@@ -1,0 +1,11 @@
+POST http://localhost:5040/register/candidate
+Content-Type: application/json
+
+{
+    "username" : "admin",
+    "password" : "admin123",
+    "confirmPassword" : "admin123",
+    "role" : "Admin",
+    "email" : "admin-ats@enfuse-solutions.com",
+    "fullName": "Admin"
+} 
