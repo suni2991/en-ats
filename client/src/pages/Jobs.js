@@ -1,10 +1,21 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import Viewjob from '../components/Viewjob'
+
 
 const Jobs = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () =>{
+    navigate('/postjob')
+  }
+
   return (
     <div className="table-container">
-        <div>Create Job</div>
-        <div>View Job</div>
+        <div>
+        <button onClick={handleClick} className="submit-button1" style={{float: 'right'}}> Post a Job</button></div>
+        <div><Viewjob /></div>
+        
     </div>
   )
 }

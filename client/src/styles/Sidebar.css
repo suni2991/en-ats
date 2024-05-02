@@ -131,7 +131,7 @@ main img{
 .icon-button{
   background-color: transparent;
   border: none;
-  margin: 130px 10px 5px 5px;
+  margin: 30px 10px 5px 5px;
   color: #00B4D2;
 }
 .icon-container {
@@ -160,4 +160,46 @@ main img{
   margin-left: 10px;
   font-weight: bold;
   cursor: pointer;
+}
+
+.breadcrumb{
+  margin: 15px 0px 3px 30px;
+  color: #00B4D2;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  /* padding: 1px 20px; */
+  background-color: #ffffff;
+  border-bottom: 1px solid #e8e8e8;
+  height: 10vh;
+  width: 80vw !important;
+}
+
+.navbar-left {
+  display: flex;
+  float: right;
+}
+
+.navbar-center {
+  flex-grow: 1;
+  margin: 0 20px;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.profile-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+
+.text {
+  font-size: 14px;
 }

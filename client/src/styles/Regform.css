@@ -1,0 +1,45 @@
+.formContainer{
+    display: flex;
+    justify-content: space-evenly;
+}
+.block{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.block div{
+    position: relative;
+}
+#btnWrapper{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+   
+}
+.table-container button{
+    width: initial!important;
+    margin: 10px;
+    padding: 2px 15px 0px 15px;
+    
+}
+select{
+    width: 22vw;
+    padding: 4px;
+}
+#desc{
+    width: 100%;
+    
+}
+#desc div{
+    width:78%;
+    margin: 20px auto;
+    position: relative;
+}
+.block label,#desc label{
+    background-color: white;
+    padding: 2px;
+    top: 6px;
+    left: 15px;
+    position: absolute;
+}

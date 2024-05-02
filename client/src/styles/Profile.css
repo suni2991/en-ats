@@ -1,0 +1,21 @@
+/* Profile.css */
+
+
+
+.profile-header {
+  text-align: center;
+  
+}
+
+.profile-info p {
+  margin-bottom: 10px;
+}
+
+/* Customizing the close button in the Drawer */
+.ant-drawer-close-btn {
+  color: #00B4D2; /* Change the color of the close button */
+}
+
+.ant-drawer-close-btn:hover {
+  color: #0083A9; /* Change the hover color of the close button */
+}

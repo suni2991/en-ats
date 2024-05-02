@@ -74,7 +74,6 @@ function Credentials() {
       const res = await fetch(url);
       const data = await res.json();
       if (data.length > 0) {
-        // Sort the data based on the creation date in descending order
         const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setData(sortedData);
       }
@@ -228,8 +227,7 @@ function Credentials() {
         <h1 style={{ color: '#00B4D2' }}> Credentials of all Candidates </h1>
         
         <div className="search-filter1">
-          <input placeholder='Search here' type="text" value={searchQuery} className="search-field" onChange={(e) => setSearchQuery(e.target.value)} />
-          {/* <button type="submit"><BsSearch/></button> */}
+         
           <button className="send-button" title='send Email' style={{ padding: "6px 10px 6px 17px", visibility: "visible", color:'#fff'}} disabled={selectedRows.length === 0} onClick={handleSendEmail} >
           Send Mail
         </button>

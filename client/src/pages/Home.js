@@ -3,14 +3,16 @@ import '../styles/Login.css';
 import useAuth from "../hooks/useAuth";
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from "axios";
-import login from '../Assests/Hire bg.jpg'
+
 import { FadeLoader } from "react-spinners";
 import Swal from 'sweetalert2';
+import logo from '../Assests/enfuse-logo.png';
+import bgImg from '../Assests/Hire bg.jpg';
 
 
 function Home() {
-  const { auth } = useAuth();
-  const { setAuth } = useAuth();
+  const { auth, setAuth } = useAuth();
+  
   const [isLoading, setIsLoading] = useState(false);
 
 
@@ -35,11 +37,13 @@ function Home() {
       if (response.status === 200) {
 
         if (response.data.role === "Admin") {
-          navigate("/admin");
+          navigate("/dashboard");
         } else if (response.data.role === "Hr") {
-          navigate("/hr");
+          navigate("/dashboard");
         } else if (response.data.role === "Candidate") {
           navigate("/candidate/candidate");
+        } else if(response.data.role === "Enfusian"){
+          navigate('/enfusian')
         }
       }
       else { console.warn("check the response") }
@@ -79,37 +83,28 @@ function Home() {
 
       {auth.role ?
         <h1> Welcome to {auth.role} Dashboard</h1>
-        : <div className='logincontainer'>
-            <center>
-                <div className='column2'>
-                  <form>
-                    <div className='form-container'>
-                      <div className='column1'>
-                          <img src={login} alt="login" />
-                      </div>
-                      <div className='column3'>
-                          <h1>User Login</h1>
-                          <input type="text" className="login-field1"
-                            placeholder="Email"
-                            onChange={(e) => setUserName(e.target.value)} />
-                          <input type="password" className="login-field1" placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} 
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {onLogin();}
-                              }}
-                          />
-                          <div className='login-butt-cont'>
-                              <button className="submit-button1" type="button" onClick={onLogin}>LOGIN</button>
-                                      {isLoading ? ( 
-                              <FadeLoader color={"#00B4D2"} size={20} margin={2} />
-                               ) : (
-                                     "")}
-                          </div>
-                      </div>
-                    </div>
-                  </form >
-                </div>
-          </center>
-        </div>}
+        :  <div>
+        <div className='LoginContainer'>
+          <div className='formWrapper'>
+            <h2 className='customeText'>Welcome</h2>
+            <img src={logo} />
+            <form>
+              <div>
+              <label>Email</label><br/>
+              <input type='text' placeholder='Email' onChange={(e) => setUserName(e.target.value)}/>
+              </div>
+              <div>
+              <label>Password</label><br/>
+              <input type='password' placeholder='password' onChange={(e) => { setPassword(e.target.value); }}  />
+              </div>
+              <button type='button' onClick={onLogin}>Login</button>
+            </form>
+          </div>
+          <div className='bgSec'>
+            <img src={bgImg} />
+          </div>
+        </div>
+      </div>}
 
 
     </div>

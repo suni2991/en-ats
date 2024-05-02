@@ -212,7 +212,6 @@ useEffect(() => {
     {showModal && (
       <div className="modal">
         <div className="modal-content">
-          {/* Display the assessment rules and terms & conditions */}
           <div className='head'><center><p style={{marginBottom: '18px', paddingTop: '0px', fontSize: '22px', fontWeight: 'bold'}}>Welcome to <img src={logos} alt='' width={'15%'} /> Assessment Portal</p></center></div>
           <p style={{fontWeight:'bold', textDecoration: 'underline'}}>Please read following before taking the Assessment:</p>
           <ol>

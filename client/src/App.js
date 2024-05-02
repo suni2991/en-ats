@@ -25,6 +25,11 @@ import Jobs from './pages/Jobs.js'
 import Statistics from './pages/Statistics.js';
 import Monitor from './pages/Monitor.js';
 import Admin from './pages/Admin.js';
+import Postjob from './components/Postjob.js';
+import Createhr from './components/Createhr.js';
+import Feedbacks from './pages/Feedbacks.js';
+import Profile from './pages/Profile.js';
+import ProfilePage from './components/ProfilePage.js';
 
 
 const App = () => {
@@ -66,6 +71,11 @@ const App = () => {
             <Route path='/statistics' element={<Statistics />} />
             <Route path='/dashboard' element={<Monitor />} />
             <Route path='/credentials' element={<Credentials />} />
+            <Route path='/postjob' element={<Postjob />} />
+            <Route path='/create-hr' element={<Createhr />} />
+            <Route path='/feedbacks' element={<Feedbacks />} />
+            <Route path='/profile' element={<Profile />} />
+            <Route path='/editProfile' element={<ProfilePage />} />
           </Route>
         </Routes>
       </Sidebar>
