@@ -311,7 +311,7 @@ hr{
   padding: 5px 5px 15px 5px;
   display: flex;
   height: auto;
-  flex-direction: column;
+  /* flex-direction: column; */
   width: 84%;
   border-radius: 2rem;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -488,11 +488,12 @@ hr{
 
 
 .table-container {
-  margin: -20px 25px 35px 25px ;
+  margin: 1px 0px 35px 0px ;
   background: rgb(255, 255, 255);
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  width: 77.5vw;
  
 }
 .table-container h1{
@@ -506,15 +507,21 @@ hr{
   justify-content: space-around;
 }
 .search-filter input[type="text"] {
-  padding: 0.4rem;
-  /* border-top-left-radius: 16px; */
-  /* border-bottom-left-radius: 16px; */
+  padding: 5px;
+  
   border-radius: 16px;
-  border-width: 0px;
-  /* margin: 10px; */
-  /* margin-bottom: 5px; */
-  width: 20%;
-  background: linear-gradient(to bottom, #98a3b5 0%, #dae0eb 100%);
+  border-width: 0.5px rgb(164, 164, 164);
+ 
+  width: 45%;
+  
+}
+
+.resume-link {
+  color: #00B4D2; /* Change the color to the desired color */
+  text-decoration: none; /* Remove underline */
+}
+.resume-link:hover {
+  text-decoration: underline; /* Underline on hover */
 }
 
 

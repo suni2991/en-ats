@@ -191,7 +191,7 @@ const renderPaginationButtons = () => {
       <h1 style={{ color: '#00B4D2' }}> Welcome to HR Dashboard </h1><br />
       <div>
         <div className="search-filter">
-            <input type="text" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{marginLeft: '45px'}} />
+            <input type="text" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{margin: '18px'}} />
           <button className="export-csv" style={{ background:'#00B4D2' }} title='Download All / Selected Records as CSV file' onClick={downloadCSV}>Download to CSV</button>
           <button className='submit-button1' style={{ width: '15%', padding: '2px 2px 2px 2px', marginRight: '60px' }} title='Add new Candidate' onClick={handleClick}>Add New</button>
         </div>
@@ -207,6 +207,7 @@ const renderPaginationButtons = () => {
             <p><b>Email:</b>{candidate.email}</p>
             <p><b>Position:</b>{candidate.appliedPosition}</p>
             <p><b>Status:</b>{candidate.status}</p>
+           
             <div className='btn-hr-container'>
             <button className='button-hr-view' title='View' onClick={() => viewCandidate(candidate._id)}><CiRead color='#0398b2' /></button>
             <button className='button-hr-view' title='Edit' onClick={() => editCandidate(candidate._id)}><CiPen color= '#0398b2' /></button>

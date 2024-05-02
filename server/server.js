@@ -6,8 +6,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const app = express();
 const emailRouter = require("./routes/EmailRouter")
-//const candidateRouter = require("./routes/CandidateRouter.js");
+const jobRouter = require("./routes/JobPostRouter.js")
 const userRouter = require("./routes/userrouter.js");
+const  path  = require("path");
 const multer = require('multer');
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,7 +21,7 @@ main().catch(err => console.log(err));
 async function main() {
   await mongoose.connect(process.env.URL);
   await mongoose.connection.db.collection('candidates').createIndex({ email: 1 }, { unique: true }); 
-  await mongoose.connection.db.collection('candidates').createIndex({ username: 1 }, { unique: true });
+ 
   console.log('db connected')
 }
 
@@ -31,8 +32,8 @@ main().catch((err) => {
 
 
 app.use(userRouter);
-app.use(emailRouter)
-
+app.use(emailRouter);
+app.use(jobRouter);
 
 const imageFilter = (req, file, cb) => {
   let filename = file.originalname;
@@ -106,19 +107,12 @@ app.post("/upload/resume", uploadResume, (req, res) => {
   });
 });
 
-app.put("/update/image/:id", uploadImage, (req, res) => {
- 
-  
-  const { id } = req.params;
-  const { fileName } = req.file; 
-  res.send({
-    message: "Image updated successfully",
-    updatedImage: {
-      id,
-      fileName
-    }
-  });
-});
+
+
+
+
 app.listen(5040, () => {
   console.log('server started at 5040')
 })
+
+
