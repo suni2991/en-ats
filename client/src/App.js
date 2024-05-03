@@ -4,7 +4,7 @@ import Sidebar from './components/Sidebar';
 import RequireAuth from './components/RequiredAuth';
 import { AuthProvider } from './context/AuthProvider';
 import Credentials from './pages/Credentials.js';
-import Hr from './pages/Hr.js';
+import HR from './pages/Hr.js';
 import Candidate from './pages/Candidate'; 
 import Home from './pages/Home.js';
 import Registration from './components/Registration';
@@ -27,7 +27,7 @@ import Monitor from './pages/Monitor.js';
 import Admin from './pages/Admin.js';
 import Postjob from './components/Postjob.js';
 import Createhr from './components/Createhr.js';
-import Feedbacks from './pages/Feedbacks.js';
+import Feedback from './pages/Feedbacks.js';
 import Profile from './pages/Profile.js';
 import ProfilePage from './components/ProfilePage.js';
 
@@ -64,7 +64,7 @@ const App = () => {
             <Route path="/assessment/excel" element={<Excel />} />
             <Route path="/assessment/typing" element={<TypingTest />} />
             <Route path='/jobs' element={<Jobs />} />
-            <Route path='/hr' element={<Hr />}/>
+            <Route path='/hr' element={<HR />}/>
             <Route path='/hr/view/:id' element={<View />}/>
             <Route path='/hr/edit/:id' element={<Edit />}/>
             <Route path='/thankyou' element={<Thankyou />} />
@@ -73,7 +73,7 @@ const App = () => {
             <Route path='/credentials' element={<Credentials />} />
             <Route path='/postjob' element={<Postjob />} />
             <Route path='/create-hr' element={<Createhr />} />
-            <Route path='/feedbacks' element={<Feedbacks />} />
+            <Route path='/feedbacks' element={<Feedback/>} />
             <Route path='/profile' element={<Profile />} />
             <Route path='/editProfile' element={<ProfilePage />} />
           </Route>

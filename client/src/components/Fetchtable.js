@@ -53,10 +53,8 @@ const Fetchtable = ({ url, columns, title, onViewClick }) => {
         highlightOnHover
         striped
         customStyles={CustomStyles}
-        selectableRows
-        onSelectedRowsChange={handleRowSelected}
-        selectedRows={selectedRows}
-        fixedheader
+       
+        
       />
     </div>
   );

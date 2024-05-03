@@ -130,7 +130,7 @@ userRouter.get('/candidates', async (req, res) => {
 })
 
 userRouter.get('/hrs', async (req, res) => {
-  const docs = await Candidate.find({ role: "Hr" });
+  const docs = await Candidate.find({ role: { $in: ["HR", "Enfusian"] } });
   res.json(docs)
 })
 

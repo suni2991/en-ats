@@ -58,7 +58,7 @@ const candidateSchema = new mongoose.Schema({
     
     password:{type: String},
     confirmPassword:{type: String},
-    role:{type: String, enum: ['Candidate', 'Hr', 'Admin', 'Enfusian'], default: "Candidate"},
+    role:{type: String, enum: ['Candidate', 'HR', 'Admin', 'Enfusian'], default: "Candidate"},
 	dateCreated:{type:Date, default: Date.now},
     createdAt:{type:Date, default: Date.now},
     state:{type: String},

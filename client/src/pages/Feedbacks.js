@@ -1,9 +1,8 @@
 import React from 'react'
-
 import Fetchtable from '../components/Fetchtable';
 import useAuth from '../hooks/useAuth';
 
-const Feedbacks = () => {
+const Feedback = () => {
     const { auth } = useAuth();
     const userColumns = [
         { name: 'Position', selector: (row) => row.postion, sortable: true },
@@ -37,4 +36,4 @@ const Feedbacks = () => {
   )
 }
 
-export default Feedbacks;
+export default Feedback;

@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import { IoKeyOutline } from "react-icons/io5";
 import { Input, Button } from 'antd';
 import ProfilePage from './ProfilePage';
+import { VscFeedback } from "react-icons/vsc";
 import axios from 'axios';
 
 const Sidebar = ({ children }) => {
@@ -22,18 +23,21 @@ const Sidebar = ({ children }) => {
   const [searchValue, setSearchValue] = useState('');
   const [profileVisible, setProfileVisible] = useState(false);
   const { auth, setAuth } = useAuth();
+  const [filteredMenuItems, setFilteredMenuItems] = useState([]);
+
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   }
-
-
-
-
-
-  const handleSearch = (value) => {
-    setSearchValue(value);
-    
+  const handleSearch = async (email) => {
+    setSearchValue(email);
+    try {
+      const response = await axios.get(`/candidates/${email}`);
+      setFilteredMenuItems(response.data);
+    } catch (error) {
+      console.error('Error fetching candidates:', error);
+    }
   };
+ 
 
  
   const logout = () => {
@@ -91,13 +95,9 @@ const Sidebar = ({ children }) => {
     {
       path: "/feedbacks",
       name: "Feedback",
-      icon: <IoKeyOutline />,
+      icon: <VscFeedback />,
     },
-    {
-      path: "/profile",
-      name: "Profile",
-      icon: <IoKeyOutline />,
-    }
+   
     
     
   ];
@@ -118,8 +118,8 @@ const Sidebar = ({ children }) => {
           <div style={{ width: isOpen ? "180px" : "25px" }} className='sidebar'>
             <div className='top-section'>
             <button style={{ background: 'none', border: 'none', float: 'left' }} onClick={toggleDarkMode}><img src={logo} alt="EnFuse" /></button>
-            {auth.role === 'Admin' || auth.role === 'HR' || auth.role === 'Enfusian' ? (
-              <img style={{ width: "80%", borderRadius: "50%", background: "white" }} src={(auth.image !== "") ? `http://localhost:5040` + auth.image : require('../Assests/User.png')} alt='logo' />
+            {auth.role === 'Admin' || auth.role === 'Enfusian' ? (
+              <img style={{ width: "60%", borderRadius: "50%", background: "white" }} src={(auth.image !== "") ? `http://localhost:5040` + auth.image : require('../Assests/User.png')} alt='logo' />
             ) : null}<br />
             </div>
 
@@ -127,15 +127,15 @@ const Sidebar = ({ children }) => {
               menuItem.map((item, index) => {
                 if (auth.role === "Admin") {
                   return (
-                    (item.name === "Admin" || item.name === "HR" || item.name === "Dashboard" || item.name === "Jobs" ||item.name === "Statistics" || item.name === "Feedback" || item.name === "Profile") &&
+                    (item.name === "Admin" || item.name === "HR" || item.name === "Dashboard" || item.name === "Jobs" ||item.name === "Statistics" ) &&
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className='icon'>{item.icon}</div>
                       <div className='link-text'>{item.name}</div>
                     </NavLink>
                   );
-                } else if (auth.role === "Hr") {
+                } else if (auth.role === "HR") {
                   return (
-                    ( item.name === "Jobs" || item.name === "Candidates" || item.name === "Dashboard" || item.name === "Scores" || item.name === "Statistics" || item.name === "Credentials" ) || item.name === "Profile" &&
+                    ( item.name === "Jobs" || item.name === "Candidates" || item.name === "Dashboard" || item.name === "Scores" || item.name === "Statistics" || item.name === "Credentials"|| item.name === "Feedback" ) &&
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className='icon'>{item.icon}</div>
                       <div className='link-text'>{item.name}</div>
@@ -143,7 +143,7 @@ const Sidebar = ({ children }) => {
                   );
                 } else if (auth.role === "Enfusian") {
                   return (
-                    (item.name === "Feedback" || item.name === "Profile")&&
+                    (item.name === "Feedback")&&
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className='icon'>{item.icon}</div>
                       <div className='link-text'>{item.name}</div>
@@ -186,7 +186,7 @@ const Sidebar = ({ children }) => {
         </nav>}
         {auth && <ProfilePage visible={profileVisible} auth={auth} onClose={() => setProfileVisible(false)} />}
           
-          {children}</main>
+        {children}</main>
       </div>
     </div>
 

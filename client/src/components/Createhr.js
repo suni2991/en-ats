@@ -114,7 +114,7 @@ const Createhr = () => {
         <label htmlFor="role">Role:</label>
         <select id="roleSelect" name="role" value={formData.role} onChange={handleRoleChange}>
     <option value="Candidate">Candidate</option>
-    <option value="Hr">Hr</option>
+    <option value="HR">HR</option>
     <option value="Admin">Admin</option>
     <option value="Enfusian">Enfusian</option>
 </select>

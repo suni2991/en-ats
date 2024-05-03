@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import '../styles/Regform.css'
+import Swal from 'sweetalert2';
 
 const Postjob = () => {
     const navigate = useNavigate();
@@ -30,6 +31,38 @@ const Postjob = () => {
     };
 
     const handleSubmit = async (e) => {
+        
+    let emptyFields = [];
+
+    // Check for empty fields
+    for (const key in formData) {
+      if (!formData[key]) {
+        emptyFields.push(key);
+      }
+    }
+
+    if (emptyFields.length > 3) {
+      // More than 3 fields are empty, show generic message
+      Swal.fire({
+        title: "Error!",
+        text: "Please fill in all the fields.",
+        icon: "error",
+        confirmButtonColor: "#00B4D2",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    // Fire individual messages for empty fields
+    emptyFields.forEach((field) => {
+      Swal.fire({
+        title: "Error!",
+        text: `Please enter ${field === "jobType" ? "select" : ""} ${field}.`,
+        icon: "error",
+        confirmButtonColor: "#00B4D2",
+        confirmButtonText: "OK",
+      });
+    });
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5040/createjob', formData);

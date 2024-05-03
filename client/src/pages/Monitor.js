@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import Fetchtable from '../components/Fetchtable';
-import {  MdAssignmentAdd ,MdDeleteOutline } from "react-icons/md";
+import { MdAssignmentAdd } from "react-icons/md";
 import { TiEyeOutline } from "react-icons/ti";
 import CandidateProfileDrawer from '../components/CandidateProfileDrawer';
-
-
+import SkillModal from '../components/SkillModal';
 
 const Monitor = () => {
-
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
-
-
-
   const [formData, setFormData] = useState({
     role: '',
     candidateName: '',
@@ -22,6 +17,7 @@ const Monitor = () => {
     panelistName: '',
     round: 'L1', // Default value for Round
   });
+  const [selectedSkills, setSelectedSkills] = useState([]); // State to store selected skills
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,9 +29,7 @@ const Monitor = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // You can handle form submission here, e.g., send data to backend
     console.log(formData);
-    // Reset form data after submission
     setFormData({
       role: '',
       candidateName: '',
@@ -44,6 +38,19 @@ const Monitor = () => {
       panelistName: '',
       round: 'L1', // Reset Round to default after submission
     });
+  };
+
+  const handleAssign = () => {
+    setShowModal(true); // Show modal on Assign button click
+  };
+
+  const handleModalCancel = () => {
+    setShowModal(false); // Hide modal
+  };
+
+  const handleModalOk = (skills) => {
+    setSelectedSkills(skills); // Set selected skills
+    setShowModal(false); // Hide modal
   };
 
   const renderResumeLink = (row) => {
@@ -70,15 +77,6 @@ const Monitor = () => {
     setProfileOpen(false); // Close the ProfilePage in the drawer
   };
 
-  const handleAssign = () => {
-    setShowModal(true); // Show modal on Assign button click
-    console.log("Assigned candidate:", selectedCandidate);
-  };
-
-  const closeModal = () => {
-    setShowModal(false); // Hide modal
-  };
-
   const userColumns = [
     { name: 'Name', selector: (row) => row.fullName, sortable: true },
     { name: 'Email', selector: (row) => row.email, sortable: true },
@@ -90,7 +88,6 @@ const Monitor = () => {
         <div>
           <button onClick={() => handleAssign(row)}><MdAssignmentAdd /></button>
           <button onClick={() => handleView(row)}><TiEyeOutline /></button>
-         
         </div>
       ),
     },
@@ -113,98 +110,31 @@ const Monitor = () => {
       {showModal && (
         <div className="modal">
           <div className="modal-content">
-         
-            
-            <div>
-      <h1>Interview Form</h1>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-      <label style={{ textAlign: 'left', width: '45%' }}>
-          Candidate Name:
-          <input
-            type="text"
-            name="candidateName"
-            value={formData.candidateName}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-          />
-        </label>
-        <label style={{ textAlign: 'left', width: '45%' }}>
-          Role:
-          <input
-            type="text"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-          />
-        </label>
-       
-        
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-        
-     
-      <label style={{ textAlign: 'left', width: '45%' }}>
-      Experience:
-      <input
-        type="text"
-        name="experience"
-        value={formData.experience}
-        onChange={handleChange}
-        style={{ width: '100%' }}
-      />
-    </label>
-    <label style={{ textAlign: 'left', width: '45%' }}>
-    Availability/Notice Period:
-    <input
-      type="text"
-      name="noticePeriod"
-      value={formData.noticePeriod}
-      onChange={handleChange}
-      style={{ width: '100%' }}
-    />
-  </label>
-        
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-        
-       
-        
-        <label style={{ textAlign: 'left', width: '45%' }}>
-          Panelist Name:
-          <input
-            type="text"
-            name="panelistName"
-            value={formData.panelistName}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-          />
-        </label>
-        <label style={{ textAlign: 'left', width: '45%' }}>
-        Round:
-        <select name="round" value={formData.round} onChange={handleChange} style={{ width: '100%' }}>
-          <option value="L1">L1</option>
-          <option value="L2">L2</option>
-          <option value="HR">HR</option>
-        </select>
-      </label>
-      </div>
-      <div id='btnWrapper'>
-      <button type="submit" style={{ alignSelf: 'flex-start', width: '100px' }}>Submit</button>
-      <button onClick={closeModal}>Close</button>
-      </div>
-      </form>
-    
-    </div>
-            
+            <h1>Interview Form</h1>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+              <label>
+                Candidate Name:
+                <input
+                  type="text"
+                  name="candidateName"
+                  value={formData.candidateName}
+                  onChange={handleChange}
+                />
+              </label>
+              {/* Other form fields */}
+              <SkillModal visible={true} onCancel={handleModalCancel} onOk={handleModalOk} />
+              {/* Display selected skills */}
+              <div>Selected Skills: {selectedSkills.join(', ')}</div>
+              <button type="submit">Submit</button>
+              <button onClick={handleModalCancel}>Cancel</button>
+            </form>
+            <button onClick={handleModalCancel}>Close</button>
           </div>
         </div>
       )}
-      {profileOpen && <CandidateProfileDrawer visible={profileOpen} onClose={closeProfile} candidateId={selectedCandidate._id} />}
 
+      {profileOpen && <CandidateProfileDrawer visible={profileOpen} onClose={closeProfile} candidateId={selectedCandidate._id} />}
     </div>
-    
   );
 };
 

@@ -38,7 +38,7 @@ function Home() {
 
         if (response.data.role === "Admin") {
           navigate("/dashboard");
-        } else if (response.data.role === "Hr") {
+        } else if (response.data.role === "HR") {
           navigate("/dashboard");
         } else if (response.data.role === "Candidate") {
           navigate("/candidate/candidate");

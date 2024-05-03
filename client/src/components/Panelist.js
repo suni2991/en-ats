@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 
+
+
 const Panelist = () => {
   const [formData, setFormData] = useState({
     position: '',
-    skills: '',
+    skills: [],
     rating: '',
     notes: '',
     fullName: '',
@@ -15,11 +17,19 @@ const Panelist = () => {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const { name, value, checked } = e.target;
+    // If checkbox is checked, add the skill to the array; otherwise, remove it
+    if (checked) {
+      setFormData((prevData) => ({
+        ...prevData,
+        skills: [...prevData.skills, value],
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        skills: prevData.skills.filter((skill) => skill !== value),
+      }));
+    }
   };
 
 
@@ -55,8 +65,7 @@ const Panelist = () => {
           <option value="HTML/CSS/UI Development">HTML/CSS/UI Development</option>
         </select>
 
-        <label htmlFor="skills">Skills:</label>
-        <input type="text" id="skills" name="skills" value={formData.skills} onChange={handleChange} required />
+        
         <label htmlFor="rating">Rating out of 5:</label>
         <input type="number" id="rating" name="rating" min="1" max="5" value={formData.rating} onChange={handleChange} required />
         <label htmlFor="notes">Notes:</label>

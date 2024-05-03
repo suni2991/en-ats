@@ -87,7 +87,7 @@ main img{
   gap: 10px;
   transition: all 0.5s;
   font-size: 12px;
- 
+ margin: 0px 0px 15px 0px;
   padding-inline-end: 5rem;
 }
 .link-text{
@@ -131,7 +131,7 @@ main img{
 .icon-button{
   background-color: transparent;
   border: none;
-  margin: 30px 10px 5px 5px;
+  margin: 60px 10px 5px 5px;
   color: #00B4D2;
 }
 .icon-container {
@@ -157,7 +157,7 @@ main img{
 .text {
   background: none;
   padding-top: 50px;
-  margin-left: 10px;
+  margin: 50px 0px 0px 10px;
   font-weight: bold;
   cursor: pointer;
 }
