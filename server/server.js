@@ -8,6 +8,7 @@ const app = express();
 const emailRouter = require("./routes/EmailRouter")
 const jobRouter = require("./routes/JobPostRouter.js")
 const userRouter = require("./routes/userrouter.js");
+const interviewRouter = require("./routes/InterviewRouter.js")
 const  path  = require("path");
 const multer = require('multer');
 app.use(cors());
@@ -34,7 +35,7 @@ main().catch((err) => {
 app.use(userRouter);
 app.use(emailRouter);
 app.use(jobRouter);
-
+app.use(interviewRouter);
 const imageFilter = (req, file, cb) => {
   let filename = file.originalname;
   let fileExtension = filename.slice(filename.lastIndexOf("."), filename.length);

@@ -1,38 +1,10 @@
 // 
 const mongoose = require('mongoose');
 
-const skillsSchema = new mongoose.Schema({
-    HTML_CSS_UI_Development: { type: Number, default: 0 },
-    ES6_JavaScript_jQuery: { type: Number, default: 0 },
-    ReactJS: { type: Number, default: 0 },
-    SCSS: { type: Number, default: 0 },
-    Any_other_UI_Framework: { type: Number, default: 0 },
-    AEM_Any_other_CMS: { type: Number, default: 0 },
-    Code_Debugging_Skills: { type: Number, default: 0 },
-    Coding_Test: { type: Number, default: 0 },
-    General: { type: Number, default: 0 },
-    Communication: { type: Number, default: 0 },
-    AEM : { type: Number, default: 0 },	 	 
-AEMasCloud :{ type: Number, default: 0 },	 	 
-Java: { type: Number, default: 0 },	 	 
-Sevlet_Services	: { type: Number, default: 0 }, 	 
-OSGi:{ type: Number, default: 0 },	 	 
-SlingModel:{ type: Number, default: 0 },	 	 
-Static_Editable_Template:{ type: Number, default: 0 },	 	 
-Frontend_Expertise: { type: Number, default: 0 },	 	 
-NodeJS:{ type: Number, default: 0 },
-OOPS:{ type: Number, default: 0 },	 	 
-RestfulAPI:{ type: Number, default: 0 },	 	 
-MongoDB:{ type: Number, default: 0 },	 	 
-JavaScript:{ type: Number, default: 0 },
-Typescript:{ type: Number, default: 0 },	 	 
-HTML:{ type: Number, default: 0 },
-CSS:{ type: Number, default: 0 }, 	 
-AngularJS:{ type: Number, default: 0 },	 	 
-AWS_Experience:{ type: Number, default: 0 },
-  });
+
 
 const candidateSchema = new mongoose.Schema({
+  
     id: {type: Number},
     firstName:{type:String},
     lastName:{type:String},
@@ -62,19 +34,28 @@ const candidateSchema = new mongoose.Schema({
 	dateCreated:{type:Date, default: Date.now},
     createdAt:{type:Date, default: Date.now},
     state:{type: String},
-    district:{type: String},
+    district:{type: String}, 
     taluka:{type: String},
     selectedCategory:{type: String},
     mgrName: {type: String},
     mgrEmail: {type: String},
-    skills: { type: skillsSchema},
-  rating: { type: Number, min: 1, max: 5 },
+    skills: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        rating:{type: Number},
+        comments:{type: String},
+      },
+    ],
   notes: { type: String },
   availability: { type: String},
   panelistName: { type: String, default: 'HR'},
   round: { type: String },
   evaluationDetails: { type: Boolean },
-  dob: {type:Number}
+  dob: {type:Number},
+  meetingDate: {type: Date}
 });
 
 const Candidate = mongoose.model('Candidate', candidateSchema);

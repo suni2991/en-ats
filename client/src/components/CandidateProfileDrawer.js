@@ -49,7 +49,7 @@ const CandidateProfileDrawer = ({ visible, onClose, candidateId }) => {
         <p>City: {candidateData.currentLocation}</p>
         <p>District: {candidateData.district}</p>
         <p>Manager Name: {candidateData.mgrName}</p>
-
+        
       </div>
     </Drawer>
   );

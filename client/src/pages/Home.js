@@ -43,7 +43,7 @@ function Home() {
         } else if (response.data.role === "Candidate") {
           navigate("/candidate/candidate");
         } else if(response.data.role === "Enfusian"){
-          navigate('/enfusian')
+          navigate('/feedbacks')
         }
       }
       else { console.warn("check the response") }

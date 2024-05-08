@@ -30,6 +30,7 @@ import Createhr from './components/Createhr.js';
 import Feedback from './pages/Feedbacks.js';
 import Profile from './pages/Profile.js';
 import ProfilePage from './components/ProfilePage.js';
+import Panelist from './components/Panelist.js';
 
 
 const App = () => {
@@ -76,6 +77,7 @@ const App = () => {
             <Route path='/feedbacks' element={<Feedback/>} />
             <Route path='/profile' element={<Profile />} />
             <Route path='/editProfile' element={<ProfilePage />} />
+            <Route path='/panelist/:id' element={<Panelist />} />
           </Route>
         </Routes>
       </Sidebar>

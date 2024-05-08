@@ -103,10 +103,14 @@ const Sidebar = ({ children }) => {
   ];
   const { pathname } = useLocation();
 
+  // const getCurrentMenuItem = () => {
+  //   return menuItem.find(item => item.path === pathname);
+  // };
+  
   const getCurrentMenuItem = () => {
+    console.log("Current pathname:", pathname);
     return menuItem.find(item => item.path === pathname);
   };
-  
 
 
   return (
