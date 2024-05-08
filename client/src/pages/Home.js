@@ -38,12 +38,12 @@ function Home() {
 
         if (response.data.role === "Admin") {
           navigate("/dashboard");
-        } else if (response.data.role === "Hr") {
+        } else if (response.data.role === "HR") {
           navigate("/dashboard");
         } else if (response.data.role === "Candidate") {
           navigate("/candidate/candidate");
         } else if(response.data.role === "Enfusian"){
-          navigate('/enfusian')
+          navigate('/feedbacks')
         }
       }
       else { console.warn("check the response") }

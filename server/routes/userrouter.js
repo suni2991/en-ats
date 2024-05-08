@@ -38,8 +38,7 @@ userRouter.post('/register/candidate', async (req, res) => {
       mgrName,
       mgrEmail,
       skills,
-      rating,
-      notes,
+     
       availability,
       panelistName,
       round,
@@ -84,8 +83,7 @@ userRouter.post('/register/candidate', async (req, res) => {
       mgrName,
       mgrEmail,
       skills,
-      rating,
-      notes,
+    
       availability,
       panelistName,
       round,
@@ -130,7 +128,7 @@ userRouter.get('/candidates', async (req, res) => {
 })
 
 userRouter.get('/hrs', async (req, res) => {
-  const docs = await Candidate.find({ role: "Hr" });
+  const docs = await Candidate.find({ role: { $in: ["HR", "Enfusian"] } });
   res.json(docs)
 })
 
@@ -197,108 +195,121 @@ userRouter.put('/candidate/:id', async (req, res) => {
   }
 })
 
-//To update Evaluation status
 userRouter.put('/evaluate/:candidateId', async (req, res) => {
   const { candidateId } = req.params;
-  const {
-    firstName,
-    lastName,
-    fullName,
-    qualification,
-    totalExperience,
-    relevantExperience,
-    noticePeriod,
-    contact,
-    email,
-    position,
-    currentLocation,
-    image,
-    dob,
-    resume,
-    status,
-    empCount,
-    psychometric,
-    quantitative,
-    vocabulary,
-    java,
-    accounts,
-    excel,
-   
-    role,
-    dateCreated,
-    createdAt,
-    state,
-    district,
-    taluka,
-    selectedCategory,
-    mgrName,
-    mgrEmail,
-    skills,
-    rating,
-    notes,
-    availability,
-    panelistName,
-    round,
-    evaluationDetails,
-  } = req.body;
+  const { skills } = req.body;
 
   try {
-    // Find the candidate by candidateId
-    let candidate = await Candidate.findById(candidateId);
-    if (!candidate) {
-      return res.status(404).json({ error: 'Candidate not found' });
-    }
-
-    // Update candidate data
-    candidate.firstName = firstName;
-    candidate.lastName = lastName;
-    candidate.fullName = fullName;
-    candidate.qualification = qualification;
-    candidate.totalExperience = totalExperience;
-    candidate.relevantExperience = relevantExperience;
-    candidate.noticePeriod = noticePeriod;
-    candidate.contact = contact;
-    candidate.email = email;
-    candidate.position = position;
-    candidate.currentLocation = currentLocation;
-    candidate.image = image;
-    candidate.resume = resume;
-    candidate.status = status;
-    candidate.empCount = empCount;
-    candidate.psychometric = psychometric;
-    candidate.quantitative = quantitative;
-    candidate.vocabulary = vocabulary;
-    candidate.java = java;
-    candidate.accounts = accounts;
-    candidate.excel = excel;
-   
-    candidate.dob= dob;
-   
-    candidate.role = role;
-    candidate.dateCreated = dateCreated;
-    candidate.createdAt = createdAt;
-    candidate.state = state;
-    candidate.district = district;
-    candidate.taluka = taluka;
-    candidate.selectedCategory = selectedCategory;
-    candidate.mgrName = mgrName;
-    candidate.mgrEmail = mgrEmail;
-    candidate.skills = skills;
-    candidate.rating = rating;
-    candidate.notes = notes;
-    candidate.availability = availability;
-    candidate.panelistName = panelistName;
-    candidate.round = round;
-    candidate.evaluationDetails = evaluationDetails;
-
-    // Save the updated candidate data
-    candidate = await candidate.save();
-    res.json(candidate);
+    const updatedCandidate = await Candidate.findByIdAndUpdate(
+      candidateId,
+      { $set: { skills } }, // Update candidate skills
+      { new: true }
+    );
+    res.json(updatedCandidate);
   } catch (error) {
-    console.error('Error updating candidate:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error updating candidate skills:', error);
+    res.status(400).json({ message: 'Error updating candidate skills', error });
   }
-})
+});
+// //To update Evaluation status
+// userRouter.put('/evaluate/:candidateId', async (req, res) => {
+//   const { candidateId } = req.params;
+//   const {
+//     firstName,
+//     lastName,
+//     fullName,
+//     qualification,
+//     totalExperience,
+//     relevantExperience,
+//     noticePeriod,
+//     contact,
+//     email,
+//     position,
+//     currentLocation,
+//     image,
+//     dob,
+//     resume,
+//     status,
+//     empCount,
+//     psychometric,
+//     quantitative,
+//     vocabulary,
+//     java,
+//     accounts,
+//     excel,
+   
+//     role,
+//     dateCreated,
+//     createdAt,
+//     state,
+//     district,
+//     taluka,
+//     selectedCategory,
+//     mgrName,
+//     mgrEmail,
+//     skills,
+    
+//     availability,
+//     panelistName,
+//     round,
+//     evaluationDetails,
+//   } = req.body;
+
+//   try {
+//      let candidate = await Candidate.findById(candidateId);
+//     if (!candidate) {
+//       return res.status(404).json({ error: 'Candidate not found' });
+//     }
+
+//     candidate.firstName = firstName;
+//     candidate.lastName = lastName;
+//     candidate.fullName = fullName;
+//     candidate.qualification = qualification;
+//     candidate.totalExperience = totalExperience;
+//     candidate.relevantExperience = relevantExperience;
+//     candidate.noticePeriod = noticePeriod;
+//     candidate.contact = contact;
+//     candidate.email = email;
+//     candidate.position = position;
+//     candidate.currentLocation = currentLocation;
+//     candidate.image = image;
+//     candidate.resume = resume;
+//     candidate.status = status;
+//     candidate.empCount = empCount;
+//     candidate.psychometric = psychometric;
+//     candidate.quantitative = quantitative;
+//     candidate.vocabulary = vocabulary;
+//     candidate.java = java;
+//     candidate.accounts = accounts;
+//     candidate.excel = excel;
+   
+//     candidate.dob= dob;
+   
+//     candidate.role = role;
+//     candidate.dateCreated = dateCreated;
+//     candidate.createdAt = createdAt;
+//     candidate.state = state;
+//     candidate.district = district;
+//     candidate.taluka = taluka;
+//     candidate.selectedCategory = selectedCategory;
+//     candidate.mgrName = mgrName;
+//     candidate.mgrEmail = mgrEmail;
+//     candidate.skills = skills;
+//     candidate.rating = rating;
+//     candidate.notes = notes;
+//     candidate.availability = availability;
+//     candidate.panelistName = panelistName;
+//     candidate.round = round;
+//     candidate.evaluationDetails = evaluationDetails;
+
+//     // Save the updated candidate data
+//     candidate = await candidate.save();
+//     res.json(candidate);
+//   } catch (error) {
+//     console.error('Error updating candidate:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// })
 
 //fetch by panelist names
 userRouter.get('/panelist/:panelistName', async (req, res) => {

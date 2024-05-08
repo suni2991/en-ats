@@ -5,9 +5,7 @@ import '../styles/Profile.css';
 const ProfilePage = ({ visible, onClose, auth }) => {
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <h2>{auth.fullName}</h2>
-      </div>
+      
       
       <Drawer
         title="Profile Details"
@@ -18,6 +16,9 @@ const ProfilePage = ({ visible, onClose, auth }) => {
         width={400}
       >
         <div className="profile-info">
+        <div className="profile-header">
+        <h2>{auth.fullName}</h2>
+      </div>
           <p>First Name: {auth.firstName}</p>
           <p>Last Name: {auth.lastName}</p>
           <p>Email: {auth.email}</p>

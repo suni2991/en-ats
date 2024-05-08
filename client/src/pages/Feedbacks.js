@@ -1,9 +1,9 @@
 import React from 'react'
-
 import Fetchtable from '../components/Fetchtable';
 import useAuth from '../hooks/useAuth';
+import { Link } from 'react-router-dom';
 
-const Feedbacks = () => {
+const Feedback = () => {
     const { auth } = useAuth();
     const userColumns = [
         { name: 'Position', selector: (row) => row.postion, sortable: true },
@@ -11,6 +11,14 @@ const Feedbacks = () => {
         { name: 'Email', selector: (row) => row.email, sortable: true },
         { name: 'Resume', cell: (row) => renderResumeLink(row), sortable: true },
         { name: 'Status', selector: (row) => row.status, sortable: true },
+        {
+          name: 'Feedback', // Add Feedback button column
+          cell: (row) => (
+            <Link to={`/panelist/${row._id}`} className='feedback-link'>
+              Add Feedback
+            </Link>
+          ),
+        },
       ];
 
       const renderResumeLink = (row) => {
@@ -28,13 +36,14 @@ const Feedbacks = () => {
     
   return (
     <div><h1>Feedbacks</h1>
-    
+   
     <Fetchtable
     url={`http://localhost:5040/panelist/${auth.fullName}`}
         columns={userColumns}
     />
     </div>
+
   )
 }
 
-export default Feedbacks;
+export default Feedback;

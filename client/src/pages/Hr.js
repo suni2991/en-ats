@@ -7,7 +7,7 @@ import Papa from 'papaparse';
 import FileSaver from 'file-saver';
 
 
-function Hr() {
+function HR() {
   const navigate = useNavigate();
   const [candidates, setCandidates] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -239,4 +239,4 @@ const renderPaginationButtons = () => {
 }
 
 
-export default Hr;
+export default HR;

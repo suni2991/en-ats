@@ -1,50 +1,122 @@
-import React, { useState } from 'react';
 import Fetchtable from '../components/Fetchtable';
-import {  MdAssignmentAdd ,MdDeleteOutline } from "react-icons/md";
+import { MdAssignmentAdd } from "react-icons/md";
 import { TiEyeOutline } from "react-icons/ti";
 import CandidateProfileDrawer from '../components/CandidateProfileDrawer';
+import {React, useState} from 'react'
+import axios from 'axios';
+import { Drawer, Form, Input, Button, Checkbox, DatePicker, Select, message } from 'antd';
 
+const { Option } = Select;
 
-
-const Monitor = () => {
-
+const Monitor = ({visible, candidateId}) => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
-
-
-
+  
+  const [candidateFullName, setCandidateFullName] = useState('');
   const [formData, setFormData] = useState({
-    role: '',
-    candidateName: '',
+    position: '',
+    fullName: '',
     experience: '',
     noticePeriod: '',
     panelistName: '',
-    round: 'L1', // Default value for Round
+    round: 'L1',
+    meetingDate: null,
+    meetingURL: '',
   });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [showDrawer, setShowDrawer] = useState(false);
+  // const handleAssign = (row) => {
+  //   if (row) {
+  //     setSelectedCandidate(row);
+  //     setShowDrawer(true);
+  //   } else {
+  //     console.error('Error: No candidate selected.');
+  //     message.error('Please select a candidate.');
+  //   }
+  // };
+  const handleAssign = (row) => {
+    console.log('Selected Row:', row);
+    if (row && row._id && row.fullName) {
+      setSelectedCandidate(row);
+      setFormData((prevData) => ({
+        ...prevData,
+        fullName: row.fullName, // Set the fullName in the form data
+        position: '', // Ensure other form fields are reset if needed
+        experience: '',
+        noticePeriod: '',
+        panelistName: '',
+        round: 'L1',
+        meetingDate: null,
+        meetingURL: '',
+      }));
+      setShowDrawer(true);
+    } else {
+      console.error('Error: Invalid candidate data.');
+      message.error('Please select a valid candidate.');
+    }
+  };
+  
+  
+  const handleDateChange = (date) => {
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      meetingDate: date,
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // You can handle form submission here, e.g., send data to backend
-    console.log(formData);
-    // Reset form data after submission
-    setFormData({
-      role: '',
-      candidateName: '',
-      experience: '',
-      noticePeriod: '',
-      panelistName: '',
-      round: 'L1', // Reset Round to default after submission
-    });
+  const handleDrawerClose = () => {
+    setShowDrawer(false); // Close the drawer
   };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.put(`http://localhost:5040/evaluate/${selectedCandidate._id}`, {
+        skills: selectedSkills, // Assuming selectedSkills contains the updated skills data
+      });
+  
+      console.log('Response from PUT request:', response.data);
+      // Handle success, e.g., show a success message or update local state
+    } catch (error) {
+      console.error('Error updating candidate skills:', error);
+      message.error('Failed to update candidate skills. Please try again later.');
+      // Handle error, e.g., show an error message or perform fallback actions
+    }
+  };
+  
+
+
+
+
+  const skillsOptions = [ // Define skillsOptions array for Checkbox.Group options
+  { label: 'HTML_CSS_UI_Development', value: 'HTML_CSS_UI_Development' },
+  { label: 'ES6_JavaScript_jQuery', value: 'ES6_JavaScript_jQuery' },
+  { label: 'ReactJS', value: 'ReactJS' },
+  { label: 'SCSS', value: 'SCSS' },
+  { label: 'Any_other_UI_Framework', value: 'Any_other_UI_Framework' },
+  { label: 'AEM_Any_other_CMS', value: 'AEM_Any_other_CMS' },
+  { label: 'Code_Debugging_Skills', value: 'Code_Debugging_Skills' },
+  { label: 'Coding_Test', value: 'Coding_Test' },
+  { label: 'General', value: 'General' },
+  { label: 'Communication', value: 'Communication' },
+  { label: 'AEM', value: 'AEM' },
+  { label: 'AEMasCloud', value: 'AEMasCloud' },
+  { label: 'Java', value: 'Java' },
+  { label: 'Sevlet_Services', value: 'Sevlet_Services' },
+  { label: 'OSGi', value: 'OSGi' },
+  { label: 'SlingModel', value: 'SlingModel' },
+  { label: 'Static_Editable_Template', value: 'Static_Editable_Template' },
+  { label: 'Frontend_Expertise', value: 'Frontend_Expertise' },
+  { label: 'NodeJS', value: 'NodeJS' },
+  { label: 'OOPS', value: 'OOPS' },
+  { label: 'RestfulAPI', value: 'RestfulAPI' },
+  { label: 'MongoDB', value: 'MongoDB' },
+  { label: 'JavaScript', value: 'JavaScript' },
+  { label: 'Typescript', value: 'Typescript' },
+  { label: 'HTML', value: 'HTML' },
+  { label: 'CSS', value: 'CSS' },
+  { label: 'AngularJS', value: 'AngularJS' },
+  { label: 'AWS_Experience', value: 'AWS_Experience' },
+];
 
   const renderResumeLink = (row) => {
     if (row.resume) {
@@ -70,14 +142,31 @@ const Monitor = () => {
     setProfileOpen(false); // Close the ProfilePage in the drawer
   };
 
-  const handleAssign = () => {
-    setShowModal(true); // Show modal on Assign button click
-    console.log("Assigned candidate:", selectedCandidate);
-  };
+  const [open, setOpen] = useState(false);
+const [childrenDrawer, setChildrenDrawer] = useState(false);
 
-  const closeModal = () => {
-    setShowModal(false); // Hide modal
-  };
+const onClose = () => {
+  setOpen(false);
+};
+const showChildrenDrawer = () => {
+  setChildrenDrawer(true);
+};
+const onChildrenDrawerClose = () => {
+  setChildrenDrawer(false);
+};
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prevData) => ({
+    ...prevData,
+    [name]: value,
+  }));
+};
+
+const handleCheckboxChange = (checkedValues) => {
+  setSelectedSkills(checkedValues); // Update selected skills
+};
+
 
   const userColumns = [
     { name: 'Name', selector: (row) => row.fullName, sortable: true },
@@ -90,7 +179,6 @@ const Monitor = () => {
         <div>
           <button onClick={() => handleAssign(row)}><MdAssignmentAdd /></button>
           <button onClick={() => handleView(row)}><TiEyeOutline /></button>
-         
         </div>
       ),
     },
@@ -110,101 +198,62 @@ const Monitor = () => {
         setSelectedCandidate={setSelectedCandidate}
       />
 
-      {showModal && (
-        <div className="modal">
-          <div className="modal-content">
-         
-            
-            <div>
-      <h1>Interview Form</h1>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-      <label style={{ textAlign: 'left', width: '45%' }}>
-          Candidate Name:
-          <input
-            type="text"
-            name="candidateName"
-            value={formData.candidateName}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-          />
-        </label>
-        <label style={{ textAlign: 'left', width: '45%' }}>
-          Role:
-          <input
-            type="text"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-          />
-        </label>
-       
-        
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-        
-     
-      <label style={{ textAlign: 'left', width: '45%' }}>
-      Experience:
-      <input
-        type="text"
-        name="experience"
-        value={formData.experience}
-        onChange={handleChange}
-        style={{ width: '100%' }}
-      />
-    </label>
-    <label style={{ textAlign: 'left', width: '45%' }}>
-    Availability/Notice Period:
-    <input
-      type="text"
-      name="noticePeriod"
-      value={formData.noticePeriod}
-      onChange={handleChange}
-      style={{ width: '100%' }}
-    />
-  </label>
-        
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-        
-       
-        
-        <label style={{ textAlign: 'left', width: '45%' }}>
-          Panelist Name:
-          <input
-            type="text"
-            name="panelistName"
-            value={formData.panelistName}
-            onChange={handleChange}
-            style={{ width: '100%' }}
-          />
-        </label>
-        <label style={{ textAlign: 'left', width: '45%' }}>
-        Round:
-        <select name="round" value={formData.round} onChange={handleChange} style={{ width: '100%' }}>
-          <option value="L1">L1</option>
-          <option value="L2">L2</option>
-          <option value="HR">HR</option>
-        </select>
-      </label>
-      </div>
-      <div id='btnWrapper'>
-      <button type="submit" style={{ alignSelf: 'flex-start', width: '100px' }}>Submit</button>
-      <button onClick={closeModal}>Close</button>
-      </div>
-      </form>
-    
-    </div>
-            
-          </div>
-        </div>
-      )}
-      {profileOpen && <CandidateProfileDrawer visible={profileOpen} onClose={closeProfile} candidateId={selectedCandidate._id} />}
+      <Drawer
+        title="Assign Interview"
+        visible={showDrawer}
+        onClose={handleDrawerClose}
+        width={600}
+      >
+        <Form layout="vertical" initialValues={formData} >
+          <Form.Item label="Position" name="position">
+            <Input onChange={handleChange} />
+          </Form.Item>
+          <Form.Item label="Candidate Name" name="fullName">
+            <Input onChange={handleChange} />
+          </Form.Item>
+          
+          <Form.Item label="Panelist Name" name="panelistName">
+            <Input onChange={handleChange} />
+          </Form.Item>
+          <Form.Item label="Round" name="round">
+            <Select onChange={(value) => setFormData({ ...formData, round: value })}>
+              <Option value="L1">L1 Round</Option>
+              <Option value="L2">L2 Round</Option>
+              <Option value="HR">HR Round</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Meeting Date" name="meetingDate">
+            <DatePicker onChange={handleDateChange} />
+          </Form.Item>
+          <Form.Item label="Meeting URL" name="meetingURL">
+            <Input onChange={handleChange} />
+          </Form.Item>
 
+          <Button type="primary" htmlType="submit" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} onSubmit={handleSubmit}>
+            Assign Interview
+          </Button>
+          
+          
+          <Button type="primary" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} onClick={showChildrenDrawer}>
+          + Skills
+        </Button>
+        <Drawer
+          title="Choose Skills"
+          width={320}
+          closable={false}
+          onClose={onChildrenDrawerClose}
+          open={childrenDrawer}
+        >
+        <Form.Item label="Skills">
+        <Checkbox.Group options={skillsOptions} onChange={handleCheckboxChange} />
+      </Form.Item>
+      
+        </Drawer>
+        </Form>
+      </Drawer>
+
+      {profileOpen && <CandidateProfileDrawer visible={profileOpen} onClose={closeProfile} candidateId={selectedCandidate._id} />}
     </div>
-    
   );
 };
 
