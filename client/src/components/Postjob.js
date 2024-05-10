@@ -13,7 +13,7 @@ const Postjob = () => {
         jobType: '',
         jobLocation: '',
         vacancies: '',
-        fulfilledBy: '',
+        
         salaryRange: '',
         experience: '',
         modeOfJob: '',
@@ -75,7 +75,7 @@ const Postjob = () => {
                 jobType: '',
                 jobLocation: '',
                 vacancies: '',
-                fulfilledBy: '',
+                
                 salaryRange: '',
                 experience: '',
                 modeOfJob: '',

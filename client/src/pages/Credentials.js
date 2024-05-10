@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import Swal from 'sweetalert2';
 import { CSVLink } from 'react-csv';
+import CustomStyles from '../components/CustomStyles';
 
 
 const API = "http://localhost:5040/candidates";
@@ -87,81 +88,6 @@ function Credentials() {
   }, [])
 
 
-  const customStyles = {
-    rows: {
-     
-      padding: '15px',
-      style: {
-       
-        backgroundColor: '#fff',
-        minHeight: '25px', // set the minimum height of each row
-      lineHeight: '25px',
-        ':hover': {
-          backgroundColor: '#00B4D2',
-          color: '#fff',
-          fontWeight: 'bold',
-          height:'30px !important',
-        },
-        ':active': {
-          backgroundColor: '#00B4D2',
-          color: '#fff',
-        },
-        
-      },
-      
-    },
-    headCells: {
-      style: {
-        backgroundColor: '#28325A',
-        color: '#FFFF',
-        padding: '2px 10px 2px 10px',
-      
-      },
-    },
-    cells: {
-      style: {
-        padding: '8px',
-        height:'30px !important',
-        width: '180px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-      },
-    },
-   
-    pagination: {
-      
-      style: {
-        backgroundColor: '#28325A',
-        height:'30px !important',
-        border: 'none',
-        color: '#fff',
-        display: "flex",
-        alignItems: "center",
-        minHeight: '30px', 
-      lineHeight: '30px'
-      },
-      pageButtonsStyle: {
-        backgroundColor: '#fff',
-        border: 'none',
-        cursor: 'pointer',
-        margin: "0 5px",
-        padding: '1px',
-         width: '20%',
-        height: '23px !important',
-        ':hover': {
-          backgroundColor: '#00B4D2',
-          color: 'rgb(14, 157, 157)',
-        },
-        ':active': {
-          backgroundColor: '#8C8C8C',
-          color: '#333',
-        },
-      },
-      
-    },
-  };
-  //   
   const columns = [
 
     {
@@ -176,13 +102,7 @@ function Credentials() {
       sortable: true,
       cell: row => <span className="custom-cell">{row.email}</span>
     },
-    {
-      name: "Username",
-      selector: row => row.username,
-      sortable: true,
-      center: true,
-      cell: row => <span className="custom-cell">{row.username}</span>
-    },
+    
     {
       name: "Password",
       selector: row => row.confirmPassword,
@@ -248,7 +168,7 @@ function Credentials() {
           pagination
           paginationPerPage={10}
           className="dataTable"
-          customStyles={customStyles}
+          customStyles={CustomStyles}
         />
         <br />
         <center>

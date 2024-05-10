@@ -142,10 +142,112 @@ userRouter.get('/candidates/:email', async (req, res) => {
   res.json(docs)
 })
 
+userRouter.get('/candidates/:firstName', async (req, res) => {
+  const docs = await Candidate.find({ firstName: req.params.firstName });
+  res.json(docs)
+})
+
+userRouter.get('/candidates/search/:query', async (req, res) => {
+  const query = req.params.query;
+  const docs = await Candidate.find({
+    $or: [
+      { fullName: { $regex: new RegExp(query, 'i') } }, // Case-insensitive regex match for fullName
+      { firstName: { $regex: new RegExp(query, 'i') } }, // Case-insensitive regex match for firstName
+    ]
+  });
+  res.json(docs);
+});
+
+userRouter.get('/candidates-status', async (req, res) => {
+  try {
+    const candidatesByStatus = await Candidate.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const formattedData = {
+      "Onboarded": 0,
+      "Rejected": 0,
+      "In Progress": 0
+    };
+
+    candidatesByStatus.forEach(candidate => {
+      formattedData[candidate._id] = candidate.count;
+    });
+
+    res.json([formattedData]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+userRouter.get('/users-by-role', async (req, res) => {
+  try {
+    const usersByRole = await Candidate.aggregate([
+      {
+        $group: {
+          _id: '$role',
+          count: { $sum: 1 } // Count the number of users in each role
+        }
+      }
+    ]);
+
+    res.json(usersByRole);
+  } catch (error) {
+    console.error('Error fetching users by role:', error);
+    res.status(500).send('Server Error');
+  }
+});
+// userRouter.get('/candidates-status', async (req, res) => {
+//   try {
+//     const candidatesByStatus = await Candidate.aggregate([
+//       {
+//         $group: {
+//           _id: "$status", // Group by candidate status
+//           count: { $sum: 1 } // Count the number of candidates for each status
+//         }
+//       },
+//       {
+//         $project: {
+//           status: "$_id", // Rename _id to status
+//           count: 1, // Include the count field
+//           _id: 0 // Exclude _id from the output
+//         }
+//       }
+//     ]);
+
+//     res.json(candidatesByStatus);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Server Error');
+//   }
+// });
+
 userRouter.get('/candidate/status', async (req, res) => {
   const docs = await Candidate.find({ status: "SELECTED" });
   res.json(docs)
 })
+
+userRouter.get('/candidates/:fullName', async (req, res) => {
+
+  try {
+    const fullName = req.params.fullName;
+    const regex = new RegExp(fullName, 'i'); // Case-insensitive search
+    const candidate = await Candidate.findOne({ fullName: regex });
+    if (!candidate) {
+      return res.status(404).json({ error: 'Candidate not found' });
+    }
+    res.json(candidate);
+  } catch (error) {
+    console.error('Error fetching candidate details:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 userRouter.get("/candidate/:id", async (req, res) => {
   try {
@@ -195,20 +297,92 @@ userRouter.put('/candidate/:id', async (req, res) => {
   }
 })
 
+// userRouter.put('/evaluate/:candidateId', async (req, res) => {
+//   const { candidateId } = req.params;
+//   const { skills } = req.body;
+
+//   try {
+//     // Validate skills format if needed
+//     if (!Array.isArray(skills)) {
+//       throw new Error('Skills should be an array.');
+//     }
+//     // You can add more validation logic as per your requirements
+
+//     const updatedCandidate = await Candidate.findByIdAndUpdate(
+//       candidateId,
+//       { $set: { skills: updatedSkills } },
+//       { new: true }
+//     );
+
+//     if (!updatedCandidate) {
+//       return res.status(404).json({ message: 'Candidate not found.' });
+//     }
+
+//     res.json(updatedCandidate);
+//   } catch (error) {
+//     console.error('Error updating candidate skills:', error);
+//     res.status(400).json({ message: 'Error updating candidate skills', error: error.message });
+//   }
+// });
+
+// userRouter.put('/evaluate/:candidateId', async (req, res) => {
+//   const { candidateId } = req.params;
+//   const { skills } = req.body;
+
+//   try {
+//     // Validate skills format if needed
+//     if (!Array.isArray(skills)) {
+//       throw new Error('Skills should be an array.');
+//     }
+//     // You can add more validation logic as per your requirements
+
+//     const updatedCandidate = await Candidate.findByIdAndUpdate(
+//       candidateId,
+//       { $set: { skills: skills } }, // Updated to use the skills received in the request body
+//       { new: true }
+//     );
+
+//     if (!updatedCandidate) {
+//       return res.status(404).json({ message: 'Candidate not found.' });
+//     }
+
+//     res.json(updatedCandidate);
+//   } catch (error) {
+//     console.error('Error updating candidate skills:', error);
+//     res.status(400).json({ message: 'Error updating candidate skills', error: error.message });
+//   }
+// });
+
 userRouter.put('/evaluate/:candidateId', async (req, res) => {
   const { candidateId } = req.params;
-  const { skills } = req.body;
+  const { skills, status } = req.body; // Include finalFeedback in the request body
 
   try {
+    // Validate skills format if needed
+    if (!Array.isArray(skills)) {
+      throw new Error('Skills should be an array.');
+    }
+    // You can add more validation logic as per your requirements
+
     const updatedCandidate = await Candidate.findByIdAndUpdate(
       candidateId,
-      { $set: { skills } }, // Update candidate skills
+      { 
+        $set: { 
+          skills: skills, // Update skills as received in the request body
+          status: status // Add finalFeedback to the candidate data
+        } 
+      },
       { new: true }
     );
+
+    if (!updatedCandidate) {
+      return res.status(404).json({ message: 'Candidate not found.' });
+    }
+
     res.json(updatedCandidate);
   } catch (error) {
     console.error('Error updating candidate skills:', error);
-    res.status(400).json({ message: 'Error updating candidate skills', error });
+    res.status(400).json({ message: 'Error updating candidate skills', error: error.message });
   }
 });
 // //To update Evaluation status
@@ -403,6 +577,22 @@ userRouter.get('/skills-analysis', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// Endpoint to fetch candidate scores
+userRouter.get('/candidate-scores', async (req, res) => {
+  try {
+    const candidateScores = await Candidate.find(
+      {},
+      'fullName psychometric java vocabulary quantitative'
+    );
+
+    res.json(candidateScores);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 
 module.exports = userRouter;

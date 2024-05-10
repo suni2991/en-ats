@@ -11,13 +11,13 @@ jobRouter.post('/createjob', async (req, res) => {
             jobType,
             jobLocation,
             vacancies,
-            fulfilledBy,
+           
             salaryRange,
             experience,
             modeOfJob,
             status
         } = req.body;
-        console.log('Received request body:', req.body);
+       
         const newJob = new Job({
             position,
             department,
@@ -25,7 +25,7 @@ jobRouter.post('/createjob', async (req, res) => {
             jobType,
             jobLocation,
             vacancies,
-            fulfilledBy,
+           
             salaryRange,
             experience,
             modeOfJob,
@@ -76,5 +76,43 @@ jobRouter.delete('/job-posts/:id', async (req, res) => {
     }
 });
 
+jobRouter.get('/vacancies-by-date', async (req, res) => {
+    try {
+      const vacanciesByDate = await Job.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$postedAt" } },
+            vacancies: { $sum: "$vacancies" }
+          }
+        },
+        { $sort: { _id: 1 } } // Sort by date ascending
+      ]);
+  
+      res.json(vacanciesByDate);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+    }
+  });
+
+  jobRouter.get('/vacancies-by-position', async (req, res) => {
+    try {
+      const vacanciesByPosition = await Job.aggregate([
+        {
+          $group: {
+            _id: "$position", // Group by position
+            vacancies: { $sum: "$vacancies" }
+          }
+        }
+      ]);
+  
+      res.json(vacanciesByPosition.map(item => ({ name: item._id, value: item.vacancies })));
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+    }
+  });
+  
+  
 
 module.exports = jobRouter;

@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom';
 
 const Panelist = () => {
   const [candidateData, setCandidateData] = useState({})
+  const [skills, setSkills] = useState([]);
+  const [rating, setRating] = useState([])
   const [formData, setFormData] = useState({
     position:'',
     fullName:'',
@@ -13,27 +15,9 @@ const Panelist = () => {
     noticePeriod:'',
     panelistName:'',
     round:'',
-    aem:'',
-    aemasCloud:'',
-    java:'',
-    services:'',
-    osgi:'',
-    slingModel:'',
-    template:'',
-    general:'',
-    communication:''
+   
   });
-  const [rating,setRating] = useState({
-    aem:0,
-    aemasCloud:0,
-    java:0,
-    services:0,
-    osgi:0,
-    slingModel:0,
-    template:0,
-    general:0,
-    communication:0
-  })
+  
   const rIterator = ['@','#','$','%','&'];
   const [isEvaluation,setIsEvaluation] = useState(false);
   const handleChange = (e) => {
@@ -51,11 +35,12 @@ const Panelist = () => {
 
   const fetchCandidateDetails = async () => {
     try {
+      
       const response = await axios.get(`http://localhost:5040/candidate/${id}`);
       const data = response.data;
       if (data.status === "SUCCESS") {
         setCandidateData(data.data);
-        // Prefill the form
+        
         setFormData({
           position: data.data.position,
           fullName: data.data.fullName,
@@ -63,157 +48,65 @@ const Panelist = () => {
           noticePeriod: data.data.noticePeriod,
           panelistName: data.data.panelistName,
           round: data.data.round,
-          aem: '',
-          aemasCloud: '',
-          java: '',
-          services: '',
-          osgi: '',
-          slingModel: '',
-          template: '',
-          general: '',
-          communication: '',
         });
+        const skillsData = data.data.skills.map(skill => skill.name);
+      setSkills(skillsData);
       }
     } catch (error) {
       console.error('Error fetching candidate details:', error);
     }
   };
 
-
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.position) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Role',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.fullName) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Candidate Name',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.totalExperience) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Experience',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.noticePeriod) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Notice Period',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.panelistName) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Panelist Name',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.round) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Round',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (isEvaluation!==true) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Please provide evaluation details',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.aem) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter AEM',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.aemasCloud) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter AEMasCloud',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.java) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Java',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.services) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter savolate/services',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.osgi) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter OSGi',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.slingModel) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Sling Model',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.template) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Template',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.general) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter General',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }else if (!formData.communication) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter Communication',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      })
-      return
-    }    
+  
+    // Show a confirmation dialog before submitting
+    Swal.fire({
+      title: "Submit your Final Feedback",
+      input: "text",
+      inputAttributes: {
+        autocapitalize: "off"
+      },
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      showLoaderOnConfirm: true,
+      preConfirm: async (status) => {
+        try {
+          // Prepare skills array with ratings and comments
+          const skillsArray = skills.map(skill => {
+            const lowercaseSkill = skill && skill.toLowerCase(); // Null check for skill
+            return {
+              name: skill,
+              rating: rating[lowercaseSkill] || 0,
+              comments: formData[`${lowercaseSkill}Comments`] || "No comments",
+            };
+          });
+  
+          // Send PUT request to update candidate details
+          const response = await axios.put(`http://localhost:5040/evaluate/${id}`, {
+            skills: skillsArray,
+            status: status,
+            evaluationDetails: true, // Include finalFeedback in the request body
+          });
+  
+          return response.data; // Assuming your backend returns some response data
+        } catch (error) {
+          Swal.showValidationMessage(`Error submitting feedback: ${error}`);
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Feedback Submitted!",
+          text: result.value.message, // Display any message from your backend
+          icon: "success"
+        });
+      }
+    });
   };
+  
+  
 
   return (
     <div className='table-container'>
@@ -246,96 +139,56 @@ const Panelist = () => {
     </tr>
       </table>
       <div id='evolution'>Evaluation Details <span onClick={()=>setIsEvaluation(true)}>+</span></div>
-      {isEvaluation?<table className='panelistTable'>
-        <tr>
-          <td>skills</td>
-          <td>Rating ouf of 5</td>
-          <td>Notes</td>
-        </tr>
-        <tr>
-          <td>AEM</td>
-          <td>
-            <div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.aem?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,aem:Idx+1})} ></i>
-            })}
-            </div>
-            </td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,aem:e.target.value})} /></td>
-        </tr>
-        <tr>
-          <td>AEMasCloud</td>
-          <td> <div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.aemasCloud?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,aemasCloud:Idx+1})} ></i>
-            })}
-            </div></td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,aemasCloud:e.target.value})} /></td>
-        </tr>
-        <tr>
-          <td>Java</td>
-          <td> <div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.java?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,java:Idx+1})} ></i>
-            })}
-            </div></td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,java:e.target.value})} /></td>
-        </tr>
-        <tr>
-          <td>savolate/services</td>
-          <td> <div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.services?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,services:Idx+1})} ></i>
-            })}
-            </div></td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,services:e.target.value})} /></td>
-        </tr>
-        <tr>
-          <td>OSGi</td>
-          <td> <div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.osgi?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,osgi:Idx+1})} ></i>
-            })}
-            </div></td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,osgi:e.target.value})} /></td>
-        </tr>
-        <tr>
-          <td>Sling Model</td>
-          <td> <div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.slingModel?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,slingModel:Idx+1})} ></i>
-            })}
-            </div></td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,slingModel:e.target.value})} /></td>
-        </tr>
-        <tr>
-          <td>Static / editalbe Template</td>
-          <td> <div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.template?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,template:Idx+1})} ></i>
-            })}
-            </div></td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,template:e.target.value})} /></td>
-        </tr>
-        <tr>
-          <td>General</td>
-          <td> <div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.general?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,general:Idx+1})} ></i>
-            })}
-            </div></td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,general:e.target.value})}/></td>
-        </tr>
-        <tr>
-          <td>Communications</td>
-          <td><div className='ratingWraper'>
-            {rIterator.map((elem,Idx)=>{
-              return <i key={Idx} className={`bi ${Idx+1<=rating.communication?'bi-star-fill':'bi-star'}`} onClick={()=>setRating({...rating,communication:Idx+1})} ></i>
-            })}
-            </div></td>
-          <td><input type='text' onChange={(e)=>setFormData({...formData,communication:e.target.value})} /></td>
-        </tr>
-      </table>:null}
+      {isEvaluation && skills.length > 0 ? (
+        <table className='panelistTable'>
+          <thead>
+            <tr>
+              <th>Skills</th>
+              <th>Rating out of 5</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+          {skills.map((skill, index) => (
+            <tr key={index}>
+              <td>{skill}</td>
+              <td>
+                <div className='ratingWrapper'>
+                  {rIterator.map((elem, idx) => (
+                    <i
+                      key={idx}
+                      className={`bi ${
+                        idx + 1 <= (skill && rating[skill.toLowerCase()]) ? 'bi-star-fill' : 'bi-star'
+                      }`}
+                      onClick={() =>
+                        setRating({
+                          ...rating,
+                          [skill && skill.toLowerCase()]: idx + 1,
+                        })
+                      }
+                    ></i>
+                  ))}
+                </div>
+              </td>
+              <td>
+                <input
+                  type='text'
+                  value={(skill && formData[`${skill.toLowerCase()}Comments`]) || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      [skill && `${skill.toLowerCase()}Comments`]: e.target.value,
+                    })
+                  }
+                />
+              </td>
+            </tr>
+          ))}
+          </tbody>
+        </table>
+      ) : null}
+      
+
       <div id='panelistbtn' onClick={handleSubmit}><button>Submit</button></div>
     </div>
   );

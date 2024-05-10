@@ -27,10 +27,10 @@ const jobSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    fulfilledBy: {
-        type: Date,
-        required: true,
-    },
+    // fulfilledBy: {
+    //     type: Date,
+    //     required: true,
+    // },
     salaryRange: {
         type: String,
         required: true,

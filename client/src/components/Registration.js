@@ -360,7 +360,7 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
       })
       const data = await response.json();
       console.log(data);
-      if (response.status === 200) {
+      if (response.status === 201) {
         Swal.fire({
           icon: 'success',
           title: 'Applicant saved successfully',

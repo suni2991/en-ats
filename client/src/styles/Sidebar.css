@@ -169,7 +169,7 @@ main img{
 
 .navbar {
   display: flex;
-  justify-content: space-evenly;
+  justify-content:space-between;
   align-items: center;
   /* padding: 1px 20px; */
   background-color: #ffffff;
@@ -183,10 +183,6 @@ main img{
   float: right;
 }
 
-.navbar-center {
-  flex-grow: 1;
-  margin: 0 20px;
-}
 
 .navbar-right {
   display: flex;
@@ -203,3 +199,4 @@ main img{
 .text {
   font-size: 14px;
 }
+

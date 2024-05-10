@@ -20,10 +20,11 @@ const Admin = () => {
   }
 
   return (
-    <div className='table-container'>Create HR Users & can view All HR credentials
-    <div> <button onClick={handleClick}>Create HR User</button>
+    <div className='table-container'>
+    <div className='topContainer'><button className="submit-button" style={{float: 'right'}} onClick={handleClick}>Create User</button>
     </div>
     <div>
+    <h1>Create a User & View the details of User</h1>
     <Fetchtable 
     url={`http://localhost:5040/hrs`}
     columns={userColumns}

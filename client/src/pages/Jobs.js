@@ -13,7 +13,7 @@ const Jobs = () => {
   return (
     <div className="table-container">
         <div>
-        <button onClick={handleClick} className="submit-button1" style={{float: 'right'}}> Post a Job</button></div>
+        <button onClick={handleClick} className="submit-button" style={{float: 'right'}}> Post a Job</button></div>
         <div><Viewjob /></div>
         
     </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import '../styles/Login.css'
+import '../styles/Regform.css'
+import { message } from 'antd';
 
 const Createhr = () => {
   const [formData, setFormData] = useState({
@@ -33,9 +34,9 @@ const Createhr = () => {
     e.preventDefault();
     const password = Math.random().toString(36).slice(-8); 
     const createdAt = new Date();
-
+    const fullName = formData.firstName + ' ' + formData.lastName;
     if (!formData.email.endsWith('@enfuse-solutions.com')) {
-      alert('Email must end with "@enfuse-solutions.com"');
+      message.error('Email must end with "@enfuse-solutions.com"');
       return;
     }
   
@@ -47,8 +48,9 @@ const Createhr = () => {
         password:password,
         createdAt:createdAt,
         confirmPassword: password,
+        fullName: fullName,
       });
-      console.log('User created:', response.data);
+      message.success("User Created Successfully")
       setFormData({
         firstName: '',
         lastName: '',
@@ -63,10 +65,13 @@ const Createhr = () => {
   };
 
   return (
-    <div>
-      <h2>Create HR User</h2>
+    <div className='table-container'>
+      <h1>Create User</h1>
       <form>
-        <label htmlFor="firstName">First Name:</label>
+      <div className='formContainer'>
+      <div className='block'>
+      <div>
+        <label htmlFor="firstName">First Name:</label><br />
         <input
           type="text"
           id="firstName"
@@ -75,7 +80,9 @@ const Createhr = () => {
           onChange={handleChange}
           required
         />
-        <label htmlFor="firstName">Last Name:</label>
+        </div>
+        <div>
+        <label htmlFor="firstName">Last Name:</label><br />
         <input
           type="text"
           id="lastName"
@@ -84,7 +91,9 @@ const Createhr = () => {
           onChange={handleChange}
           required
         />
-        <label htmlFor="email">Email:</label>
+        </div>
+        <div>
+        <label htmlFor="email">Email:</label><br />
         <input
           type="email"
           id="email"
@@ -93,7 +102,11 @@ const Createhr = () => {
           onChange={handleChange}
           required
         />
-        <label htmlFor="currentLocation">Current Location:</label>
+        </div>
+        </div>
+        <div className='block'>
+        <div>
+        <label htmlFor="currentLocation">Current Location:</label><br />
         <input
           type="text"
           id="currentLocation"
@@ -102,7 +115,9 @@ const Createhr = () => {
           onChange={handleChange}
           required
         />
-        <label htmlFor="qualification">Qualification:</label>
+        </div>
+        <div>
+        <label htmlFor="qualification">Qualification:</label><br />
         <input
           type="text"
           id="qualification"
@@ -111,15 +126,22 @@ const Createhr = () => {
           onChange={handleChange}
           required
         />
-        <label htmlFor="role">Role:</label>
+        </div>
+        <div>
+        <label htmlFor="role">Role:</label><br />
         <select id="roleSelect" name="role" value={formData.role} onChange={handleRoleChange}>
-    <option value="Candidate">Candidate</option>
+   <option>Choose Role</option>
     <option value="HR">HR</option>
     <option value="Admin">Admin</option>
     <option value="Enfusian">Enfusian</option>
 </select>
+</div>
+</div>
+</div>
+<div id='btnWrapper'>
         <button type="submit" onClick={handleSubmit}>Create User</button>
-      </form>
+        </div>
+        </form>
     </div>
   );
 };
