@@ -20,7 +20,7 @@ const Viewjob = () => {
 ];
 
   return (
-    <div><h1>Viewjob</h1>
+    <div><h1>Monitor the jobs created</h1>
       <Fetchtable 
       url="http://localhost:5040/viewjobs"
                 columns={userColumns} 

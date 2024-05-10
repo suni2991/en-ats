@@ -49,7 +49,20 @@ const CandidateProfileDrawer = ({ visible, onClose, candidateId }) => {
         <p>City: {candidateData.currentLocation}</p>
         <p>District: {candidateData.district}</p>
         <p>Manager Name: {candidateData.mgrName}</p>
-        
+        {candidateData.evaluationDetails && (
+          <div>
+            <h3>Skills - Evaluation Details</h3>
+            <ul>
+              {candidateData.skills.map((skill, index) => (
+                <li key={index}>
+                  <strong>{skill.name}</strong>: {skill.rating} - {skill.comments}
+                </li>
+              ))}
+            </ul>
+            <p>Panelist: {candidateData.panelistName}</p>
+            <h1>Status: {candidateData.status}</h1>
+          </div>
+        )}
       </div>
     </Drawer>
   );

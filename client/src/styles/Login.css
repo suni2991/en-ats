@@ -1,7 +1,7 @@
 .LoginContainer{
     width: 70vw;
-    height: 80vh;
-    margin: 0px auto;
+    height: 90vh;
+    margin: 30px auto;
     display: flex;
     background-color: white;
     box-shadow: 2px 2px 6px  gray;
