@@ -123,7 +123,7 @@ userRouter.post("/api/login", (req, res) => {
 });
 
 userRouter.get('/candidates', async (req, res) => {
-  const docs = await Candidate.find({ role: "Candidate" });
+  const docs = await Candidate.find({ role: "Applicant Candidate"});
   res.json(docs)
 })
 
@@ -133,7 +133,7 @@ userRouter.get('/hrs', async (req, res) => {
 })
 
 userRouter.get('/candidatesreport', async (req, res) => {
-  const docs = await Candidate.find({ role: "Candidate" });
+  const docs = await Candidate.find({ role: {$in: ["Applicant", "Candidate"] }});
   res.json(docs)
 })
 
@@ -203,33 +203,15 @@ userRouter.get('/users-by-role', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-// userRouter.get('/candidates-status', async (req, res) => {
-//   try {
-//     const candidatesByStatus = await Candidate.aggregate([
-//       {
-//         $group: {
-//           _id: "$status", // Group by candidate status
-//           count: { $sum: 1 } // Count the number of candidates for each status
-//         }
-//       },
-//       {
-//         $project: {
-//           status: "$_id", // Rename _id to status
-//           count: 1, // Include the count field
-//           _id: 0 // Exclude _id from the output
-//         }
-//       }
-//     ]);
 
-//     res.json(candidatesByStatus);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Server Error');
-//   }
-// });
 
 userRouter.get('/candidate/status', async (req, res) => {
   const docs = await Candidate.find({ status: "SELECTED" });
+  res.json(docs)
+})
+
+userRouter.get('/candidate/cat-count', async (req, res) => {
+  const docs = await Candidate.find({ selectedCategory: "Technical" || "Non-Technical" });
   res.json(docs)
 })
 
@@ -297,201 +279,105 @@ userRouter.put('/candidate/:id', async (req, res) => {
   }
 })
 
-// userRouter.put('/evaluate/:candidateId', async (req, res) => {
-//   const { candidateId } = req.params;
-//   const { skills } = req.body;
 
-//   try {
-//     // Validate skills format if needed
-//     if (!Array.isArray(skills)) {
-//       throw new Error('Skills should be an array.');
-//     }
-//     // You can add more validation logic as per your requirements
-
-//     const updatedCandidate = await Candidate.findByIdAndUpdate(
-//       candidateId,
-//       { $set: { skills: updatedSkills } },
-//       { new: true }
-//     );
-
-//     if (!updatedCandidate) {
-//       return res.status(404).json({ message: 'Candidate not found.' });
-//     }
-
-//     res.json(updatedCandidate);
-//   } catch (error) {
-//     console.error('Error updating candidate skills:', error);
-//     res.status(400).json({ message: 'Error updating candidate skills', error: error.message });
-//   }
-// });
-
-// userRouter.put('/evaluate/:candidateId', async (req, res) => {
-//   const { candidateId } = req.params;
-//   const { skills } = req.body;
-
-//   try {
-//     // Validate skills format if needed
-//     if (!Array.isArray(skills)) {
-//       throw new Error('Skills should be an array.');
-//     }
-//     // You can add more validation logic as per your requirements
-
-//     const updatedCandidate = await Candidate.findByIdAndUpdate(
-//       candidateId,
-//       { $set: { skills: skills } }, // Updated to use the skills received in the request body
-//       { new: true }
-//     );
-
-//     if (!updatedCandidate) {
-//       return res.status(404).json({ message: 'Candidate not found.' });
-//     }
-
-//     res.json(updatedCandidate);
-//   } catch (error) {
-//     console.error('Error updating candidate skills:', error);
-//     res.status(400).json({ message: 'Error updating candidate skills', error: error.message });
-//   }
-// });
-
-userRouter.put('/evaluate/:candidateId', async (req, res) => {
-  const { candidateId } = req.params;
-  const { skills, status } = req.body; // Include finalFeedback in the request body
+userRouter.put('/feedback/:id', async (req, res) => {
+  const { id } = req.params;
 
   try {
-    // Validate skills format if needed
-    if (!Array.isArray(skills)) {
-      throw new Error('Skills should be an array.');
+    const candidate = await Candidate.findById(id);
+    if (!candidate) {
+      return res.status(404).json({ message: 'Candidate not found' });
     }
-    // You can add more validation logic as per your requirements
 
-    const updatedCandidate = await Candidate.findByIdAndUpdate(
+    // Update candidate skills, status, and evaluation details
+    candidate.skills = req.body.skills;
+    candidate.status = req.body.status;
+    candidate.evaluationDetails = req.body.evaluationDetails;
+
+    await candidate.save();
+
+    res.status(200).json({ message: 'Candidate evaluation updated successfully' });
+  } catch (error) {
+    console.error('Error updating candidate evaluation:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+userRouter.put('/evaluate/:id', async (req, res) => {
+  try {
+    const { panelistName, round, meetingDate, skills, status } = req.body;
+    const candidateId = req.params.id;
+
+    // Update candidate details in the database
+    await Candidate.findByIdAndUpdate(
       candidateId,
-      { 
-        $set: { 
-          skills: skills, // Update skills as received in the request body
-          status: status // Add finalFeedback to the candidate data
-        } 
-      },
+      { $set: { round, meetingDate, skills, status, panelistName } },
       { new: true }
     );
 
-    if (!updatedCandidate) {
-      return res.status(404).json({ message: 'Candidate not found.' });
-    }
-
-    res.json(updatedCandidate);
+    res.status(200).json({ message: 'Candidate details updated successfully.' });
   } catch (error) {
-    console.error('Error updating candidate skills:', error);
-    res.status(400).json({ message: 'Error updating candidate skills', error: error.message });
+    console.error('Error updating candidate details:', error);
+    res.status(500).json({ message: 'Failed to update candidate details.' });
   }
 });
-// //To update Evaluation status
-// userRouter.put('/evaluate/:candidateId', async (req, res) => {
-//   const { candidateId } = req.params;
-//   const {
-//     firstName,
-//     lastName,
-//     fullName,
-//     qualification,
-//     totalExperience,
-//     relevantExperience,
-//     noticePeriod,
-//     contact,
-//     email,
-//     position,
-//     currentLocation,
-//     image,
-//     dob,
-//     resume,
-//     status,
-//     empCount,
-//     psychometric,
-//     quantitative,
-//     vocabulary,
-//     java,
-//     accounts,
-//     excel,
-   
-//     role,
-//     dateCreated,
-//     createdAt,
-//     state,
-//     district,
-//     taluka,
-//     selectedCategory,
-//     mgrName,
-//     mgrEmail,
-//     skills,
-    
-//     availability,
-//     panelistName,
-//     round,
-//     evaluationDetails,
-//   } = req.body;
 
-//   try {
-//      let candidate = await Candidate.findById(candidateId);
-//     if (!candidate) {
-//       return res.status(404).json({ error: 'Candidate not found' });
-//     }
+//no of applicants for this position
 
-//     candidate.firstName = firstName;
-//     candidate.lastName = lastName;
-//     candidate.fullName = fullName;
-//     candidate.qualification = qualification;
-//     candidate.totalExperience = totalExperience;
-//     candidate.relevantExperience = relevantExperience;
-//     candidate.noticePeriod = noticePeriod;
-//     candidate.contact = contact;
-//     candidate.email = email;
-//     candidate.position = position;
-//     candidate.currentLocation = currentLocation;
-//     candidate.image = image;
-//     candidate.resume = resume;
-//     candidate.status = status;
-//     candidate.empCount = empCount;
-//     candidate.psychometric = psychometric;
-//     candidate.quantitative = quantitative;
-//     candidate.vocabulary = vocabulary;
-//     candidate.java = java;
-//     candidate.accounts = accounts;
-//     candidate.excel = excel;
-   
-//     candidate.dob= dob;
-   
-//     candidate.role = role;
-//     candidate.dateCreated = dateCreated;
-//     candidate.createdAt = createdAt;
-//     candidate.state = state;
-//     candidate.district = district;
-//     candidate.taluka = taluka;
-//     candidate.selectedCategory = selectedCategory;
-//     candidate.mgrName = mgrName;
-//     candidate.mgrEmail = mgrEmail;
-//     candidate.skills = skills;
-//     candidate.rating = rating;
-//     candidate.notes = notes;
-//     candidate.availability = availability;
-//     candidate.panelistName = panelistName;
-//     candidate.round = round;
-//     candidate.evaluationDetails = evaluationDetails;
 
-//     // Save the updated candidate data
-//     candidate = await candidate.save();
-//     res.json(candidate);
-//   } catch (error) {
-//     console.error('Error updating candidate:', error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// })
+userRouter.get('/candidates/position/:position', async (req, res) => {
+  try {
+    const position = req.params.position;
+    const count = await Candidate.countDocuments({ position });
+    res.status(200).json({ count });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
-//fetch by panelist names
+
+//count for Job Dashboard
+userRouter.get('/candidates/counts', async (req, res) => {
+  try {
+    const counts = await Candidate.aggregate([
+      { $group: { _id: '$position', count: { $sum: 1 } } },
+      { $project: { _id: 0, position: '$_id', count: 1 } }
+    ]);
+
+    res.status(200).json(counts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+userRouter.get('/panelists/enfusian', async (req, res) => {
+  try {
+    const panelist = await Candidate.find({ role: 'Enfusian' }, 'fullName'); // Fetch fullName and email of HRs
+    res.json(panelist);
+  } catch (error) {
+    console.error('Error fetching Panelists:', error);
+    res.status(500).json({ message: 'Error fetching Panelists' });
+  }
+});
+
+userRouter.get('/hrs/name', async (req, res) => {
+  try {
+    const hrs = await Candidate.find({ role: 'HR' }, 'fullName email'); // Fetch fullName and email of HRs
+    res.json(hrs);
+  } catch (error) {
+    console.error('Error fetching HRs:', error);
+    res.status(500).json({ message: 'Error fetching HRs' });
+  }
+});
+
 userRouter.get('/panelist/:panelistName', async (req, res) => {
   const { panelistName } = req.params;
 
   try {
-    // Find candidates where panelistName matches
-    const candidates = await Candidate.find({ panelistName });
+    // Find candidates where panelistName matches and role is "Candidate"
+    const candidates = await Candidate.find({ panelistName, role: 'Applicant' });
 
     if (candidates.length === 0) {
       return res.status(404).json({ error: 'Candidates not found for this panelist' });
@@ -503,6 +389,7 @@ userRouter.get('/panelist/:panelistName', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 //Delete records

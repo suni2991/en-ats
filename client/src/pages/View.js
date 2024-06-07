@@ -52,7 +52,7 @@ function View() {
       <p><b>State : </b>{candidate.state}</p>
       <p><b>Qualification : </b>{candidate.qualification}</p>
       <hr/>
-      <p><b>Position : </b>{candidate.appliedPosition}</p>
+      <p><b>Position : </b>{candidate.position}</p>
       <p><b>Notice Period : </b>{candidate.noticePeriod}</p>
       <p><b>Total Experience : </b>{candidate.totalExperience} years</p>
       <p><b>Relevant Experience : </b>{candidate.relevantExperience} years</p>

@@ -8,11 +8,13 @@ import { LuMonitorCheck } from 'react-icons/lu';
 import useAuth from '../hooks/useAuth';
 import '../styles/Sidebar.css';
 import logo from '../Assests/enfuse-logo.png';
-import { IoKeyOutline } from 'react-icons/io5';
-import { Input, Button, AutoComplete, Modal, message, Tooltip } from 'antd';
+
+import { HomeOutlined} from '@ant-design/icons';
+import { Input, Button, AutoComplete, Modal,Tooltip, Breadcrumb } from 'antd';
 import ProfilePage from './ProfilePage';
 import { VscFeedback } from 'react-icons/vsc';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const Sidebar = ({ children }) => {
   const navigate = useNavigate();
@@ -49,13 +51,7 @@ const Sidebar = ({ children }) => {
     }
   };
 
-  const renderOption = (item) => {
-    return (
-      <AutoComplete.Option key={item.value} value={item.value}>
-        {item.value}
-      </AutoComplete.Option>
-    );
-  };
+
 
   const handleCancel = () => {
     setModalVisible(false);
@@ -68,7 +64,8 @@ const Sidebar = ({ children }) => {
   const logout = () => {
     setAuth({});
     navigate('/');
-    message.success('Logged out!', 'You have successfully logged out.', 'success');
+    Swal.fire("You have been successfullY logged out!!")
+    
     
 
   };
@@ -81,7 +78,7 @@ const Sidebar = ({ children }) => {
     },
     {
       path: '/admins',
-      name: 'Admin',
+      name: 'User Managment',
       icon: <FaAdn />,
     },
     {
@@ -104,11 +101,7 @@ const Sidebar = ({ children }) => {
       name: 'Statistics',
       icon: <FaRegChartBar />,
     },
-    {
-      path: '/credentials',
-      name: 'Assign Test',
-      icon: <IoKeyOutline />,
-    },
+    
     {
       path: '/feedbacks',
       name: 'Feedback',
@@ -119,7 +112,7 @@ const Sidebar = ({ children }) => {
   const { pathname } = useLocation();
 
   const getCurrentMenuItem = () => {
-    console.log('Current pathname:', pathname);
+    
     return menuItem.find(item => item.path === pathname);
   };
 
@@ -145,7 +138,7 @@ const Sidebar = ({ children }) => {
             {menuItem.map((item, index) => {
               if (auth.role === 'Admin') {
                 return (
-                  (item.name === 'Admin' || item.name === 'HR' || item.name === 'Dashboard' || item.name === 'Jobs' || item.name === 'Statistics') && (
+                  (item.name === 'User Managment' || item.name === 'HR' || item.name === 'Dashboard' || item.name === 'Statistics') && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className="icon">{item.icon}</div>
                       <div className="link-text">{item.name}</div>
@@ -159,7 +152,7 @@ const Sidebar = ({ children }) => {
                     item.name === 'Dashboard' ||
                     item.name === 'Scores' ||
                     item.name === 'Statistics' ||
-                    item.name === 'Assign Test' ||
+                   
                     item.name === 'Feedback') && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className="icon">{item.icon}</div>
@@ -181,67 +174,33 @@ const Sidebar = ({ children }) => {
               }
             })}
 
-            {auth.role && (
-              <button className="icon-button" onClick={logout}>
-                <span className="icon-container">
-                  <MdLogout />
-                </span>{' '}
-                <span className="text">Logout</span>
-              </button>
-            )}
+            
           </div>
         )}
         <main className={`main-container ${isDarkMode ? 'dark-mode' : ''}`}>
-          {auth.role && (
+          {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Enfusian')&& (
             <nav className="navbar">
-            <div className="breadcrumb">/{getCurrentMenuItem()?.name}</div> 
-              <div className="navbar-center">
-              <AutoComplete
-              value={searchValue}
-              options={suggestions}
-              onSelect={onSelect}
-              onChange={handleSearch}
-              style={{ width: '100%'}}
-              placeholder="Search by Name... "
-              filterOption={(inputValue, option) =>
-                option && option.value && option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-              }
-            >
-              <Input.Search allowClear />
-            </AutoComplete>
-
-                <Modal className= 'modal-container' title="User Details" visible={modalVisible} onCancel={handleCancel} footer={null}>
-                 
-                  {selectedCandidateDetails && (
-                    <div>
-                      <p>Name: {selectedCandidateDetails.fullName}</p>
-                      <p>Email: {selectedCandidateDetails.email}</p>
-                      <p>Role: {selectedCandidateDetails.role}</p>
-                      <p>Contact: {selectedCandidateDetails.contact}</p>
-                      <p>Qualification: {selectedCandidateDetails.qualification}</p>
-                      <p>Experience: {selectedCandidateDetails.totalExperience}</p>
-                      {auth.role === 'Candidate' && (
-                        <>
-                          
-                        <p>Relevant Experience: {selectedCandidateDetails.relevantExperience}</p>
-                          <p>Position: {selectedCandidateDetails.position}</p>
-                          <p>Notice Period: {selectedCandidateDetails.noticePeriod}</p>
-                          <p>Status: {selectedCandidateDetails.status}</p>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </Modal>
-              </div>
+          
+   
+        
               <div className="navbar-right">
-              <Tooltip title="View & Update Profile">
+              <Tooltip title="View & Update Profile" color='cyan'>
                 <Button type="text"  onClick={() => setProfileVisible(true)} style={{color: '#00B4D2'}}>
-                  Hello, {auth.fullName}
+                  Welcome, {auth.fullName} |
                 </Button></Tooltip>
               </div>
+
+              {auth.role && (
+                <button className="icon-button" onClick={logout}>
+                  <span className="icon-container">
+                    <MdLogout />
+                  </span>{' '}
+                  <span className="text">Logout</span>
+                </button>
+              )}
             </nav>
           )}
-          {auth && <ProfilePage visible={profileVisible} auth={auth} onClose={() => setProfileVisible(false)} />}
+          {auth && <ProfilePage open={profileVisible} auth={auth} onClose={() => setProfileVisible(false)} />}
 
           {children}
         </main>

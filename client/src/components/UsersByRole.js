@@ -20,15 +20,15 @@ const UsersByRole = () => {
 
   return (
     <div className="user-roles-container">
-      <h2>Users </h2>
-      <div className="role-boxes">
-        {usersByRole.map((userRole) => (
-          <div key={userRole._id} className="role-box">
-            <h1>{userRole._id}</h1>
-            <h2>{userRole.count}</h2>
-          </div>
-        ))}
+      
+    <div className="role-boxes">
+    {usersByRole.filter(userRole => userRole._id !== 'Admin').map((userRole) => (
+      <div key={userRole._id} className="role-box">
+        <h1>{userRole._id}</h1>
+        <h2>{userRole.count}</h2>
       </div>
+    ))}
+  </div>
     </div>
   );
 };

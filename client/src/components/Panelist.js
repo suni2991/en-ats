@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import '../styles/Panelist.css'
 import Swal from 'sweetalert2'
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const Panelist = () => {
+  const navigate = useNavigate();
   const [candidateData, setCandidateData] = useState({})
   const [skills, setSkills] = useState([]);
   const [rating, setRating] = useState([])
@@ -59,18 +60,21 @@ const Panelist = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Show a confirmation dialog before submitting
+
     Swal.fire({
       title: "Submit your Final Feedback",
-      input: "text",
-      inputAttributes: {
-        autocapitalize: "off"
+      input: "select",
+      inputOptions: {
+        'Shortlisted for L2': 'Shortlisted for L2',
+        'Shortlist to HR': 'Shortlist to HR',
+        'Not-Shortlisted': 'Not-Shortlisted',
+        'Onboarded': 'Onboarded',
       },
+      inputPlaceholder: "Select Final Feedback",
       showCancelButton: true,
       confirmButtonText: "Submit",
       showLoaderOnConfirm: true,
-      preConfirm: async (status) => {
+      preConfirm: async (feedback) => {
         try {
           // Prepare skills array with ratings and comments
           const skillsArray = skills.map(skill => {
@@ -83,12 +87,12 @@ const Panelist = () => {
           });
   
           // Send PUT request to update candidate details
-          const response = await axios.put(`http://localhost:5040/evaluate/${id}`, {
+          const response = await axios.put(`http://localhost:5040/feedback/${id}`, {
             skills: skillsArray,
-            status: status,
+            status: feedback,
             evaluationDetails: true, // Include finalFeedback in the request body
           });
-  
+          navigate('/feedbacks')
           return response.data; // Assuming your backend returns some response data
         } catch (error) {
           Swal.showValidationMessage(`Error submitting feedback: ${error}`);
@@ -105,8 +109,7 @@ const Panelist = () => {
       }
     });
   };
-  
-  
+
 
   return (
     <div className='table-container'>

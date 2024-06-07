@@ -11,8 +11,9 @@ jobRouter.post('/createjob', async (req, res) => {
             jobType,
             jobLocation,
             vacancies,
-           
-            salaryRange,
+            vacancyStatus,
+            secondarySkills,
+            primarySkills,
             experience,
             modeOfJob,
             status
@@ -25,8 +26,9 @@ jobRouter.post('/createjob', async (req, res) => {
             jobType,
             jobLocation,
             vacancies,
-           
-            salaryRange,
+            vacancyStatus,
+            secondarySkills,
+            primarySkills,
             experience,
             modeOfJob,
             status,
@@ -95,23 +97,102 @@ jobRouter.get('/vacancies-by-date', async (req, res) => {
     }
   });
 
-  jobRouter.get('/vacancies-by-position', async (req, res) => {
+
+jobRouter.get('/vacancies-by-position', async (req, res) => {
     try {
-      const vacanciesByPosition = await Job.aggregate([
-        {
-          $group: {
-            _id: "$position", // Group by position
-            vacancies: { $sum: "$vacancies" }
-          }
-        }
-      ]);
-  
-      res.json(vacanciesByPosition.map(item => ({ name: item._id, value: item.vacancies })));
+        const vacanciesByDepartmentAndPosition = await Job.aggregate([
+            {
+                $unwind: "$vacancyStatus"
+            },
+            {
+                $group: {
+                    _id: { department: "$department", position: "$position", status: "$vacancyStatus.status" },
+                    count: { $sum: "$vacancyStatus.count" }
+                }
+            },
+            {
+                $group: {
+                    _id: { department: "$_id.department", position: "$_id.position" },
+                    vacancyStatus: {
+                        $push: { status: "$_id.status", count: "$count" }
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.department",
+                    positions: {
+                        $push: { position: "$_id.position", vacancyStatus: "$vacancyStatus" }
+                    }
+                }
+            }
+        ]);
+
+        res.json(vacanciesByDepartmentAndPosition.map(item => ({
+            department: item._id,
+            positions: item.positions
+        })));
     } catch (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
+        console.error(err);
+        res.status(500).send('Server Error');
     }
-  });
+});
+  
+  
+
+  jobRouter.get('/positions', async (req, res) => {
+    try {
+        // Fetch all jobs
+        const jobs = await Job.find();
+
+        // Fetch all candidates and group by position
+        const candidates = await Candidate.aggregate([
+            { $group: { _id: "$position", count: { $sum: 1 } } }
+        ]);
+
+        // Create a map to store consolidated data
+        const consolidatedData = {};
+
+        // Populate the map with job positions and their vacancies
+        jobs.forEach(job => {
+            consolidatedData[job.position] = {
+                position: job.position,
+                department: job.department,
+                description: job.description,
+                jobType: job.jobType,
+                jobLocation: job.jobLocation,
+                vacancies: job.vacancies,
+                registeredCandidates: 0,
+                salaryRange: job.salaryRange,
+                experience: job.experience,
+                modeOfJob: job.modeOfJob,
+                postedAt: job.postedAt,
+                status: job.status
+            };
+        });
+
+        // Count the number of candidates for each position
+        candidates.forEach(candidate => {
+            const position = candidate._id;
+            if (consolidatedData[position]) {
+                consolidatedData[position].registeredCandidates = candidate.count;
+            } else {
+                consolidatedData[position] = {
+                    position,
+                    vacancies: 0,
+                    registeredCandidates: candidate.count
+                };
+            }
+        });
+
+        // Convert the consolidated data into an array format
+        const result = Object.values(consolidatedData);
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching positions data', error });
+    }
+});
   
   
 

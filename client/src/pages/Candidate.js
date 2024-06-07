@@ -76,7 +76,7 @@ const Hire = () => {
   
     if (auth && completedTestsCount >= 4) {
       setIsChecked(false);
-      const userDataWithTimestamp = { ...useData, dateCreated: new Date() }; // Add the dateCreated property
+      const userDataWithTimestamp = { ...useData, dateCreated: new Date(), status: "Assessment Done" }; // Add the dateCreated property
       axios.put(`http://localhost:5040/candidate/${auth._id}`, {
         ...auth,
         ...userDataWithTimestamp,

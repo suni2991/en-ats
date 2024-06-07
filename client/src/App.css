@@ -3,7 +3,7 @@
   font-display: calc(transition);
   font-style:initial;
    font-variant-east-asian: simplified;
-   font-size: 14px; 
+   font-size: 13px; 
 }
   .buttn-container{
     margin: 30px 0px 0px 50px;
@@ -14,14 +14,15 @@
     margin-top: 20px;
     color:#00B4D2;
     text-transform: capitalize;
-    margin-bottom: 20px;
-
-    
+    margin-bottom: 20px;  
   }
   .logout{
     font-weight: bold;
   }
   
+  p{
+    color: #848484;
+  }
   .profile-container-img{
     border-radius: 50%;
   }
@@ -488,16 +489,42 @@ hr{
 }
 }
 
-
 .table-container {
-  margin: 1px 0px 35px 0px ;
+  margin: 5px 0px 35px 15px;
   background: rgb(255, 255, 255);
   padding: 15px;
   border-radius: 5px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 6px rgb(38, 39, 130);
   width: 77.5vw;
- 
+  height: calc(100vh - 55px); /* Adjust height as needed */
+  overflow-y: auto;
+  position: fixed; /* Use fixed to keep it in place or set a specific height for scrolling */
 }
+
+/* Hide the scrollbar */
+.table-container::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* Optional: makes the scrollbar area transparent */
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.table-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+
+/* .table-container {
+  margin: 5px 0px 35px 15px ;
+  background: rgb(255, 255, 255);
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgb(38, 39, 130);
+  width: 77.5vw;
+  overflow-y: hidden;
+ 
+} */
 .table-container h1{
   font-size: 18px;
   margin-top: 10px;
@@ -581,7 +608,7 @@ hr{
   border-radius: 2rem;
   margin-top: 4px;
   float: center;
-  background-image: linear-gradient( #15f7f7, rgb(8, 8, 68));
+  background-image: linear-gradient( #15f7f7, rgb(38, 39, 130));
   cursor: pointer;
   display: flex;
   text-align: center;
@@ -897,7 +924,7 @@ button .submit-button:disabled{
 }
 
 .table-btn:hover{
-  background-color: #060448;
+  background-color: rgb(38, 39, 130);
   box-shadow: #060448;
   color: #ffff;
 }
@@ -921,4 +948,54 @@ button .submit-button:disabled{
   
 }
 
-/* Additional styles for charts as needed */
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 25px;
+  font-weight: bold;
+  color:#00B4D2;
+  
+}
+
+.vacancies {
+  font-size: 24px;
+  color: rgb(38, 39, 130);
+  font-weight: bold; /* Customize the color as desired */
+}
+
+.toggle-button Button {
+  color: #00B4D2; /* Change to the desired hover color */
+}
+
+.toggle-button .active-button{
+  color: #fff;
+  background-color: #00B4D2;
+}
+
+.stat-repo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.search-dept {
+  flex-grow: 1;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  padding: 20px 40px;
+}
+
+.buttons button {
+  padding: 10px !important;
+  cursor: pointer;
+  background-color: #00B4D2;
+  margin: 10px;
+  border-radius: 5px;
+  border: none;
+  color: #ffff;
+}

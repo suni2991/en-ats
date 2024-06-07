@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/Regform.css'
+import '../styles/Regform.css';
 import Swal from 'sweetalert2';
 
 const Postjob = () => {
@@ -13,15 +13,29 @@ const Postjob = () => {
         jobType: '',
         jobLocation: '',
         vacancies: '',
-        
-        salaryRange: '',
+        primarySkills: '',
+        secondarySkills: '',
         experience: '',
         modeOfJob: '',
     });
 
     const handleRedirect = () => {
-        navigate('/jobs')
-    }
+        navigate('/jobs');
+    };
+
+    const deptList = [
+        'Data and Digital-DND', 
+        'PACS', 
+        'EdTech & Catalog Operations (ECO)', 
+        'Analytics Practice', 
+        'Adobe_Team', 
+        'Software Services', 
+        'Business Development', 
+        'Human Resources', 
+        'Administration', 
+        'IT & Governance'
+    ];
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -31,43 +45,44 @@ const Postjob = () => {
     };
 
     const handleSubmit = async (e) => {
-        
-    let emptyFields = [];
-
-    // Check for empty fields
-    for (const key in formData) {
-      if (!formData[key]) {
-        emptyFields.push(key);
-      }
-    }
-
-    if (emptyFields.length > 3) {
-      // More than 3 fields are empty, show generic message
-      Swal.fire({
-        title: "Error!",
-        text: "Please fill in all the fields.",
-        icon: "error",
-        confirmButtonColor: "#00B4D2",
-        confirmButtonText: "OK",
-      });
-      return;
-    }
-
-    // Fire individual messages for empty fields
-    emptyFields.forEach((field) => {
-      Swal.fire({
-        title: "Error!",
-        text: `Please enter ${field === "jobType" ? "select" : ""} ${field}.`,
-        icon: "error",
-        confirmButtonColor: "#00B4D2",
-        confirmButtonText: "OK",
-      });
-    });
         e.preventDefault();
+
+        let emptyFields = [];
+
+        // Check for empty fields
+        for (const key in formData) {
+            if (!formData[key]) {
+                emptyFields.push(key);
+            }
+        }
+
+        if (emptyFields.length > 3) {
+            // More than 3 fields are empty, show generic message
+            Swal.fire({
+                title: "Error!",
+                text: "Please fill in all the fields.",
+                icon: "error",
+                confirmButtonColor: "#00B4D2",
+                confirmButtonText: "OK",
+            });
+            return;
+        }
+
+        // Fire individual messages for empty fields
+        emptyFields.forEach((field) => {
+            Swal.fire({
+                title: "Error!",
+                text: `Please enter ${field === "jobType" ? "select" : ""} ${field}.`,
+                icon: "error",
+                confirmButtonColor: "#00B4D2",
+                confirmButtonText: "OK",
+            });
+        });
+
         try {
             const response = await axios.post('http://localhost:5040/createjob', formData);
             console.log('Job post submitted:', response.data);
-          
+            
             setFormData({
                 position: '',
                 department: '',
@@ -75,8 +90,6 @@ const Postjob = () => {
                 jobType: '',
                 jobLocation: '',
                 vacancies: '',
-                
-                salaryRange: '',
                 experience: '',
                 modeOfJob: '',
             });
@@ -86,13 +99,13 @@ const Postjob = () => {
     };
 
     return (
-        <div className='table-container'>
-        <h1>Create a Job</h1>
+        <div>
+            <h1>Create a Job</h1>
             <form>
                 <div className='formContainer'>
                     <div className='block'>
                         <div>
-                            <label htmlFor="position">Job Role:</label><br />
+                            <label htmlFor="position">Job Title:</label><br />
                             <input
                                 type="text"
                                 name="position"
@@ -101,39 +114,28 @@ const Postjob = () => {
                                 onChange={handleChange}
                                 required
                                 placeholder='Job Title'
-
                             />
                         </div>
                         <div>
                             <label htmlFor="department">Department:</label><br />
-                            <input
-                                type="text"
+                            <select
                                 name="department"
                                 id="department"
                                 value={formData.department}
                                 onChange={handleChange}
                                 required
-                                placeholder='Department'
-
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="jobType">Job Type:</label><br />
-                            <select
-                                name="jobType"
-                                id="jobType"
-                                value={formData.jobType}
-                                onChange={handleChange}
-                                required
-
                             >
-                                <option value="">Select Job Type</option>
-                                <option value="FullTime">Full Time</option>
-                                <option value="Contract">Contract Basis</option>
+                                <option value="">Select Department</option>
+                                {deptList.map((dept, index) => (
+                                    <option key={index} value={dept}>
+                                        {dept}
+                                    </option>
+                                ))}
                             </select>
                         </div><br />
+                       
                         <div>
-                            <label htmlFor="jobLocation">Job Location:</label><br />
+                            <label htmlFor="jobLocation">Location:</label><br />
                             <input
                                 type="text"
                                 name="jobLocation"
@@ -141,9 +143,19 @@ const Postjob = () => {
                                 value={formData.jobLocation}
                                 onChange={handleChange}
                                 required
-
                             />
-                        </div>
+                        </div><br />
+                        <div>
+                        <label htmlFor="primaryskills">Primary Skills:</label><br />
+                        <input
+                            type="text"
+                            name="primarySkills"
+                            id="primarySkills"
+                            value={formData.primarySkills}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
                     </div>
                     <div className='block'>
                         <div>
@@ -158,7 +170,6 @@ const Postjob = () => {
                                 placeholder='No of Vacancies'
                             />
                         </div>
-                        
                         <div>
                             <label htmlFor="modeOfJob">Mode of Job:</label><br />
                             <select
@@ -173,23 +184,8 @@ const Postjob = () => {
                                 <option value="Office">Office</option>
                             </select>
                         </div><br />
-                        <div>
-                            <label htmlFor="salaryRange">Salary Range:</label><br />
-                            <select
-                                name="salaryRange"
-                                id="salaryRange"
-                                value={formData.salaryRange}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select Salary Range</option>
-                                <option value="Below 5,00,000">Below 5,00,000</option>
-                                <option value="5,00,000-100000">5,00,000 - 10,00,000</option>
-                                <option value="10,00,000-15,00,000">10,00,000 - 15,00,000</option>
-                                <option value="15,00,000-20,00,000">15,00,000 - 20,00,000</option>
-
-                            </select>
-
-                        </div><br />
+                       
+                       
                         <div>
                             <label htmlFor="experience">Experience:</label><br />
                             <input
@@ -199,21 +195,32 @@ const Postjob = () => {
                                 value={formData.experience}
                                 onChange={handleChange}
                                 required
-
+                            />
+                        </div>
+                       
+                        <div>
+                            <label htmlFor="secondarySkills">Secondary Skills:</label><br />
+                            <input
+                                type="text"
+                                name="secondarySkills"
+                                id="secondarySkills"
+                                value={formData.secondarySkills}
+                                onChange={handleChange}
+                                required
                             />
                         </div>
                     </div>
                 </div>
                 <div id='desc'>
                     <div>
-                        <label htmlFor="description">Description:</label><br />
+                        <label htmlFor="description">Additional Details:</label><br />
                         <textarea
                             name="description"
                             id="description"
                             value={formData.description}
                             onChange={handleChange}
                             required
-                            style={{ width: '100%', height: '110px', padding: '8px' }}
+                            style={{ width: '97.5%', height: '110px', padding: '8px' }}
                         />
                     </div>
                 </div>

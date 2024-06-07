@@ -31,6 +31,7 @@ import Feedback from './pages/Feedbacks.js';
 import Profile from './pages/Profile.js';
 import ProfilePage from './components/ProfilePage.js';
 import Panelist from './components/Panelist.js';
+import JobDashboard from './components/JobDashboard.js';
 
 
 const App = () => {
@@ -70,7 +71,7 @@ const App = () => {
             <Route path='/hr/edit/:id' element={<Edit />}/>
             <Route path='/thankyou' element={<Thankyou />} />
             <Route path='/statistics' element={<Statistics />} />
-            <Route path='/dashboard' element={<Monitor />} />
+            <Route path='/dashboard' element={<Statistics />} />
             <Route path='/credentials' element={<Credentials />} />
             <Route path='/postjob' element={<Postjob />} />
             <Route path='/create-hr' element={<Createhr />} />

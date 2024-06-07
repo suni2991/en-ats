@@ -30,20 +30,28 @@
     align-items: center;
 }
 input{
-    width: 21vw;
+    width: 26vw;
     padding: 5px;
-    
     margin: 0px 0px 15px 0px;
-    
 }
+
+input[type='radio'] {
+    
+    margin-right: 5px;
+  }
+
+input[type='radio'] label{
+    margin-left: 2px;
+} 
+
 form button{
     width: fit-content;
     padding: 10px 30px;
     font-size: 22px;
     cursor: pointer;
     border-radius: 4px;
-    /* background-color: rgb(#15f7f7, rgb(8, 8, 68)); */
-    background-image:linear-gradient(#15f7f7, rgb(8, 8, 68));;
+    /* background-color: rgb(#15f7f7, rgb(38, 39, 130)); */
+    background-image:linear-gradient(#15f7f7, rgb(38, 39, 130));;
     color: white;
     border: none;
     margin: 10px auto;

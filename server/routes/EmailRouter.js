@@ -10,7 +10,7 @@ const compiledTemplate = Hogan.compile(template);
 
 // send mail
 emailRouter.post("/user/register", (req, res) => {
-    const { username } = req.body;
+    const { role } = req.body;
     const { confirmPassword } = req.body;
     const { email } = req.body;
     const { fullName } = req.body;
@@ -21,16 +21,16 @@ emailRouter.post("/user/register", (req, res) => {
             
             service: "gmail",
             auth: {
-                user: "recruitments@enfuse-solutions.com",
-                pass: "gfokoxwimjcwvkaq"
+                user: "sunithach2991@gmail.com",
+                pass: "irzenkailwllcdtx"
             }
         });
 
         const mailOptions = {
-            from: 'recruitments@enfuse-solutions.com',
+            from: 'sunithach2991@gmail.com',
             to: email,
             subject: "Enfuse Welcomes You",
-            html: compiledTemplate.render({ username, fullName, confirmPassword }),
+            html: compiledTemplate.render({ role, email, fullName, confirmPassword }),
             attachments: [
                 {
                     filename: 'enfuse-logo.png',

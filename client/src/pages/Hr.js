@@ -205,9 +205,9 @@ const renderPaginationButtons = () => {
             <h2>Name:{candidate.fullName}</h2>
             <hr/>
             <p><b>Email:</b>{candidate.email}</p>
-            <p><b>Position:</b>{candidate.appliedPosition}</p>
+            <p><b>Position:</b>{candidate.position}</p>
             <p><b>Status:</b>{candidate.status}</p>
-           
+            
             <div className='btn-hr-container'>
             <button className='button-hr-view' title='View' onClick={() => viewCandidate(candidate._id)}><CiRead color='#0398b2' /></button>
             <button className='button-hr-view' title='Edit' onClick={() => editCandidate(candidate._id)}><CiPen color= '#0398b2' /></button>

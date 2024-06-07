@@ -29,7 +29,7 @@ const candidateSchema = new mongoose.Schema({
     excel: { type: Number, default: -1 },
     password:{type: String},
     confirmPassword:{type: String},
-    role:{type: String, enum: ['Candidate', 'HR', 'Admin', 'Enfusian'], default: "Candidate"},
+    role:{type: String, enum: ['Applicant', 'HR', 'Admin', 'Enfusian'], default: "Applicant"},
 	  dateCreated:{type:Date, default: Date.now},
     createdAt:{type:Date, default: Date.now},
     state:{type: String},

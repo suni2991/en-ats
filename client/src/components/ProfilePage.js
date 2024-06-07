@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from "react";
-import { Drawer, Button, Form, Input, DatePicker } from "antd";
+import { Drawer, Button, Form, Input, DatePicker, message } from "antd";
 import "../styles/Profile.css";
 import axios from "axios";
-import Swal from "sweetalert2";
 
-const ProfilePage = ({ visible, onClose, auth }) => {
+
+const ProfilePage = ({ open, onClose, auth }) => {
   const [editMode, setEditMode] = useState(false);
   const [editedData, setEditedData] = useState(auth);
 
@@ -26,31 +26,38 @@ const ProfilePage = ({ visible, onClose, auth }) => {
 
   const handleUpdate = async () => {
     try {
+      // Check if DOB is a valid date
+      const dob = editedData.dob;
+      const dobDate = dob ? new Date(dob) : null;
+      if (dob && isNaN(dobDate.getTime())) {
+        throw new Error('Invalid date of birth');
+      }
+  
+      // Prepare formatted data for update
       const formattedData = {
         ...editedData,
-        dob: new Date(editedData.dob).toISOString(), 
+        dob: dobDate ? dobDate.toISOString() : null,
       };
+  
+      // Send update request
       const response = await axios.put(
         `http://localhost:5040/candidate/${auth._id}`,
         formattedData
       );
-
-      
+  
+      // Update state and show success message
       setEditMode(false);
-      
       const updatedResponse = await axios.get(
         `http://localhost:5040/candidate/${auth._id}`
       );
       setEditedData(updatedResponse.data);
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Your updates will be applied shortly after review.",
-      });
+      message.success("Your updates will be applied shortly after review.")
+     
     } catch (error) {
       console.error("Error updating profile:", error);
     }
   };
+  
 
 
 
@@ -81,7 +88,7 @@ const ProfilePage = ({ visible, onClose, auth }) => {
         placement="right"
         closable={false}
         onClose={handleClose} 
-        open={visible}
+        open={open}
         width={400}
       >    
         {editMode ? (

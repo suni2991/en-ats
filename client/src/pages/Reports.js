@@ -5,7 +5,7 @@ import DataTable from 'react-data-table-component'
 import { CSVLink } from 'react-csv';
 import { FadeLoader } from 'react-spinners';
 
-const API = "http://localhost:5040/candidates";
+const API = "http://localhost:5040/candidatesreport";
 
 function Reports() {
   const [data, setData] = useState([])
@@ -14,7 +14,7 @@ function Reports() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
   useEffect(() => {
-    fetch('http://localhost:5040/candidate/status')
+    fetch(API)
       .then(response => response.json())
       .then(data => {
         setData(data);

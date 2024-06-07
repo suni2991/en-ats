@@ -11,7 +11,8 @@ const Fetchtable = ({ url, columns, title, onViewClick }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(url);
-        setData(response.data);
+        setData(response.data.reverse());
+        // setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -53,6 +54,7 @@ const Fetchtable = ({ url, columns, title, onViewClick }) => {
         highlightOnHover
         striped
         customStyles={CustomStyles}
+        fixedHeader
        
         
       />

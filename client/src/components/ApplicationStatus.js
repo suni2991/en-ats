@@ -25,6 +25,7 @@ const ApplicationStatus = () => {
 
   return (
     <div>
+    <h1>Applicant Status</h1>
       <BarChart width={300} height={300} data={candidatesData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="status" />

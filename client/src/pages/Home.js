@@ -40,7 +40,7 @@ function Home() {
           navigate("/dashboard");
         } else if (response.data.role === "HR") {
           navigate("/dashboard");
-        } else if (response.data.role === "Candidate") {
+        } else if (response.data.role === "Applicant") {
           navigate("/candidate/candidate");
         } else if(response.data.role === "Enfusian"){
           navigate('/feedbacks')

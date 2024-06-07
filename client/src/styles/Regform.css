@@ -24,7 +24,7 @@
     
 }
 select{
-    width: 22vw;
+    width: 27vw;
     padding: 4px;
 }
 #desc{
@@ -32,7 +32,7 @@ select{
     
 }
 #desc div{
-    width:78%;
+    width: 90%;
     margin: 20px auto;
     position: relative;
 }

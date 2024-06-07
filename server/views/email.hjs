@@ -274,8 +274,8 @@
                                                               >Greetings!!
                                                               </span></p>
                                                          <p style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
-                                                          <span>Welcome to EnFuse Hiring Process. Please find below credentials for your assessment login:<br /> <br />
-                                                              <p><b>Username:   {{username}}               
+                                                          <span>Welcome to EnFuse Solutions Private Ltd. You have successfully registered as {{role}}. Please find below credentials to login:<br /> <br />
+                                                              <p><b>email:   {{email}}               
                                                                 <br />
                                                               Password:   {{confirmPassword}}</b></p>
                                                               
