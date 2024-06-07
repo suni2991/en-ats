@@ -39,13 +39,12 @@ const ProfilePage = ({ open, onClose, auth }) => {
         dob: dobDate ? dobDate.toISOString() : null,
       };
   
-      // Send update request
+   
       const response = await axios.put(
         `http://localhost:5040/candidate/${auth._id}`,
         formattedData
       );
   
-      // Update state and show success message
       setEditMode(false);
       const updatedResponse = await axios.get(
         `http://localhost:5040/candidate/${auth._id}`

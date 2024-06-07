@@ -76,9 +76,9 @@ const Panelist = () => {
       showLoaderOnConfirm: true,
       preConfirm: async (feedback) => {
         try {
-          // Prepare skills array with ratings and comments
+          
           const skillsArray = skills.map(skill => {
-            const lowercaseSkill = skill && skill.toLowerCase(); // Null check for skill
+            const lowercaseSkill = skill && skill.toLowerCase(); 
             return {
               name: skill,
               rating: rating[lowercaseSkill] || 0,
@@ -86,14 +86,14 @@ const Panelist = () => {
             };
           });
   
-          // Send PUT request to update candidate details
+          
           const response = await axios.put(`http://localhost:5040/feedback/${id}`, {
             skills: skillsArray,
             status: feedback,
-            evaluationDetails: true, // Include finalFeedback in the request body
+            evaluationDetails: true, 
           });
           navigate('/feedbacks')
-          return response.data; // Assuming your backend returns some response data
+          return response.data; 
         } catch (error) {
           Swal.showValidationMessage(`Error submitting feedback: ${error}`);
         }
@@ -103,7 +103,7 @@ const Panelist = () => {
       if (result.isConfirmed) {
         Swal.fire({
           title: "Feedback Submitted!",
-          text: result.value.message, // Display any message from your backend
+          text: result.value.message, 
           icon: "success"
         });
       }

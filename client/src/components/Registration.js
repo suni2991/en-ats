@@ -364,7 +364,7 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
       password: password,
       confirmPassword: password,
       createdAt: createdAt,
-      mgrName: selectedHrName, // Update mgrName with selected HR's name
+      mgrName: selectedHrName, 
       mgrEmail: selectedHrEmail,
       
     };

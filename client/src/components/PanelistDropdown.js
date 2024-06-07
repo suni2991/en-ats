@@ -32,7 +32,7 @@ const PanelistDropdown = ({ onSelect }) => {
           {panelist.fullName}
         </Option>
       ))}
-      <Option value="HR">HR</Option> {/* Add HR as an option */}
+      <Option value="HR">HR</Option> 
     </Select>
   );
 };

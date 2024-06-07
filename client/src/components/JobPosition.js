@@ -44,7 +44,7 @@ const JobPositionPieChart = () => {
   };
 
   const handleMouseEnter = (data) => {
-    setHoveredPosition(data.name); // Set the hovered position
+    setHoveredPosition(data.name);
     const departmentData = vacanciesData.find(vacancy => vacancy.department === selectedDepartment);
     if (departmentData) {
       const positionDetails = departmentData.positions.find(position => position.position === data.name);
