@@ -49,7 +49,7 @@ const Postjob = () => {
 
         let emptyFields = [];
 
-        // Check for empty fields
+      
         for (const key in formData) {
             if (!formData[key]) {
                 emptyFields.push(key);
@@ -57,7 +57,7 @@ const Postjob = () => {
         }
 
         if (emptyFields.length > 3) {
-            // More than 3 fields are empty, show generic message
+            
             Swal.fire({
                 title: "Error!",
                 text: "Please fill in all the fields.",
