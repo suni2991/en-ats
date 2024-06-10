@@ -158,32 +158,7 @@ const Postjob = () => {
                     </div>
                     </div>
                     <div className='block'>
-                        <div>
-                            <label htmlFor="vacancies">Vacancies:</label><br />
-                            <input
-                                type="number"
-                                name="vacancies"
-                                id="vacancies"
-                                value={formData.vacancies}
-                                onChange={handleChange}
-                                required
-                                placeholder='No of Vacancies'
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="modeOfJob">Mode of Job:</label><br />
-                            <select
-                                name="modeOfJob"
-                                id="modeOfJob"
-                                value={formData.modeOfJob}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="">Select Mode of Job</option>
-                                <option value="Remote">Remote</option>
-                                <option value="Office">Office</option>
-                            </select>
-                        </div><br />
+                       
                        
                        
                         <div>
@@ -225,8 +200,8 @@ const Postjob = () => {
                     </div>
                 </div>
                 <div id='btnWrapper'>
-                    <button type="submit" className="submit-button1" onClick={handleSubmit}>Post</button>
-                    <button type="submit" className="submit-button1" onClick={handleRedirect}>Back</button>
+                    <button type="submit" className="submit-button1" onClick={handleSubmit}>Submit</button>
+                    
                 </div>
             </form>
         </div>

@@ -54,7 +54,7 @@ const Fetchtable = ({ url, columns, title, onViewClick }) => {
         highlightOnHover
         striped
         customStyles={CustomStyles}
-        fixedHeader
+        // fixedHeader
        
         
       />

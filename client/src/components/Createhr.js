@@ -8,8 +8,7 @@ const Createhr = () => {
     firstName: '',
     lastName: '',
     email: '',
-    currentLocation: '',
-    qualification: '',
+    department: '',
     role: '',
     empCount: 0,
   });
@@ -84,7 +83,7 @@ const Createhr = () => {
   };
 
   return (
-    <div className='table-container'>
+    <div>
       <h1>Create User</h1>
       <form>
         <div className='formContainer'>
@@ -136,12 +135,12 @@ const Createhr = () => {
               />
             </div>
             <div>
-              <label htmlFor="qualification">Qualification:</label><br />
+              <label htmlFor="department">Department:</label><br />
               <input
                 type="text"
-                id="qualification"
-                name="qualification"
-                value={formData.qualification}
+                id="department"
+                name="department"
+                value={formData.department}
                 onChange={handleChange}
                 required
               />
@@ -158,7 +157,7 @@ const Createhr = () => {
           </div>
         </div>
         <div id='btnWrapper'>
-          <Tooltip title="Submit" color='cyan'>
+          <Tooltip title="Submit" color='red'>
             <button type="submit" onClick={handleSubmit}>Create User</button>
           </Tooltip>
         </div>

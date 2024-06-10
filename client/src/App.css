@@ -45,12 +45,12 @@
   }
   .card-view {
     border-radius: 7px;
-    margin: 10px 20px 10px 20px;
+    margin: 20px 20px 10px 20px;
     overflow: hidden;    
     padding: 5px;
     transition: all 0.3s ease;
-    background: #fff;
-    width: 260px;
+    background: #eceff1;
+    width: 150px;
     height: 150px;
     box-shadow: 2px 2px 2px 2px rgb(194, 192, 192);
     display: flex;
@@ -99,21 +99,25 @@ hr{
 .card-info {
   height: 125px;
   width: 80%;
-  padding: 5px 5px;
-  margin-right: 5px; 
+  /* padding: 5px 5px;
+  margin-right: 5px;  */
+  align-content: center;
 }
 .card-info-view {
   margin: 0 auto;
+  background-color: #eceff1;
 }
 .card-info h2 {
   margin-bottom: 5px;
   font-weight: bold;
   color: #28325A;
   text-transform: capitalize;
+  text-align: center;
 }
 .card-info p {
   margin-bottom: 5px;
   color: black;
+  text-align: center;
 }
 .button-hr{
   margin: 7px;
@@ -954,7 +958,7 @@ button .submit-button:disabled{
   align-items: center;
   font-size: 25px;
   font-weight: bold;
-  color:#00B4D2;
+  color:red;
   
 }
 

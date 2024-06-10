@@ -336,6 +336,16 @@ userRouter.get('/candidates/position/:position', async (req, res) => {
   }
 });
 
+userRouter.get('/applicants/position/:position', async (req, res) => {
+  try {
+    const position = req.params.position;
+    const candidates = await Candidate.find({ position });
+    res.json(candidates);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching candidates', error });
+  }
+});
+
 
 //count for Job Dashboard
 userRouter.get('/candidates/counts', async (req, res) => {

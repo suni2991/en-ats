@@ -147,7 +147,7 @@ const Sidebar = ({ children }) => {
                 );
               } else if (auth.role === 'HR') {
                 return (
-                  (item.name === 'Jobs' ||
+                  (
                     item.name === 'Candidates' ||
                     item.name === 'Dashboard' ||
                     item.name === 'Scores' ||

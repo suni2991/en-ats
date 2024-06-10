@@ -474,14 +474,14 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
                 /><br />
              
               
-                <label>Taluka</label><br />
+                <label>City</label><br />
                 <input
                   type="text"
-                  name="taluka"
+                  name="city"
                   
-                  value={formData.taluka}
+                  value={formData.city}
                   maxLength={20}
-                  placeholder="Enter taluka"
+                  placeholder="Enter city"
                   onChange={handleChange}
                 />
               
