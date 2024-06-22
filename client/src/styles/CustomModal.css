@@ -8,6 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 2000;
 }
 
 .modal-body {
@@ -15,6 +16,12 @@
   padding: 20px;
   position: relative;
   border-radius: 5px;
+  border: 1px solid #3FB4D9;
+  box-shadow: 5px 2px 5px 10px #ffffff;
+  /* margin-top: 10px;
+  margin-bottom: 10px; */
+  height: auto;
+  width: 70% !important;
 }
 
 .close-button {
@@ -22,8 +29,10 @@
   top: 10px;
   right: 10px;
   background: transparent;
-  border: none;
+  border: 1px red;
   font-size: 24px;
   cursor: pointer;
   color: red;
+  border-radius: 50px 50px;
+  
 }

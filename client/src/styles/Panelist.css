@@ -34,16 +34,7 @@
     width: 80%;
     margin: 0px auto;
 }
-#evolution{
-    width: 80%;
-    font-size: 22px;
-    margin: 30px auto;
-    border: 1px solid gray;
-    cursor: pointer;
-}
-#evolution span{
-    font-size: 28px;
-}
+
 .panelistTable td{
     border: 1px solid gray;
 }

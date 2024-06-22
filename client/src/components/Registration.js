@@ -6,7 +6,9 @@ import useAuth from '../hooks/useAuth';
 import Swal from 'sweetalert2'
 import axios from 'axios';
 import HrDropdown from './HrDropdown';
-import { Radio, Button} from 'antd';
+import { Button, DatePicker } from 'antd';
+import '../styles/Regform.css';
+import moment from 'moment';
 
 function Registration() {
   const navigate = useNavigate()
@@ -29,11 +31,15 @@ function Registration() {
     email: '',
     position: '',
     currentLocation: '',
-    selectedCategory:'',
+    selectedCategory: '',
     image: '',
     resume: '',
     mgrName: '',
     mgrEmail: '',
+    lwd:'',
+    state:'',
+    district:'',
+    city:'',
   })
 
   const [selectedHrName, setSelectedHrName] = useState('');
@@ -43,7 +49,7 @@ function Registration() {
     setSelectedHrName(fullName);
     setSelectedHrEmail(email);
   };
-  
+
 
 
   const statesList = [
@@ -86,7 +92,7 @@ function Registration() {
   ];
 
   const handleSelectState = (selectedState) => {
-    
+
     setFormData((prevState) => ({
       ...prevState,
       state: selectedState,
@@ -95,7 +101,14 @@ function Registration() {
       (state) => state !== selectedState
     );
     setStateSuggestions(updatedStateSuggestions);
-    setShowSuggestions(false); 
+    setShowSuggestions(false);
+  };
+
+  const handleDateChange = (date, dateString) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      lwd: dateString,
+    }));
   };
 
   const validateForm = () => {
@@ -140,7 +153,7 @@ function Registration() {
       })
       isValid = false;
     }
-if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
+    if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
       Swal.fire({
         title: 'Error!',
         text: 'Current Location should be of Alphabets',
@@ -221,17 +234,17 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
         isValid = false;
       }
     }
-    
+
     return isValid;
   };
 
   useEffect(() => {
-    fetchJobPositions(); 
+    fetchJobPositions();
   }, []);
 
   const fetchJobPositions = async () => {
     try {
-      const response = await axios.get('http://localhost:5040/viewjobs'); 
+      const response = await axios.get('http://localhost:5040/viewjobs');
       const jobPositions = response.data;
       setPositions(jobPositions);
     } catch (error) {
@@ -252,13 +265,13 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
         body: uploadFormData
       })
       if (!response.ok) {
-        
+
         console.error("Image upload failed with status code", response.status);
-        
+
       } else {
-        
+
         console.log("Image uploaded successfully");
-        
+
       }
       const data = await response.json();
       console.log(data);
@@ -275,7 +288,7 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
           ...prevState,
           position: ''
         }));
-  
+
         const { value: customValue } = await Swal.fire({
           input: 'text',
           inputLabel: 'Custom Applied Position',
@@ -283,7 +296,7 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
           showCloseButton: true,
           confirmButtonColor: '#00B4D2'
         });
-  
+
         if (customValue !== undefined) {
           if (customValue.trim() !== '') {
             if (!positions.includes(customValue)) {
@@ -295,8 +308,8 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
               position: customValue,
             }));
             setCustomPosition(customValue);
-          } 
-        } 
+          }
+        }
       }
       else if (e.target.name === 'qualification' && value === 'other') {
         const { value: customQualification } = await Swal.fire({
@@ -306,7 +319,7 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
           showCloseButton: 'true',
           confirmButtonColor: '#00B4D2'
         });
-  
+
         if (customQualification !== undefined) {
           if (customQualification.trim() !== '') {
             if (!qualifications.includes(customQualification)) {
@@ -318,8 +331,8 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
               qualification: customQualification,
             }));
             setCustomQualification(customQualification);
-          } 
-        } 
+          }
+        }
       } else {
         setFormData((prevState) => ({
           ...prevState,
@@ -346,7 +359,8 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
         }));
       }
 
-    }}
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -355,8 +369,9 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
     const username = formData.firstName + '.' + formData.lastName + randomNumber
     const password = Math.random().toString(36).slice(-8);
     const createdAt = new Date();
-   
     
+
+
     const formDataWithFullName = {
       ...formData,
       fullName: fullName,
@@ -364,9 +379,9 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
       password: password,
       confirmPassword: password,
       createdAt: createdAt,
-      mgrName: selectedHrName, 
+      mgrName: selectedHrName,
       mgrEmail: selectedHrEmail,
-      
+      currentLocation: formData.city,
     };
     const isValid = validateForm();
     if (isValid) {
@@ -422,127 +437,123 @@ if (!/^[A-Za-z]+$/.test(formData.currentLocation) && formData.currentLocation) {
 
 
   return (
-    <div >
-      <div>
-      
-      <form onSubmit={handleSubmit}>
-     
-        <div className='reg-container'>
-        
-        <div className='col1'>
-        <div>
-        <label>Category</label><br />
-        <Radio.Group onChange={handleChange}>
-  <Radio
-    className="custom-radio" // Apply custom CSS class to the Radio component
-    value="Technical"
-    checked={formData.selectedCategory === 'Technical'}
-  >
-    Technical
-  </Radio>
-  <Radio
-    className="custom-radio" 
-    value="Non-Technical"
-    checked={formData.selectedCategory === 'Non-Technical'}
-  >
-    Non-Technical
-  </Radio>
-</Radio.Group>
-        </div>
-      <br/>
-          <label>First Name</label><br />
-          <input type="text" name="firstName" value={formData.firstName} required onChange={handleChange} placeholder="Enter Fullname"></input><br />
-          <label>Last Name</label><br />
-          <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange}></input><br />
-         
-          <label>Email</label><br />
-          <input type="text" name="email" value={formData.email}  required onChange={handleChange} placeholder="Enter valid Mail Id "></input><br />
-          <label>Contact<span className='require'>*</span></label><br />
-              <input type="text" name="contact" value={formData.contact} maxLength={10}  onChange={handleChange} required placeholder="Enter 10-digit valid mobile No."></input><br /><br />
-              
-              
-              
-                <label>District</label><br />
-                <input
-                  type="text"
-                  name="district"
-                  
-                  value={formData.district}
-                  maxLength={20}
-                  placeholder="Enter district"
-                  onChange={handleChange}
-                /><br />
-             
-              
-                <label>City</label><br />
-                <input
-                  type="text"
-                  name="city"
-                  
-                  value={formData.city}
-                  maxLength={20}
-                  placeholder="Enter city"
-                  onChange={handleChange}
-                />
-              
-              <br />
-                    <label>State<span className='require'>*</span></label><br />
-              <input type="text" name="state" value={formData.state} maxLength={10}  onChange={handleChange} required placeholder="Enter your State"></input><ul className=
-              'no-bullets'>
-        {stateSuggestions.map((state, index) => (
-          <li key={index}onClick={() => handleSelectState(state)}>{state}</li>
+    <div>
+    <h2>Add New Candidate</h2>
+      <form onSubmit={handleSubmit}>        
+          <div className='formContainer'>
           
-        ))}
-      </ul><br />
-
-      
-        </div>
-
-        <div className='col2'>
-        <label>Total Experience</label><br />
-              <input type="text" name="totalExperience"  value={formData.totalExperience} onChange={handleChange} placeholder="in years"></input><br />
-              <label>Relevant Experience</label><br />
-              <input type="text" name="relevantExperience"  value={formData.relevantExperience} onChange={handleChange} placeholder="in years"></input><br />
-     
-        <label>Qualification</label><br />
-        <select name="qualification" value={formData.qualification} style={{width:'100%'}} onChange={handleChange} placeholder="Enter Highest qualification">
-          <option value="">Choose One</option>
-          <option value="Btech">Btech</option>
-          <option value="PhD">PhD</option>
-          <option value="PG">PG</option>
-          <option value="UG">UG</option>
-        </select><br /><br />  
-        <label>Notice Period</label><br />
-          <select name="noticePeriod" style={{width:'100%'}} value={formData.noticePeriod} onChange={handleChange}>
-            <option value="">Choose One</option>
-            <option value="Immediatejoiner">Immediate Joiner</option>
-            <option value="Lessthan30days">Less than 30days</option>
-            <option value="Lessthan45days">Less than 45days</option>
-            <option value="Morethan45days">More than 45 days</option>
-          </select><br /><br />
-          <label>Applied Position</label><br />
-          <select name="position" style={{width:'100%'}}  value={formData.position} onChange={handleChange}>
-            <option value="">Choose One</option>
-            {positions.map((position) => (
-              <option key={position._id} value={position.position}>{position.position}</option>
-            ))}
-          </select><br /><br />
+          <div className='block' >
+            <div>
+              <label>First Name</label><br />
+              <input type="text" name="firstName" value={formData.firstName} required onChange={handleChange} placeholder="Enter Fullname"></input></div>
+            <div><label>Email</label><br />
+              <input type="text" name="email" value={formData.email} required onChange={handleChange} placeholder="Enter valid Mail Id "></input></div>
+            <div><label>Total Experience</label><br />
+              <input type="text" name="totalExperience" value={formData.totalExperience} onChange={handleChange} placeholder="in years"></input></div>
+            <div><label>Notice Period</label><br />
+              <select name="noticePeriod" style={{ width: '100%' }} value={formData.noticePeriod} onChange={handleChange}>
+                <option value="">Choose One</option>
+                <option value="Immediatejoiner">Immediate Joiner</option>
+                <option value="Lessthan30days">Less than 30days</option>
+                <option value="Lessthan45days">Less than 45days</option>
+                <option value="Morethan45days">More than 45 days</option>
+              </select></div>
+            <div>
+              <label>City</label><br />
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                maxLength={20}
+                placeholder="Enter city"
+                onChange={handleChange}
+              />
+            </div>
+            <div><label>State<span className='require'>*</span></label><br />
+              <input type="text" name="state" value={formData.state} maxLength={10} onChange={handleChange} required placeholder="Enter your State"></input><ul className=
+                'no-bullets'>
+                {stateSuggestions.map((state, index) => (
+                  <li key={index} onClick={() => handleSelectState(state)}>{state}</li>
+                ))}
+              </ul></div>
+          
+          <div>
           <label>Resume</label><br />
-      <input type="file" name="resume" path={formData.resume}  onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input><br />
+          <input type="file" name="resume" path={formData.resume} onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input></div>
+          <div><label>Category</label><br />
+          <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
+            <option value="Techincal">Technical</option>
+            <option value="Non-Technical">Non-Technical</option>
+            
+          </select></div><br />
+          </div>
+         
+     <div>
+        <div className='block' style={{float:'right'}}>
+          <div>
+            <label>Last Name</label><br />
+            <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange}></input></div>
 
-             
-      <label>HR Manager</label><br />
+          <div><label>Contact Number<span className='require'>*</span></label><br />
+            <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No."></input>
+         <div><label>Relevant Experience</label><br />
+              <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="in years"></input></div>
+         <div><label>Qualification</label><br />
+              <select name="qualification" value={formData.qualification} style={{ width: '100%' }} onChange={handleChange} placeholder="Enter Highest qualification">
+                <option value="">Choose One</option>
+                <option value="Btech">Btech</option>
+                <option value="PhD">PhD</option>
+                <option value="PG">PG</option>
+                <option value="UG">UG</option>
+              </select></div><br />
+         <div>
+              <label>District</label><br />
+              <input
+                type="text"
+                name="district"
+                value={formData.district}
+                maxLength={20}
+                placeholder="Enter district"
+                onChange={handleChange}
+              /></div>
+
+            <div><label>Applied Position</label><br />
+              <select name="position" style={{ width: '100%' }} value={formData.position} onChange={handleChange}>
+                <option value="">Choose One</option>
+                {positions.map((position) => (
+                  <option key={position._id} value={position.position}>{position.position}</option>
+                ))}
+              </select></div>
+           <br />
+
+            <div>
+           
+              
+
+              <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} /> </div><br/>
+              <div>
+              
+              <DatePicker
+                name="lwd"
+                value={formData.lwd ? moment(formData.lwd) : null}
+                onChange={handleDateChange}
+                placeholder="Choose Last Working Day"
+                style={{width:'100%',border: '1px solid #00B4D2', padding: '0px'}}
+              />
+            </div>
+
+           
+          </div>
+         
+        </div>
+       
+        </div>
         
-      <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} /> {/* Pass the onSelect and onSelectHr functions */}
-     
-
-          <button style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} type="submit" >Submit</button>
         </div>
-
-        </div>
+        <Button className='form-btn' type="submit" onClick={handleSubmit} >Submit</Button>
       </form>
-      
-    </div>
+
+
     </div>
   )
 }

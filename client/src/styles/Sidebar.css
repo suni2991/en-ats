@@ -7,24 +7,27 @@
   margin: 0 auto;
   display: flex;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   position: relative;
   border-style: solid 15px white;
- background: #ffff;
+ background: #eceff1;
+ 
 }
 main{
-    width:100%;
-    height: 100vh;
-    background: #ffff;
+    width:100vw;
+    height: 100% !important;
+    background: #eceff1;
     justify-content: center;
     /* padding-left: 30px; */
     box-shadow: 3px white;
+    
     /* overflow: auto; */
-    margin-top: 5px !important;
+    /* margin-top: 5px !important; */
+    
     /* border: 1px solid #00B4D2 ; */
 }
 main img{
- width: 60%;
+ width: 70%;
   padding-top: 15px;
   /* margin-bottom: 30px; */
 }
@@ -48,15 +51,19 @@ main img{
 .top-section img{
   width: 130px;
   float: left;
- 
+  margin-top: 2px !important;
 }
 .sidebar{
   background-color: white;
+  z-index: 1;
   /* background-image: linear-gradient( #15f7f7, rgb(38, 39, 130)); */
   color:rgb(38, 39, 130);
   height: 100vh;
-  width: 35%;
+  width: 30vw;
   font-size: 14px;
+  position: fixed;
+  /* box-shadow: 0px 0px 6px rgb(38, 39, 130); */
+  /* margin-right: auto; */
   /* overflow:auto; */
   /* border-top-left-radius: 3em;
   border-bottom-left-radius: 3em;
@@ -77,14 +84,15 @@ main img{
   align-items: center;
   padding: 12px 5px 5px 5px;
   color: rgb(75, 178, 212);
+  z-index: 1000 !important;
   /* margin-bottom: 60px; */
-  margin-top: 15px;
+  
 }
 
 .link{
   display: flex;
   color: rgb(38, 39, 130);
-  padding: 15px 15px 0px 10px;
+  padding: 15px;
   gap: 10px;
   transition: all 0.5s;
   font-size: 14px;
@@ -117,10 +125,10 @@ main img{
   font-weight: bold !important;
   color: #00B4D2;
   transition: cubic-bezier(2);
-  border: 1px solid #00B4D2 ;
+  /* border: 1px solid #00B4D2 ; */
   background-color: #eceff1;
-  border-right: 2px solid #eceff1;
-  box-shadow: 0px 4px 6px rgb(38, 39, 130);
+  /* border-right: 2px solid #eceff1; */
+  /* box-shadow: 0px 0px 6px rgb(38, 39, 130); */
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   border-top-right-radius: -10px;
@@ -134,7 +142,7 @@ main img{
   border-radius: 50%;
 
   padding: 6px;
-  margin-left: 7px;
+  /* margin-left: 7px; */
 }
 .active .icon{
 
@@ -148,7 +156,7 @@ main img{
 .icon-button{
   background-color: transparent;
   border: none;
-  margin: 0px 10px 5px 5px;
+  margin: 0px 5px 5px 5px;
   color: red;
 }
 .icon-container {
@@ -190,11 +198,13 @@ main img{
   justify-content:flex-end;
   align-items: center;
   color:#00B4D2;
+  /* z-index: 1; */
   /* padding: 1px 20px; */
   background-color: #ffffff;
-  border-bottom: 1px solid #e8e8e8;
-  height: 10vh;
-  width: 83.7vw !important;
+  position: fixed;
+  /* box-shadow: 0px 0px 2px blue ; */
+  height: 50px;
+  width: 100% !important;
 }
 
 .navbar-left {
@@ -219,3 +229,14 @@ main img{
   font-size: 14px;
 }
 
+
+
+.footer {
+  margin-top: 500px;
+  
+  padding: 2px;
+  background: #1a2763;
+  color: #fff;
+  text-align: center;
+  height: 30px !important; /* Adjust as needed */
+}

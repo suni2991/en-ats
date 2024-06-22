@@ -17,8 +17,7 @@ const statusColors = {
   Processing: 'purple'
 };
 
-const JobDashboard = () => {
-  const [jobs, setJobs] = useState([]);
+const JobDashboard = ({ jobs }) => {
   const [candidateCounts, setCandidateCounts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -27,12 +26,8 @@ const JobDashboard = () => {
   const pageSize = 16;
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchCandidateCounts = async () => {
       try {
-        const response = await axios.get('http://localhost:5040/viewjobs');
-        const jobs = response.data;
-        setJobs(jobs);
-
         const counts = await Promise.all(jobs.map(async (job) => {
           const countResponse = await axios.get(`http://localhost:5040/candidates/position/${job.position}`);
           return { position: job.position, count: countResponse.data.count };
@@ -45,12 +40,12 @@ const JobDashboard = () => {
 
         setCandidateCounts(countsObject);
       } catch (error) {
-        console.error('Error fetching jobs:', error);
+        console.error('Error fetching candidate counts:', error);
       }
     };
 
-    fetchJobs();
-  }, []);
+    fetchCandidateCounts();
+  }, [jobs]);
 
   const showApplicants = async (position) => {
     try {
@@ -72,13 +67,11 @@ const JobDashboard = () => {
       dataIndex: 'fullName',
       key: 'fullName',
     },
-   
     {
       title: 'Qualification',
       dataIndex: 'qualification',
       key: 'qualification',
     },
-   
     {
       title: 'Relevant Experience',
       dataIndex: 'relevantExperience',
@@ -94,35 +87,49 @@ const JobDashboard = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status) => (
-        <Tag color={statusColors[status] || 'gray'}>{status}</Tag>
+        <Tag style={{ width: '100%', textAlign: 'center' }} color={statusColors[status] || 'gray'}>{status}</Tag>
       ),
     },
   ];
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '30px 20px' }}>
       <Row gutter={[16, 16]}>
         {currentJobs.map((job) => (
           <Col key={job._id} xs={20} sm={12} md={8} lg={6}>
             <Badge
               count={candidateCounts[job.position] !== undefined ? candidateCounts[job.position] : 0}
-              style={{ backgroundColor: 'green' }}
+              style={{ backgroundColor: '#1DAB4D' }}
               showZero
             >
               <Card
+              className="card-hover"
                 bordered={false}
-                style={{ border: '#00B4D2', boxShadow: '0px 2px 4px rgb(38, 39, 130)', 
-                  backgroundColor: '#eceff1',
-                  height: '180px', // Fixed height
-                  width: '100%'}} // Make sure it occupies full width of the column }}
+                style={{
+                  borderRadius: '1px',
+                  boxShadow: '0px 2px 4px rgb(38, 39, 130)',                
+                  backgroundColor: '#FFFF',
+                  height: '180px', 
+                  width: '225px', 
+                  textAlign: 'left',
+                }}
                 onClick={() => showApplicants(job.position)}
               >
-                <div className="card-title"><span>{job.position}</span></div>
-                <hr />
-                - {job.jobLocation}
-                <p><strong>HR:</strong> HR</p>
-                <p><strong>Department:</strong> {job.department}</p>
-                <p><strong>Status:</strong> <span style={{ color: colors[job.status], fontWeight: 'bold' }}>{job.status}</span></p>
+              <div className="card-title" style={{ cursor: 'pointer' }}>
+              <span 
+                style={{ fontWeight: 'bold', textDecoration: 'underline', color: '#00B4D2' }} 
+                onClick={() => showApplicants(job.position)}
+              >
+                {job.position}
+              </span>
+            </div>
+                
+                  <p><strong>Location:</strong> {job.jobLocation}</p>
+                  <p><strong>HR:</strong>{job.postedBy}</p>
+                  <p><strong>Department:</strong> {job.department}</p>
+                  
+                  <p><strong>Status:</strong> <span style={{ color: colors[job.status], fontWeight: 'bold' }}>{job.status}</span></p>
+                
               </Card>
             </Badge>
           </Col>
@@ -133,7 +140,7 @@ const JobDashboard = () => {
         pageSize={pageSize}
         total={jobs.length}
         onChange={(page) => setCurrentPage(page)}
-        style={{ textAlign: 'right', marginTop: '20px' }}
+        style={{ textAlign: 'right', marginTop: '20px', background:'#fff', width: '74vw', height: '40px'}}
       />
       <Modal
         title={`Applicants for ${selectedJob}`}

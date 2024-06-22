@@ -1,13 +1,28 @@
 
 import React, { useState, useEffect } from "react";
+import styled from 'styled-components';
 import { Drawer, Button, Form, Input, DatePicker, message } from "antd";
 import "../styles/Profile.css";
 import axios from "axios";
+import userlogo from  '../Assests/User.png'
+import { useNavigate } from "react-router-dom";
+
+const StyledFormItem = styled(Form.Item)`
+  .ant-form-item-label > label {
+    color: #00B4D2 !important;
+    border-color: #00B4D2 !important;
+  }
+  .ant-picker {
+  border-color: #00B4D2 !important;
+  color:#00B4D2;
+  }
+`;
 
 
-const ProfilePage = ({ open, onClose, auth }) => {
+const ProfilePage = ({ open, onClose, auth, setAuth }) => {
   const [editMode, setEditMode] = useState(false);
   const [editedData, setEditedData] = useState(auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!editMode) {
@@ -19,6 +34,13 @@ const ProfilePage = ({ open, onClose, auth }) => {
     setEditMode(true);
   };
 
+  const handleClick = () =>{
+    setAuth({});
+    onClose();
+    navigate('/');
+    
+  }
+
   const handleClose = () => {
     setEditMode(false); 
     onClose(); 
@@ -26,14 +48,14 @@ const ProfilePage = ({ open, onClose, auth }) => {
 
   const handleUpdate = async () => {
     try {
-      // Check if DOB is a valid date
+      
       const dob = editedData.dob;
       const dobDate = dob ? new Date(dob) : null;
       if (dob && isNaN(dobDate.getTime())) {
         throw new Error('Invalid date of birth');
       }
   
-      // Prepare formatted data for update
+      
       const formattedData = {
         ...editedData,
         dob: dobDate ? dobDate.toISOString() : null,
@@ -83,7 +105,7 @@ const ProfilePage = ({ open, onClose, auth }) => {
   return (
     <div className="profile-container">
       <Drawer
-        title="Profile Details"
+        
         placement="right"
         closable={false}
         onClose={handleClose} 
@@ -92,43 +114,56 @@ const ProfilePage = ({ open, onClose, auth }) => {
       >    
         {editMode ? (
           <Form layout="vertical" onFinish={handleUpdate} initialValues={auth}>           
-          <Form.Item label="DoB">
-          <DatePicker
-            name="dob"
-            onChange={(date, dateString) => handleInputChange({ target: { name: 'dob', value: dateString } })}
-            format="DD-MM-YYYY"
-          />
-        </Form.Item>
-            <Form.Item label="Qualification" >
-              <Input name="qualification" onChange={handleInputChange} />
-            </Form.Item>
-            <Form.Item label="Experience" >
-              <Input name="totalExperience" onChange={handleInputChange} />
-            </Form.Item>
-            <Form.Item label="Contact" >
-              <Input name="contact" onChange={handleInputChange} />
-            </Form.Item>
-            <Form.Item label="City" >
-              <Input name="currentLocation" onChange={handleInputChange} />
-            </Form.Item>
-            <Form.Item label="District" >
-              <Input name="district" onChange={handleInputChange} />
-            </Form.Item>
-            <Form.Item label="Manager Name">
-              <Input  name="mgrName" onChange={handleInputChange} />
-            </Form.Item>
-            <Button type="primary" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} htmlType="submit">
-              Update
-            </Button>
-          </Form>
+          <StyledFormItem label="DoB">
+            <DatePicker
+              name="dob"
+              onChange={(date, dateString) => handleInputChange({ target: { name: 'dob', value: dateString } })}
+              format="DD-MM-YYYY"
+            />
+          </StyledFormItem>
+          <StyledFormItem label="Qualification">
+            <Input name="qualification" onChange={handleInputChange} />
+          </StyledFormItem>
+          <StyledFormItem label="Experience">
+            <Input name="totalExperience" onChange={handleInputChange} />
+          </StyledFormItem>
+          <StyledFormItem label="Contact">
+            <Input name="contact" onChange={handleInputChange} />
+          </StyledFormItem>
+          <StyledFormItem label="City">
+            <Input name="currentLocation" onChange={handleInputChange} />
+          </StyledFormItem>
+          <StyledFormItem label="District">
+            <Input name="district" onChange={handleInputChange} />
+          </StyledFormItem>
+          <StyledFormItem label="Manager Name">
+            <Input name="mgrName" onChange={handleInputChange} />
+          </StyledFormItem>
+          <Button type="primary" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} htmlType="submit">
+            Update
+          </Button>
+        </Form>
         ) : (
           <div className="profile-info">
             <div className="profile-header">
+            <img src={userlogo} alt="User Logo" className="user-logo" width={70}/>
               <h2>{auth.fullName}</h2>
             </div>       
-            <p><span>First Name: </span>{auth.firstName}</p>
-            <p><span>Last Name: </span>{auth.lastName}</p>
-            <p><span>Email: </span>{auth.email}</p>
+            
+            <center><p>{auth.email}</p></center>
+            <center><p>{auth.role}</p></center>
+            <div style={{alignContent: 'space-between'}}>
+            <Button type="primary" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} onClick={handleEditClick}>
+            Edit Profile
+          </Button>
+          <Button type="primary" style={{ float:'right', backgroundColor: '#A50707', borderColor: '#fff' }} onClick={handleClick}>
+            Sign Out
+          </Button>
+          </div>
+          <br />
+          <div style={{width:'100%'}}><hr/></div>
+          <p><span>First Name: </span>{auth.firstName}</p>
+          <p><span>Last Name: </span>{auth.lastName}</p>
             <p><span>DoB: </span>{new Date(auth.dob).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
             <p><span>Qualification: </span> {auth.qualification}</p>
             <p><span>Experience: </span>{auth.totalExperience}</p>
@@ -136,9 +171,7 @@ const ProfilePage = ({ open, onClose, auth }) => {
             <p><span>City: </span>{auth.currentLocation}</p>
             <p><span>District: </span>{auth.district}</p>
             <p><span>Manager Name: </span>{auth.mgrName}</p>
-            <Button type="primary" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} onClick={handleEditClick}>
-              Edit
-            </Button>
+           
           </div>
         )}
       </Drawer>

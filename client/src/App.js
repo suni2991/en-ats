@@ -32,6 +32,8 @@ import Profile from './pages/Profile.js';
 import ProfilePage from './components/ProfilePage.js';
 import Panelist from './components/Panelist.js';
 import JobDashboard from './components/JobDashboard.js';
+import Dashboard from './pages/Dashboard.js';
+import Applicant from './pages/Applicant.js';
 
 
 const App = () => {
@@ -71,7 +73,7 @@ const App = () => {
             <Route path='/hr/edit/:id' element={<Edit />}/>
             <Route path='/thankyou' element={<Thankyou />} />
             <Route path='/statistics' element={<Statistics />} />
-            <Route path='/dashboard' element={<Statistics />} />
+            <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/credentials' element={<Credentials />} />
             <Route path='/postjob' element={<Postjob />} />
             <Route path='/create-hr' element={<Createhr />} />
@@ -79,6 +81,7 @@ const App = () => {
             <Route path='/profile' element={<Profile />} />
             <Route path='/editProfile' element={<ProfilePage />} />
             <Route path='/panelist/:id' element={<Panelist />} />
+            <Route path='/applicants' element={<Applicant />} />
           </Route>
         </Routes>
       </Sidebar>

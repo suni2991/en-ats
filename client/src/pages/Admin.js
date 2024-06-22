@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import Fetchtable from '../components/Fetchtable';
 import CustomModal from '../components/CustomModal';
 import Postjob from '../components/Postjob'; // Replace with the CreateUser component if you have one
-import { Tooltip } from 'antd';
+import { Tooltip, Button } from 'antd';
 import Createhr from '../components/Createhr';
+import { MdWidthFull } from 'react-icons/md';
 
 const Admin = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const userColumns = [
     { name: 'Name', selector: (row) => row.fullName, sortable: true },
-    { name: 'Email', selector: (row) => row.email, sortable: true },
-    { name: 'Location', cell: (row) => row.currentLocation, sortable: true },
+    { name: 'Email', selector: (row) => row.email, sortable: true, width:'300px'},
+    { name: 'Department', selector: (row) => row.department, sortable: true , width:'150px'},
+    { name: 'Location', cell: (row) => row.currentLocation, sortable: true, width:'150px' },
     { 
       name: 'Role', 
+       width:'120px',
       cell: (row) => (
         <div style={{
           backgroundColor: getRoleColor(row.role),
@@ -23,8 +26,9 @@ const Admin = () => {
           textAlign: 'center'
         }}>
         {row.role === 'Enfusian' ? 'Panelist' : row.role}
+        
         </div>
-       
+      
       ), 
       sortable: true 
     },
@@ -33,9 +37,9 @@ const Admin = () => {
   const getRoleColor = (role) => {
     switch(role) {
       case 'HR':
-        return '#85c7a6';
+        return '#00B4d2';
       case 'Enfusian':
-        return '#0f5a8c';
+        return '#1a2763';
       default:
         return 'black';
     }
@@ -50,17 +54,18 @@ const Admin = () => {
   };
 
   return (
-    <div className='table-container'>
-      <div className='topContainer'>
-        <Tooltip title="Create HR/Panelist" color='cyan'>
-          <button className="submit-button" style={{float: 'right'}} onClick={showModal}>
-            Create User
-          </button>
-        </Tooltip>
-      </div>
+    <div className='vh-page'>
+      
       <div>
-        <h1>Create a User & View the details of User</h1>
+      <div className='topContainer2'>
+      <Tooltip title="Create HR/Panelist" color='cyan'>
+        <Button className='add-button' type='primary' style={{float: 'right', background:'#A60808'}} onClick={showModal}>
+          Create User
+        </Button>
+      </Tooltip>
+    </div>
         <Fetchtable 
+          style={{width:'50% !important'}}
           url={`http://localhost:5040/hrs`}
           columns={userColumns}
         />

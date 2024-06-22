@@ -8,13 +8,13 @@ import { LuMonitorCheck } from 'react-icons/lu';
 import useAuth from '../hooks/useAuth';
 import '../styles/Sidebar.css';
 import logo from '../Assests/enfuse-logo.png';
-
-import { HomeOutlined} from '@ant-design/icons';
-import { Input, Button, AutoComplete, Modal,Tooltip, Breadcrumb } from 'antd';
+import { Layout, Tooltip, Button, AutoComplete, Modal } from 'antd';
 import ProfilePage from './ProfilePage';
 import { VscFeedback } from 'react-icons/vsc';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+
+const { Footer } = Layout;
 
 const Sidebar = ({ children }) => {
   const navigate = useNavigate();
@@ -43,15 +43,13 @@ const Sidebar = ({ children }) => {
     setSelectedEmail(value);
     try {
       const response = await axios.get(`http://localhost:5040/candidates/search/${value}`);
-      console.log('API response:', response.data); // Add this line for debugging
-      setSelectedCandidateDetails(response.data[0]); // Assuming the API returns a single candidate based on email
+      console.log('API response:', response.data);
+      setSelectedCandidateDetails(response.data[0]);
       setModalVisible(true);
     } catch (error) {
       console.error('Error fetching candidate details:', error);
     }
   };
-
-
 
   const handleCancel = () => {
     setModalVisible(false);
@@ -64,10 +62,7 @@ const Sidebar = ({ children }) => {
   const logout = () => {
     setAuth({});
     navigate('/');
-    Swal.fire("You have been successfullY logged out!!")
-    
-    
-
+    Swal.fire("You have been successfully logged out!!");
   };
 
   const menuItem = [
@@ -78,7 +73,7 @@ const Sidebar = ({ children }) => {
     },
     {
       path: '/admins',
-      name: 'User Managment',
+      name: 'EnFusians',
       icon: <FaAdn />,
     },
     {
@@ -88,7 +83,12 @@ const Sidebar = ({ children }) => {
     },
     {
       path: '/hr',
-      name: 'Candidates',
+      name: 'ATS',
+      icon: <FaRegUser />,
+    },
+    {
+      path: '/applicants',
+      name: 'Applicants',
       icon: <FaRegUser />,
     },
     {
@@ -101,7 +101,6 @@ const Sidebar = ({ children }) => {
       name: 'Statistics',
       icon: <FaRegChartBar />,
     },
-    
     {
       path: '/feedbacks',
       name: 'Feedback',
@@ -112,7 +111,6 @@ const Sidebar = ({ children }) => {
   const { pathname } = useLocation();
 
   const getCurrentMenuItem = () => {
-    
     return menuItem.find(item => item.path === pathname);
   };
 
@@ -138,7 +136,7 @@ const Sidebar = ({ children }) => {
             {menuItem.map((item, index) => {
               if (auth.role === 'Admin') {
                 return (
-                  (item.name === 'User Managment' || item.name === 'HR' || item.name === 'Dashboard' || item.name === 'Statistics') && (
+                  (item.name === 'EnFusians' || item.name === 'Applicants' || item.name === 'Dashboard' || item.name === 'Statistics') && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className="icon">{item.icon}</div>
                       <div className="link-text">{item.name}</div>
@@ -148,11 +146,10 @@ const Sidebar = ({ children }) => {
               } else if (auth.role === 'HR') {
                 return (
                   (
-                    item.name === 'Candidates' ||
+                    item.name === 'ATS' ||
                     item.name === 'Dashboard' ||
                     item.name === 'Scores' ||
                     item.name === 'Statistics' ||
-                   
                     item.name === 'Feedback') && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className="icon">{item.icon}</div>
@@ -173,21 +170,17 @@ const Sidebar = ({ children }) => {
                 return null;
               }
             })}
-
-            
           </div>
         )}
         <main className={`main-container ${isDarkMode ? 'dark-mode' : ''}`}>
-          {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Enfusian')&& (
+          {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Enfusian') && (
             <nav className="navbar">
-          
-   
-        
               <div className="navbar-right">
-              <Tooltip title="View & Update Profile" color='cyan'>
-                <Button type="text"  onClick={() => setProfileVisible(true)} style={{color: '#00B4D2'}}>
-                  Welcome, {auth.fullName} |
-                </Button></Tooltip>
+                <Tooltip title="View & Update Profile" color='cyan'>
+                  <Button type="text" onClick={() => setProfileVisible(true)} style={{ color: '#00B4D2' }}>
+                    Welcome, {auth.fullName} |
+                  </Button>
+                </Tooltip>
               </div>
 
               {auth.role && (
@@ -200,11 +193,17 @@ const Sidebar = ({ children }) => {
               )}
             </nav>
           )}
-          {auth && <ProfilePage open={profileVisible} auth={auth} onClose={() => setProfileVisible(false)} />}
+          {auth && <ProfilePage open={profileVisible} auth={auth} setAuth={setAuth} onClose={() => setProfileVisible(false)} />}
 
           {children}
+          {auth.role && (
+            <div className="footer">
+              @ 2024 EnFuse Solutions. All rights Reserved
+            </div>
+          )}
         </main>
       </div>
+     
     </div>
   );
 };

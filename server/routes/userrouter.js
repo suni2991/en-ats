@@ -19,6 +19,7 @@ userRouter.post('/register/candidate', async (req, res) => {
       position,
       currentLocation,
       image,
+      department,
       resume,
       status,
       empCount,
@@ -38,7 +39,7 @@ userRouter.post('/register/candidate', async (req, res) => {
       mgrName,
       mgrEmail,
       skills,
-     
+     lwd,
       availability,
       panelistName,
       round,
@@ -65,6 +66,7 @@ userRouter.post('/register/candidate', async (req, res) => {
       image,
       resume,
       status,
+      department,
       empCount,
       psychometric,
       quantitative,
@@ -83,7 +85,7 @@ userRouter.post('/register/candidate', async (req, res) => {
       mgrName,
       mgrEmail,
       skills,
-    
+      lwd,
       availability,
       panelistName,
       round,
@@ -204,11 +206,26 @@ userRouter.get('/users-by-role', async (req, res) => {
   }
 });
 
+userRouter.get('/candidate/:status', async (req, res) => {
+  const { status } = req.params;
+  try {
+    let docs;
+    if (status === "Selected" || status === "Onboarded") {
+      docs = await Candidate.find({ status });
+    } else {
+      docs = await Candidate.find();
+    }
+    res.json(docs);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching candidates", error });
+  }
+});
 
-userRouter.get('/candidate/status', async (req, res) => {
-  const docs = await Candidate.find({ status: "SELECTED" });
-  res.json(docs)
-})
+
+// userRouter.get('/candidate/status', async (req, res) => {
+//   const docs = await Candidate.find({ status: "SELECTED" || "Onboarded" });
+//   res.json(docs)
+// })
 
 userRouter.get('/candidate/cat-count', async (req, res) => {
   const docs = await Candidate.find({ selectedCategory: "Technical" || "Non-Technical" });
@@ -231,7 +248,7 @@ userRouter.get('/candidates/:fullName', async (req, res) => {
   }
 });
 
-userRouter.get("/candidate/:id", async (req, res) => {
+userRouter.get("/candidate/profile/:id", async (req, res) => {
   try {
     const _id = req.params.id;
     const result = await Candidate.findById(_id);
@@ -263,7 +280,8 @@ userRouter.put('/candidate/:id', async (req, res) => {
     if (!result) {
       res.json({
         status: "FAILED",
-        message: "record is not updated successfully"
+        message: "record is not updated successfully",
+        
       })
     }
     else {
@@ -293,7 +311,9 @@ userRouter.put('/feedback/:id', async (req, res) => {
     candidate.skills = req.body.skills;
     candidate.status = req.body.status;
     candidate.evaluationDetails = req.body.evaluationDetails;
-
+    candidate.lwd = req.body.lwd;
+    candidate.joiningDate = req.body.joiningDate;
+    candidate.role = req.body.role;
     await candidate.save();
 
     res.status(200).json({ message: 'Candidate evaluation updated successfully' });
@@ -364,10 +384,10 @@ userRouter.get('/candidates/counts', async (req, res) => {
 
 userRouter.get('/panelists/enfusian', async (req, res) => {
   try {
-    const panelist = await Candidate.find({ role: 'Enfusian' }, 'fullName'); // Fetch fullName and email of HRs
+    const panelist = await Candidate.find({ role: 'Panelist' }, 'fullName'); // Fetch fullName and email of HRs
     res.json(panelist);
   } catch (error) {
-    console.error('Error fetching Panelists:', error);
+    console.error('Error fetching Panelists:', error);f
     res.status(500).json({ message: 'Error fetching Panelists' });
   }
 });
@@ -486,6 +506,15 @@ userRouter.get('/candidate-scores', async (req, res) => {
     res.json(candidateScores);
   } catch (err) {
     console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+userRouter.get('/selected-candidates', async (req, res) => {
+  try {
+    const selectedCandidates = await Candidate.find({ status: 'Selected' });
+    res.json(selectedCandidates);
+  } catch (error) {
     res.status(500).send('Server Error');
   }
 });

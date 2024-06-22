@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
 
-// Define the schema for vacancy status
-const vacancyStatusSchema = new mongoose.Schema({
-    status: {
-        type: String,
-        enum: ['Active', 'Inactive','Hold'],
-        required: true,
-    },
-    count: {
-        type: Number,
-        required: true,
-        default: 0
-    }
-});
+// // Define the schema for vacancy status
+// const vacancyStatusSchema = new mongoose.Schema({
+//     status: {
+//         type: String,
+//         enum: ['Active', 'Inactive','Hold'],
+//         required: true,
+//     },
+//     count: {
+//         type: Number,
+//         required: true,
+//         default: 0
+//     }
+// });
 
 // Define the schema for job posts
 const jobSchema = new mongoose.Schema({
@@ -28,10 +28,7 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    jobType: {
-        type: String,
-        required: true,
-    },
+    
     jobLocation: {
         type: String,
         required: true,
@@ -44,10 +41,7 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    modeOfJob: {
-        type: String,
-        required: true,
-    },
+   
     primarySkills:{
         type: String,
         
@@ -67,14 +61,15 @@ const jobSchema = new mongoose.Schema({
         type: String,
         default: "HR"
     },
-    vacancyStatus: {
-        type: [vacancyStatusSchema],
-        default: [
-            { status: 'Active', count: 0 },
-            { status: 'Inactive', count: 0 },
-            { status: 'Hold', count: 0 }
-        ]
-    }
+    // vacancyStatus: {
+    //     type: [vacancyStatusSchema],
+    //     default: [
+    //         { status: 'Selected', count: 0 },
+    //         { status: 'Rejected', count: 0 },
+    //         { status: 'L1', count: 0 },
+    //         { status: 'L2', count: 0 },
+    //     ]
+    // }
 });
 
 const Job = mongoose.model('Job', jobSchema);

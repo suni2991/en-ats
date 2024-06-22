@@ -151,7 +151,8 @@ const Createhr = () => {
                 <option>Choose Role</option>
                 <option value="HR">HR</option>
                 <option value="Admin">Admin</option>
-                <option value="Enfusian">Enfusian</option>
+                <option value="Panelist">Panelist</option>
+                
               </select>
             </div>
           </div>

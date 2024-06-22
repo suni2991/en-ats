@@ -1,26 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/Panelist.css'
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Button, DatePicker, Rate, Input } from 'antd';
+import moment from 'moment';
 
-const Panelist = () => {
+const Panelist = ({ candidateData, auth }) => {
   const navigate = useNavigate();
-  const [candidateData, setCandidateData] = useState({})
   const [skills, setSkills] = useState([]);
-  const [rating, setRating] = useState([])
+  const [rating, setRating] = useState({});
   const [formData, setFormData] = useState({
-    position:'',
-    fullName:'',
-    totalExperience:'',
-    noticePeriod:'',
-    panelistName:'',
-    round:'',
-   
+    position: '',
+    fullName: '',
+    totalExperience: '',
+    noticePeriod: '',
+    panelistName: '',
+    round: '',
+    feedback: '',
+    joiningDate: null,
   });
-  
-  const rIterator = ['@','#','$','%','&'];
-  const [isEvaluation,setIsEvaluation] = useState(false);
+
+  const [isFeedback, setIsFeedback] = useState(false);
+
+  useEffect(() => {
+    if (candidateData) {
+      setFormData({
+        position: candidateData.position,
+        fullName: candidateData.fullName,
+        totalExperience: candidateData.totalExperience,
+        noticePeriod: candidateData.noticePeriod,
+        panelistName: candidateData.panelistName,
+        round: candidateData.round,
+        feedback: '',
+        joiningDate: null,
+      });
+      const skillsData = candidateData.skills.map(skill => skill.name);
+      setSkills(skillsData);
+      setRating(candidateData.skills.reduce((acc, skill) => {
+        acc[skill.name.toLowerCase()] = skill.rating;
+        return acc;
+      }, {}));
+    }
+  }, [candidateData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -29,120 +51,96 @@ const Panelist = () => {
     }));
   };
 
-  const { id } = useParams();
-  useEffect(() => {
-    fetchCandidateDetails();
-  }, []);
-
-  const fetchCandidateDetails = async () => {
-    try {
-      
-      const response = await axios.get(`http://localhost:5040/candidate/${id}`);
-      const data = response.data;
-      if (data.status === "SUCCESS") {
-        setCandidateData(data.data);
-        
-        setFormData({
-          position: data.data.position,
-          fullName: data.data.fullName,
-          totalExperience: data.data.totalExperience,
-          noticePeriod: data.data.noticePeriod,
-          panelistName: data.data.panelistName,
-          round: data.data.round,
-        });
-        const skillsData = data.data.skills.map(skill => skill.name);
-      setSkills(skillsData);
-      }
-    } catch (error) {
-      console.error('Error fetching candidate details:', error);
-    }
+  const handleDateChange = (date, dateString) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      joiningDate: dateString,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    Swal.fire({
-      title: "Submit your Final Feedback",
-      input: "select",
-      inputOptions: {
-        'Shortlisted for L2': 'Shortlisted for L2',
-        'Shortlist to HR': 'Shortlist to HR',
-        'Not-Shortlisted': 'Not-Shortlisted',
-        'Onboarded': 'Onboarded',
-      },
-      inputPlaceholder: "Select Final Feedback",
-      showCancelButton: true,
-      confirmButtonText: "Submit",
-      showLoaderOnConfirm: true,
-      preConfirm: async (feedback) => {
-        try {
-          
-          const skillsArray = skills.map(skill => {
-            const lowercaseSkill = skill && skill.toLowerCase(); 
-            return {
-              name: skill,
-              rating: rating[lowercaseSkill] || 0,
-              comments: formData[`${lowercaseSkill}Comments`] || "No comments",
-            };
-          });
-  
-          
-          const response = await axios.put(`http://localhost:5040/feedback/${id}`, {
-            skills: skillsArray,
-            status: feedback,
-            evaluationDetails: true, 
-          });
-          navigate('/feedbacks')
-          return response.data; 
-        } catch (error) {
-          Swal.showValidationMessage(`Error submitting feedback: ${error}`);
-        }
-      },
-      allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Feedback Submitted!",
-          text: result.value.message, 
-          icon: "success"
-        });
-      }
-    });
+    if (!candidateData || !candidateData._id) {
+      Swal.fire({
+        title: "Error",
+        text: "Candidate data is missing or incomplete.",
+        icon: "error",
+      });
+      return;
+    }
+
+    console.log('Submitting feedback for candidate ID:', candidateData._id);
+
+    try {
+      const skillsArray = skills.map(skill => {
+        const lowercaseSkill = skill && skill.toLowerCase();
+        return {
+          name: skill,
+          rating: rating[lowercaseSkill] || 0,
+          comments: formData[`${lowercaseSkill}Comments`] || "No comments",
+        };
+      });
+
+      const response = await axios.put(`http://localhost:5040/feedback/${candidateData._id}`, {
+        skills: skillsArray,
+        status: formData.feedback,
+        evaluationDetails: true,
+        joiningDate: formData.joiningDate,
+      });
+
+      Swal.fire({
+        title: "Feedback Submitted!",
+        text: response.data.message,
+        icon: "success",
+      });
+
+      navigate('/feedbacks');
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: `Error submitting feedback: ${error}`,
+        icon: "error",
+      });
+      console.error('Error submitting feedback:', error);
+    }
   };
 
-
   return (
-    <div className='table-container'>
-      <h1>Interview Feedback Form</h1>
- 
-      <table className='panelistTable'>
-      <tr>
-      <td>Role</td>
-      <td><input type='text' value={formData.position} onChange={handleChange} name='position' /></td>
-    </tr>
-    <tr>
-      <td>Candidate Name</td>
-      <td><input type='text' value={formData.fullName} onChange={handleChange} name='fullName' /></td>
-    </tr>
-    <tr>
-      <td>Experience</td>
-      <td><input type='text' value={formData.totalExperience} onChange={handleChange} name='totalExperience' /></td>
-    </tr>
-    <tr>
-      <td>Availability / Notice Period</td>
-      <td><input type='text' value={formData.noticePeriod} onChange={handleChange} name='noticePeriod' /></td>
-    </tr>
-    <tr>
-      <td>Panelist Name</td>
-      <td><input type='text' value={formData.panelistName} onChange={handleChange} name='panelistName' /></td>
-    </tr>
-    <tr>
-      <td>Round</td>
-      <td><input type='text' value={formData.round} onChange={handleChange} name='round' /></td>
-    </tr>
-      </table>
-      <div id='evolution'>Evaluation Details <span onClick={()=>setIsEvaluation(true)}>+</span></div>
-      {isEvaluation && skills.length > 0 ? (
+    <div className='modalContent'>
+      <h1>Role: {candidateData.position}</h1>
+      <p>Candidate Name: {candidateData.fullName}</p>
+      <p>Total Experience: {candidateData.totalExperience}</p>
+      <p>Availability / Notice Period: {candidateData.noticePeriod}</p>
+      <p>Panelist Name: {candidateData.panelistName}</p>
+      <p>Round: {candidateData.round}</p>
+      
+      <div className='two-btns'>
+        <Button
+          onClick={() => {
+            setIsFeedback(false);
+          }}
+          style={{ float: 'left', background: '#00B4D2' }}
+          type='text'
+        >
+          Evaluation
+        </Button>
+        <Button
+          onClick={() => {
+            setIsFeedback(true);
+          }}
+          style={{ float: 'right', background: '#00B4D2', marginLeft: '180px' }}
+          type='text'
+        >
+          Feedback
+        </Button>
+      </div>
+          <br/>
+      {candidateData.status === 'Selected' || candidateData.status === 'Rejected' ? (
+        <p style={{ color: 'red', marginTop: '10px' }}>Feedback is already given</p>
+      ) : null}
+
+      {!isFeedback && (
         <table className='panelistTable'>
           <thead>
             <tr>
@@ -152,47 +150,62 @@ const Panelist = () => {
             </tr>
           </thead>
           <tbody>
-          {skills.map((skill, index) => (
-            <tr key={index}>
-              <td>{skill}</td>
-              <td>
-                <div className='ratingWrapper'>
-                  {rIterator.map((elem, idx) => (
-                    <i
-                      key={idx}
-                      className={`bi ${
-                        idx + 1 <= (skill && rating[skill.toLowerCase()]) ? 'bi-star-fill' : 'bi-star'
-                      }`}
-                      onClick={() =>
-                        setRating({
-                          ...rating,
-                          [skill && skill.toLowerCase()]: idx + 1,
-                        })
-                      }
-                    ></i>
-                  ))}
-                </div>
-              </td>
-              <td>
-                <input
-                  type='text'
-                  value={(skill && formData[`${skill.toLowerCase()}Comments`]) || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      [skill && `${skill.toLowerCase()}Comments`]: e.target.value,
-                    })
-                  }
-                />
-              </td>
-            </tr>
-          ))}
+            {skills.map((skill, index) => (
+              <tr key={index}>
+                <td>{skill}</td>
+                <td>
+                  <Rate
+                    value={rating[skill.toLowerCase()] || 0}
+                    onChange={(value) => setRating({
+                      ...rating,
+                      [skill.toLowerCase()]: value,
+                    })}
+                  />
+                </td>
+                <td>
+                  <Input
+                    type='text'
+                    value={formData[`${skill.toLowerCase()}Comments`] || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        [`${skill.toLowerCase()}Comments`]: e.target.value,
+                      })
+                    }
+                  />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
-      ) : null}
-      
+      )}
 
-      <div id='panelistbtn' onClick={handleSubmit}><button>Submit</button></div>
+      {isFeedback && (
+        <div className='panelistTable'>
+          {console.log('Rendering Feedback Form')}
+          <label htmlFor='feedback'>Final Feedback:</label>
+          <select name='feedback' value={formData.feedback} onChange={handleChange}>
+            <option value=''>Select Feedback</option>
+            <option value='L2'>Shortlisted for L2</option>
+            <option value='HR'>Shortlist to HR</option>
+            <option value='Rejected'>Rejected</option>
+            <option value='Selected'>Selected</option>
+          </select>
+          {auth && auth.role === 'HR' && formData.feedback === 'Selected' && (
+            <div>
+              <label htmlFor='joiningDate'>Joining Date:</label>
+              <DatePicker
+                name='joiningDate'
+                value={formData.joiningDate ? moment(formData.joiningDate) : null}
+                onChange={handleDateChange}
+                style={{ display: 'block', width:'50%', border:'1px #00B4D2' }}
+              />
+            </div>
+          )}
+        </div>
+      )}
+      
+      <div id='panelistbtn' onClick={handleSubmit}><Button style={{background:'#A50707'}}>Submit</Button></div>
     </div>
   );
 };

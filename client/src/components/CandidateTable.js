@@ -1,54 +1,72 @@
 import React, { useState } from 'react';
-import Fetchtable from './Fetchtable';
-import { Modal, Button, Spin, Tooltip } from 'antd';
+import { MdOutlineAddTask } from "react-icons/md";
 import { TiEyeOutline } from "react-icons/ti";
-import axios from 'axios';
+import CandidateProfileDrawer from '../components/CandidateProfileDrawer';
+import Fetchtable from '../components/Fetchtable';
+import AssignInterview from '../components/AssignInterview';
+import { Tooltip } from 'antd';
 
 const CandidateTable = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const handleDrawerClose = () => {
+    setShowDrawer(false);
+    setProfileOpen(false);
+  };
+
+  const handleView = (row) => {
+    console.log("Viewing candidate:", row); // Debugging log
+    setSelectedCandidate(row);
+    setShowDrawer(false);
+    setProfileOpen(true);
+  };
+  
+  const handleAssign = (row) => {
+    console.log("Assigning candidate:", row); // Debugging log
+    setSelectedCandidate(row);
+    setShowDrawer(true);
+    setProfileOpen(false);
+  };
+
+  const renderResumeLink = (row) => {
+    if (row.resume) {
+      const downloadLink = `http://localhost:5040${row.resume}`;
+      return (
+        <a href={downloadLink} target="_blank" rel="noopener noreferrer" className='resume-link'>
+          {row.firstName} CV
+        </a>
+      );
+    } else {
+      return "Resume not available";
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Active':
-        return 'green';
-      case 'Hold':
-        return '#00B4D2';
-      case 'Inactive':
+      case 'HR':
+        return '#4DC230';
+      case 'L1':
+        return 'yellow';
+      case 'L2':
+        return '#1884E8';
+      case 'Rejected':
         return 'red';
+      case 'Processing':
+        return '#00B4';
+      case 'Selected':
+        return '#00B4D2';
       default:
         return 'black';
     }
   };
-  const handleRowButtonClick = async (jobId) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`http://localhost:5040/job-posts/${jobId}`);
-      setSelectedJob(response.data);
-      setIsModalVisible(true);
-    } catch (error) {
-      console.error('Error fetching job details:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setSelectedJob(null);
-  };
-
-  
 
   const userColumns = [
-    {name: 'Name', selector: (row) => row.fullName, sortable: true, textTransform: 'capitalize'},
-    { name: 'Role', selector: (row) => row.position, sortable: true },
-    {name: 'Experience', selector: (row) => row.relevantExperience, sortable: true },
-    
-    { name: 'Location', selector: (row) => row.currentLocation, sortable: true, width:'150px' },
+    { name: 'Name', selector: (row) => row.fullName, sortable: true, width: '200px' },
+    { name: 'Location', selector: (row) => row.currentLocation, sortable: true, width: '130px' },
+    { name: 'Resume', cell: (row) => renderResumeLink(row), sortable: true, width: '130px' },
     { name: 'Notice Period', selector: (row) => row.noticePeriod, sortable: true },
-    { name: 'Vacancies', selector: (row) => row.vacancies, sortable: true, width: '120px' },
     {
       name: 'Status',
       selector: (row) => row.status,
@@ -59,63 +77,52 @@ const CandidateTable = () => {
           color: 'white',
           padding: '5px 10px',
           borderRadius: '5px',
-          textAlign: 'center'
+          textAlign: 'center',
+          width: '80%'
         }}>
           {row.status}
         </div>
       ),
     },
     {
-      name: 'Action',
+      name: 'Actions',
       cell: (row) => (
-       
-        <Tooltip title="View Details" color='cyan'><button className='table-btn' name='View' onClick={() => handleRowButtonClick(row._id)}><TiEyeOutline /></button></Tooltip>
+        <div>
+          <Tooltip title="Assign Interview" color='cyan'>
+            <button className='table-btn' name='Assign' onClick={() => handleAssign(row)}>
+              <MdOutlineAddTask />
+            </button>
+          </Tooltip>
+          <Tooltip title="View Details" color='cyan'>
+            <button className='table-btn' name='View' onClick={() => handleView(row)}>
+              <TiEyeOutline />
+            </button>
+          </Tooltip>
+        </div>
       ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+      width: '150px'
     },
   ];
 
-
-
+  
   return (
     <div>
       <Fetchtable 
         url="http://localhost:5040/candidatesreport"
-        columns={userColumns}
+        columns={userColumns} 
+        setSelectedCandidate={setSelectedCandidate}
       />
-      <Modal
-        title="Job Details"
-        open={isModalVisible}
-        onCancel={handleCancel}
-       
-        footer={[
-          <Button type='primary' style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} key="close" onClick={handleCancel}>
-            Close
-          </Button>,
-        ]}
-      >
-        {loading ? (
-          <Spin />
-        ) : selectedJob ? (
-          <div>
-            <p><strong>Position:</strong> {selectedJob.position}</p>
-            <p><strong>Department:</strong> {selectedJob.department}</p>
-            <p><strong>Description:</strong> {selectedJob.description}</p>
-            <p><strong>Job Type:</strong> {selectedJob.jobType}</p>
-            <p><strong>Job Location:</strong> {selectedJob.jobLocation}</p>
-            <p><strong>Vacancies:</strong> {selectedJob.vacancies}</p>
-            <p><strong>Salary Range:</strong> {selectedJob.salaryRange}</p>
-            <p><strong>Experience:</strong> {selectedJob.experience}</p>
-            <p><strong>Mode of Job:</strong> {selectedJob.modeOfJob}</p>
-            <p><strong>Posted At:</strong> {new Date(selectedJob.postedAt).toLocaleDateString()}</p>
-            <p><strong>Status:</strong> {selectedJob.status}</p>
-          </div>
-        ) : (
-          <p>No job details available</p>
-        )}
-      </Modal>
+      <AssignInterview 
+        open={showDrawer} 
+        onClose={handleDrawerClose} 
+        candidateId={selectedCandidate ? selectedCandidate._id : ''}
+      />
+      {profileOpen && 
+        <CandidateProfileDrawer 
+          open={profileOpen} 
+          onClose={handleDrawerClose} 
+          candidateId={selectedCandidate ? selectedCandidate._id : ''} 
+        />}
     </div>
   );
 };

@@ -25,16 +25,16 @@ const ApplicationStatus = () => {
 
   return (
     <div>
-    <h1>Applicant Status</h1>
+    <center><h1>Applicant Status</h1></center><br/>
       <BarChart width={300} height={300} data={candidatesData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="status" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="Onboarded" name="Onboarded" fill="#8884d8" />
-        <Bar dataKey="Rejected" name="Rejected" fill="#82ca9d" />
-        <Bar dataKey="In Progress" name="In Progress" fill="#ffc658" />
+        <Bar dataKey="Onboarded" name="Onboarded" fill="#00B4D2" />
+        <Bar dataKey="Rejected" name="Rejected" fill="#969596" />
+        <Bar dataKey="In Progress" name="In Progress" fill="#1a2763" />
       </BarChart>
     </div>
   );

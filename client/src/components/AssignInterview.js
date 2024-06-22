@@ -55,7 +55,7 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/candidate/${candidateId}`);
+        const response = await axios.get(`http://localhost:5040/candidate/profile/${candidateId}`);
         const data = response.data;
         if (data.status === "SUCCESS") {
           const { fullName, position } = data.data;
@@ -88,7 +88,7 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
         round,
         meetingDate,
         skills: selectedSubskills.map((skill) => ({ name: skill, rating: 0, comments: 'No comments' })),
-        status: finalFeedback,
+        status: round,
       };
 
       const response = await axios.put(`http://localhost:5040/evaluate/${candidateId}`, requestBody);

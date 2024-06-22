@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Select, Input } from 'antd';
+import { Select } from 'antd';
 
 const { Option } = Select;
 
@@ -14,10 +14,10 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
     const selectedHr = hrs.find((hr) => hr.fullName === fullName);
     if (selectedHr) {
       setSelectedPanelist(fullName);
-      onSelect(selectedHr.email); // Notify parent component with the selected HR's email
-      onSelectHr(selectedHr.fullName, selectedHr.email); // Notify parent component with the selected HR's fullName and email
-      setMgrName(selectedHr.fullName); // Set mgrName to the selected HR's fullName
-      setMgrEmail(selectedHr.email); // Set mgrEmail to the selected HR's email
+      onSelect(selectedHr.email);
+      onSelectHr(selectedHr.fullName, selectedHr.email);
+      setMgrName(selectedHr.fullName);
+      setMgrEmail(selectedHr.email);
     }
   };
 
@@ -29,7 +29,7 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
         if (data.length > 0) {
           setHrs(data);
         } else {
-          console.log('No Enfusian hrs found.'); // Handle empty data case
+          console.log('No Enfusian hrs found.');
         }
       } catch (error) {
         console.error('Error fetching Enfusian hrs:', error);
@@ -42,10 +42,11 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
   return (
     <div>
       <Select
-        placeholder="Select Panelist"
+        placeholder="Choose HR"
         value={selectedPanelist}
         onChange={handleSelectChange}
-        style={{width:'100%'}}
+        style={{ width: '100%' }}
+        className="custom-dropdown"
       >
         {hrs.map((hr) => (
           <Option key={hr._id} value={hr.fullName}>
@@ -53,13 +54,16 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
           </Option>
         ))}
       </Select>
-      <Input
-        disabled
-        style={{ marginTop: '10px' }}
-        value={mgrEmail || ''}
-        placeholder="HR Email"
-        
-      />
+      <style>
+        {`
+          .custom-dropdown .ant-select-selector:hover {
+            border-color: #00B4D2 !important;
+          }
+          .custom-dropdown .ant-select-selector {
+            border-color: #00B4D2 !important;
+          }
+        `}
+      </style>
     </div>
   );
 };

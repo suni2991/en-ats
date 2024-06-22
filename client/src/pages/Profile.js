@@ -9,10 +9,11 @@ const ProfilePage = ({ visible, onClose, auth }) => {
       placement="right"
       closable={false}
       onClose={onClose}
-      visible={visible}
+      open={visible}
       width={400}
     >
       <div className="profile-info">
+      <img src='/client/src/Assests/User.png' alt='img' />
         <p>Full Name: {auth.fullName}</p>
         <p>Email: {auth.email}</p>
         <p>Date of Birth: {auth.dob}</p>
@@ -22,7 +23,7 @@ const ProfilePage = ({ visible, onClose, auth }) => {
         <p>City: {auth.currentLocation}</p>
         <p>District: {auth.district}</p>
         <p>Manager Name: {auth.mgrName}</p>
-        {/* Add more fields as needed */}
+       
       </div>
     </Drawer>
   );
