@@ -9,7 +9,7 @@ jobRouter.post('/createjob', async (req, res) => {
             position,
             department,
             description,
-           
+            responsibilities,
             jobLocation,
             vacancies,
            
@@ -24,7 +24,7 @@ jobRouter.post('/createjob', async (req, res) => {
             position,
             department,
             description,
-           
+            responsibilities,
             jobLocation,
             vacancies,
            
@@ -45,12 +45,61 @@ jobRouter.post('/createjob', async (req, res) => {
 
 // GET route to fetch all job posts
 jobRouter.get('/viewjobs', async (req, res) => {
-    try {
-        const jobPosts = await Job.find();
-        res.status(200).json(jobPosts);
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching job posts' });
-    }
+  try {
+      const jobPosts = await Job.find({ status: { $ne: 'Approval Pending' } });
+      res.status(200).json(jobPosts);
+  } catch (error) {
+      console.error('Error fetching job posts:', error);
+      res.status(500).json({ error: 'Error fetching job posts' });
+  }
+});
+
+//by postedBy
+jobRouter.get('/viewpositions/postedBy/:fullName', async (req, res) => {
+  const { fullName } = req.params;
+
+  try {
+    // Retrieve jobs posted by the specific user and not in 'Approval Pending' status
+    const jobPosts = await Job.find({ 
+      postedBy: fullName, 
+      status: { $ne: 'Approval Pending' } 
+    });
+    res.status(200).json(jobPosts);
+  } catch (error) {
+    console.error('Error fetching job posts:', error);
+    res.status(500).json({ error: 'Error fetching job posts' });
+  }
+});
+
+jobRouter.get('/pendingjobs', async (req, res) => {
+  try {
+      const jobPosts = await Job.find({ 
+          status: { 
+              $in: ['Approval Pending', 'Denied'] 
+          } 
+      });
+      res.status(200).json(jobPosts);
+  } catch (error) {
+      console.error('Error fetching job posts:', error);
+      res.status(500).json({ error: 'Error fetching job posts' });
+  }
+});
+
+jobRouter.get('/job/:id', async (req, res) => {
+  const jobId = req.params.id;
+
+  try {
+      const job = await Job.findById(jobId);
+
+      if (!job) {
+          return res.status(404).json({ message: 'Job not found' });
+      }
+
+      res.status(200).json(job);
+  } catch (error) {
+      console.error('Error fetching job by ID:', error);
+      res.status(500).json({ message: 'Server error' });
+  }
 });
 
 // GET route to fetch a single job post by ID
@@ -160,13 +209,13 @@ jobRouter.get('/vacancies-by-position', async (req, res) => {
                 position: job.position,
                 department: job.department,
                 description: job.description,
-                jobType: job.jobType,
+                responsibilities: job.responsibilities,
                 jobLocation: job.jobLocation,
                 vacancies: job.vacancies,
                 registeredCandidates: 0,
-                salaryRange: job.salaryRange,
+               
                 experience: job.experience,
-                modeOfJob: job.modeOfJob,
+              
                 postedAt: job.postedAt,
                 status: job.status
             };
@@ -227,12 +276,54 @@ jobRouter.get('/vacancy-status/:position', async (req, res) => {
     }
   });
 
-  jobRouter.put('/job-posts/:id', async (req, res) => {
+//   jobRouter.put('/job-posts/:id', async (req, res) => {
+//     const jobId = req.params.id;
+//     const { status } = req.body;
+  
+//     try {
+//       const updatedJob = await Job.findByIdAndUpdate(jobId, { status }, { new: true });
+  
+//       if (!updatedJob) {
+//         return res.status(404).json({ message: 'Job not found' });
+//       }
+  
+//       res.status(200).json(updatedJob);
+//     } catch (error) {
+//       console.error('Error updating job status:', error);
+//       res.status(500).json({ message: 'Server error' });
+//     }
+//   });
+  
+jobRouter.put('/job-posts/:id', async (req, res) => {
     const jobId = req.params.id;
-    const { status } = req.body;
+    const {
+      position,
+      department,
+      jobLocation,
+      experience,
+      vacancies,
+      postedBy,
+      status,
+      description,
+      responsibilities,
+    } = req.body;
   
     try {
-      const updatedJob = await Job.findByIdAndUpdate(jobId, { status }, { new: true });
+      const updatedJob = await Job.findByIdAndUpdate(
+        jobId,
+        {
+          position,
+          department,
+          jobLocation,
+          experience,
+          vacancies,
+          postedBy,
+          status,
+          description,
+          responsibilities
+        },
+        { new: true }
+      );
   
       if (!updatedJob) {
         return res.status(404).json({ message: 'Job not found' });
@@ -240,7 +331,7 @@ jobRouter.get('/vacancy-status/:position', async (req, res) => {
   
       res.status(200).json(updatedJob);
     } catch (error) {
-      console.error('Error updating job status:', error);
+      console.error('Error updating job details:', error);
       res.status(500).json({ message: 'Server error' });
     }
   });

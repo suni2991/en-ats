@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import Fetchtable from '../components/Fetchtable';
-import CustomModal from '../components/CustomModal';
-import Postjob from '../components/Postjob'; // Replace with the CreateUser component if you have one
-import { Tooltip, Button } from 'antd';
+import { Tooltip, Button, Modal } from 'antd';
 import Createhr from '../components/Createhr';
-import { MdWidthFull } from 'react-icons/md';
 
 const Admin = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const userColumns = [
-    { name: 'Name', selector: (row) => row.fullName, sortable: true },
-    { name: 'Email', selector: (row) => row.email, sortable: true, width:'300px'},
-    { name: 'Department', selector: (row) => row.department, sortable: true , width:'150px'},
-    { name: 'Location', cell: (row) => row.currentLocation, sortable: true, width:'150px' },
+    { name: 'Name', selector: (row) => row.fullName,  sortable: true,  cell: row => <span className="custom-cell" style={{textTransform:'capitalize'}}>{row.fullName}</span> },
+    { name: 'Email', selector: (row) => row.email, sortable: true, width: '300px' },
+    { name: 'Department', selector: (row) => row.department, sortable: true, width: '150px' },
+    { name: 'Location', cell: (row) => row.currentLocation, sortable: true, width: '150px' },
     { 
       name: 'Role', 
-       width:'120px',
+      width: '120px',
       cell: (row) => (
         <div style={{
           backgroundColor: getRoleColor(row.role),
@@ -25,10 +22,8 @@ const Admin = () => {
           borderRadius: '5px',
           textAlign: 'center'
         }}>
-        {row.role === 'Enfusian' ? 'Panelist' : row.role}
-        
+          {row.role}
         </div>
-      
       ), 
       sortable: true 
     },
@@ -38,8 +33,10 @@ const Admin = () => {
     switch(role) {
       case 'HR':
         return '#00B4d2';
-      case 'Enfusian':
+      case 'Panelist':
         return '#1a2763';
+        case 'Ops-Manager':
+          return '#54ab6a';
       default:
         return 'black';
     }
@@ -55,24 +52,16 @@ const Admin = () => {
 
   return (
     <div className='vh-page'>
-      
       <div>
-      <div className='topContainer2'>
-      <Tooltip title="Create HR/Panelist" color='cyan'>
-        <Button className='add-button' type='primary' style={{float: 'right', background:'#A60808'}} onClick={showModal}>
-          Create User
-        </Button>
-      </Tooltip>
-    </div>
         <Fetchtable 
-          style={{width:'50% !important'}}
           url={`http://localhost:5040/hrs`}
           columns={userColumns}
+          extraContent={<Tooltip title="Create HR/Panelist" color='cyan'><Button onClick={showModal} className='add-button' type='primary' style={{marginTop:'1px'}} >Create User</Button></Tooltip>}
         />
       </div>
-      <CustomModal isVisible={isModalVisible} onClose={closeModal}>
-        <Createhr />  {/* Replace this with the component for creating a user */}
-      </CustomModal>
+      <Modal open={isModalVisible} onCancel={closeModal} footer={null}  width={800} title={<h2>Create ATS User</h2>}>
+        <Createhr closeModal={closeModal} />  
+      </Modal>
     </div>
   );
 }

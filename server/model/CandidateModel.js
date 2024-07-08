@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-
-
 const candidateSchema = new mongoose.Schema({
   
     id: {type: Number},
@@ -28,7 +26,7 @@ const candidateSchema = new mongoose.Schema({
     excel: { type: Number, default: -1 },
     password:{type: String},
     confirmPassword:{type: String},
-    role:{type: String, enum: ['Applicant', 'HR', 'Admin', 'Enfusian', 'Panelist'], default: "Applicant"},
+    role:{type: String, enum: ['Applicant', 'HR', 'Admin', 'Enfusian', 'Panelist', 'Ops-Manager'], default: "Applicant"},
 	  dateCreated:{type:Date, default: Date.now},
     createdAt:{type:Date, default: Date.now},
     department:{type: String},
@@ -40,22 +38,31 @@ const candidateSchema = new mongoose.Schema({
     selectedCategory:{type: String},
     mgrName: {type: String},
     mgrEmail: {type: String},
+
+    
+  notes: { type: String },
+  availability: { type: String},
+  
+  round:[ {
+    
+    roundName:{type:String, enum:["L1", "L2", "HR"] },
+    panelistName:{type:String},
+    interviewDate:{type:Date},
+    feedbackProvided:{type: Boolean},
     skills: [
       {
         name: {
           type: String,
           required: true,
         },
+        
         rating:{type: Number, default: 0},
         comments:{type: String, default: "No comments"},
       },
     ],
-  notes: { type: String },
-  availability: { type: String},
-  panelistName: { type: String, default: 'HR'},
-  round: { type: String },
+  } ],
   evaluationDetails: { type: Boolean, default: false },
-  dob: {type:Number},
+  dob: {type:Date},
   meetingDate: {type: Date}
 });
 

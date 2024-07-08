@@ -7,7 +7,12 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { Button } from 'antd';
 
-const Fetchtable = ({ url, columns, title, onViewClick, filteredData }) => {
+// Utility function to capitalize the first letter of each word
+const capitalizeWords = (str) => {
+  return str.replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
+const Fetchtable = ({ url, columns, title, onViewClick, filteredData, extraContent }) => {
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRow, setSelectedRow] = useState(null);
@@ -72,7 +77,21 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData }) => {
 
   const handleExportToExcel = (dataToExport) => {
     const filteredData = filterDataForExport(dataToExport);
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+
+    // Modify the column headers to be capitalized
+    const capitalizedHeaders = Object.keys(filteredData[0] || {}).reduce((acc, key) => {
+      acc[capitalizeWords(key.replace(/_/g, ' '))] = key;
+      return acc;
+    }, {});
+
+    const formattedData = filteredData.map(item => {
+      return Object.keys(item).reduce((acc, key) => {
+        acc[capitalizeWords(key.replace(/_/g, ' '))] = item[key];
+        return acc;
+      }, {});
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
@@ -83,15 +102,16 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData }) => {
   return (
     <div className='fetch-table'>
       <div className='search-cont'>
+        {extraContent && <div style={{ float: 'left' }}>{extraContent}</div>}
         <input
           type="text"
           placeholder="Search by FullName/ Job Title or Location"
           value={searchQuery}
           onChange={handleSearch}
-          style={{ float: 'left', width: '50%' }}
+          style={{ float: 'left', width: '50%', padding:'6px', margin:'2px' }}
         />
         <Button 
-          style={{ background: 'a', margin: '0px',color: '#FFF', float: 'right' }} 
+          style={{ background: '#A60808', margin: '0px',color: '#FFF', float: 'right' }} 
           onClick={() => handleExportToExcel(filteredResults.length ? filteredResults : data)}
         >
           <MdOutlineDownload /> Download Excel
@@ -107,7 +127,6 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData }) => {
         customStyles={CustomStyles}
         onRowClicked={(row) => setSelectedRow(row)}
       />
-      
     </div>
   );
 };

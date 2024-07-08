@@ -7,7 +7,7 @@ import OnboardedCandidates from '../components/Onboarded';
 
 const Statistics = () => {
   return (
-    <div className='vh-page'>
+    <div>
       <UsersByRole />
       <div className='stat-container'>
         <div className='stat-repo1'>

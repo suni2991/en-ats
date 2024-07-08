@@ -1,12 +1,18 @@
 .formContainer{
     display: flex;
-    justify-content: normal;
+    max-width: fit-content;
+    justify-content: center;
+    align-content: center;
+    padding: 5px;
+    gap:2rem;
+    margin: 40px auto;
+    
 }
 .block{
-    width: 50%;
+    width: 45%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-content: center;
     color: #00B4D2;
 }
 .block div{
@@ -20,12 +26,12 @@
 }
 .table-container button{
     width: initial!important;
-    margin: 10px;
+    /* margin: 10px; */
     padding: 2px 15px 0px 15px;
     
 }
 select{
-    width: 27vw;
+    width: 25vw;
     padding: 5px;
 }
 #desc{
@@ -33,11 +39,11 @@ select{
     
 }
 #desc div{
-    width: 97%;
-    margin: 10px 0px 0px 10px;
+    width: 95%;
+    margin: 0px 0px 0px 10px;
     position: relative;
 }
-.block label,#desc label{
+.block label{
     background-color: white;
     padding: 2px;
     top: 2px;
@@ -46,13 +52,23 @@ select{
     color: #00B4D2;
 }
 
+#desc label{
+    background-color: white;
+    padding: 2px;
+    top: 4px;
+    left: 50px;
+    position: absolute;
+    color: #00B4D2;
+}
+
 .block input{
     border: 1px solid #00B4D2;
     padding: 5px;
+    width: 24vw !important;
 }
 
 .block select{
     border: 1px solid #00B4D2;
-    width: 27vw !important;
+    width: 25vw !important;
     padding: 5px;
 }

@@ -70,13 +70,16 @@
     p:first-of-type {
       margin-top: 0 !important;
     }
-    p{
+
+    p {
       font-size: 12px;
-      font-family: Century Gothic; 
-    }
-    h5{
       font-family: Century Gothic;
     }
+
+    h5 {
+      font-family: Century Gothic;
+    }
+
     .gmail-fix {
       display: none !important;
     }
@@ -167,7 +170,7 @@
       .post-col-left {
         padding-right: 0;
       }
-      
+
       .post-col-right {
         padding-left: 0;
       }
@@ -209,7 +212,7 @@
                 <td class="template__inner">
                   <table class="components" cellpadding="0" cellspasing="0" role="presentation"
                     style="border-collapse: collapse; width: 100%;">
-                    
+
                     <tbody class="components__item">
                       <tr>
                         <td>
@@ -244,95 +247,77 @@
                                                       <td align="center" class=""><a href="https://example.com">
                                                           <!--[if gte mso 9]><img src="img/image-1_4uTLQvKKDM.jpg" width="600" height="150" alt="Some alt"><![endif]-->
                                                           <!--[if !gte mso 9]><!--><img width="600" height="220"
-                                                            src="cid:welcome" 
+                                                            src="cid:recruitment"
                                                             style="vertical-align: top; max-width: 100%; width: 600px;">
                                                           <!--<![endif]-->
                                                         </a></td>
                                                     </tr>
                                                   </tbody>
                                                 </table>
-                                                <table cellpadding="0" cellspacing="0" border="0" role="presentation"
-                                                  style="width: 100%; border-collapse: collapse;">
-                                                  <tbody>
-                                                    <tr>
-                                                      <td height="50" style="font-size: 1px; line-height: 1px;">
-                                                        &nbsp;
-                                                      </td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
+
                                                 <table cellpadding="0" cellspacing="0" role="presentation" border="0"
                                                   style="white-space: normal; border-collapse: collapse; width: 100%;">
                                                   <tbody>
                                                     <tr>
-                                                      <td align="center">
+                                                      <td align="left">
                                                         <p
                                                           style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic; line-height: 1.5em;">
-                                                          <span style="color: rgb(0, 0, 0); text-transform: capitalize;">Dear {{fullName}},</span></p>
-                                                        <p style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
                                                           <span
-                                                              >Greetings!!
-                                                              </span></p>
-                                                         <p style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
-                                                          <span>Welcome to EnFuse Solutions Private Ltd. You have successfully registered as {{role}}. Please find below credentials to login:<br /> <br />
-                                                              <p><b>email:   {{email}}               
-                                                                <br />
-                                                              Password:   {{confirmPassword}}</b></p>
-                                                              
-                                                            
-                                                              </span></p>
-                                                              <p style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;"><b>Please click this link below and login with your credentials</b></p>
-                                                              <a style="font-family: Century Gothic;" href="http://localhost:3000/">Login Here</a>     
-                                                              <br />
-                                                              <br />
-                                                              <br />
-                                                              <p style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">In case of any concerns, reach out to your respecitve HR</p>
-                                                              
+                                                            style="color: rgb(0, 0, 0); text-transform: capitalize;"></span>
+                                                        </p>
+                                                        <p
+                                                          style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
+                                                          <span>Dear Directors,
+                                                          </span>
+                                                        </p>
+
+                                                        <p
+                                                          style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
+                                                          <span>Trusting this message finds you well.
+                                                          </span>
+                                                        </p>
+
+                                                        <p
+                                                          style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
+                                                          <span>A new {{position}} has been proposed to enhance the
+                                                            capabilities of {{department}}. The details of the position
+                                                            have been outlined and are ready for your review and
+                                                            approval to initiate the recruitment process.
+                                                          </span>
+                                                        </p>
+
+                                                        <p
+                                                          style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
+                                                          <span>
+
+                                                            Your approval would be appreciated to move forward with this
+                                                            addition.</span>
+
+
+
+
+
+                                                        <p
+                                                          style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
+                                                          <b>Please click this link below to review of job position to
+                                                            proceed further</b></p>
+                                                        <a style="font-family: Century Gothic;"
+                                                          href="http://localhost:3000/job/{{jobId}}">Click Here</a>
+
+
+                                                        <p
+                                                          style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
+                                                          Please advise if any further information is required.</p>
+                                                        
+                                                        <p>Thank you for your consideration.</p>
+
                                                         <!--[if gte mso 12]><p style="font-size: 0px; line-height: 0px; mso-line-height-rule:exactly;">&nbsp;</p><![endif]-->
                                                       </td>
                                                     </tr>
                                                   </tbody>
                                                 </table>
-                                                <table cellpadding="0" cellspacing="0" border="0" role="presentation"
-                                                  style="width: 100%; border-collapse: collapse;">
-                                                  <tbody>
-                                                    <tr>
-                                                      <td height="20" style="font-size: 1px; line-height: 1px;">
-                                                        &nbsp;
-                                                      </td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
-                                                <table cellpadding="0" cellspacing="0" border="0" role="presentation"
-                                                  class="wrapper" style="width: 100%;">
-                                                  <tbody>
-                                                    <tr>
-                                                      <td align="center">
-                                                        <table cellpadding="0" cellspacing="0" border="0"
-                                                          role="presentation" class="wrapper"
-                                                          style="display: inline-table;">
-                                                          <tbody>
-                                                            <tr>
-                                                              <td valign="top" style="padding: 5px;">
-                                                                <table cellpadding="0" cellspacing="0"
-                                                                  role="presentation" class="button"
-                                                                  style="position: relative; display: inline-table;">
-                                                                  <tbody>
-                                                                    <tr>
-                                                                      <td
-                                                                        style="font-size: 14px; font-weight: 600; padding: 14px 20px; color: rgb(255, 255, 255);">
-                                                                      </td>
-                                                                    </tr>
-                                                                  </tbody>
-                                                                </table>
-                                                              </td>
-                                                            </tr>
-                                                          </tbody>
-                                                        </table>
-                                                      </td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
+
+
                                               </td>
                                             </tr>
                                           </tbody>
@@ -355,7 +340,25 @@
                     <tbody class="components__item">
                       <tr>
                         <td>
-                          
+                          <table cellpadding="0" cellspacing="0" role="presentation" border="0"
+                            style="white-space: normal; border-collapse: collapse; width: 100%;">
+                            <tbody>
+                              <tr>
+
+                                <td align="left">
+
+                                  <p style="color: rgb(255, 255, 255); font-size: 12px; font-family: Century Gothic; ">
+
+                                    <span style="font-size: 12px; line-height: 1.5em;">Best
+                                      Regards,</span> </p>
+                                  <p>By {{postedBy}},</p>
+                                  <p>Department: {{department}}</p>
+
+                                  <!--[if gte mso 12]><p style="font-size: 0px; line-height: 0px; mso-line-height-rule:exactly;">&nbsp;</p><![endif]-->
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
                           <!-- START COMPONENT: FOOTER 1 -->
                           <table cellspacing="0" cellpadding="0" border="0" role="presentation"
                             class="component footer-1" style="width: 100%; border-collapse: collapse; ">
@@ -365,16 +368,15 @@
                                   style="white-space: normal; border-collapse: collapse; width: 100%;">
                                   <tbody>
                                     <tr>
-
                                       <td align="center">
-                                        
+
                                         <p
                                           style="color: rgb(255, 255, 255); font-size: 12px; font-family: Century Gothic; ">
                                           <img src="cid:enfuse-logo" alt="EnFuse-logo" />
                                           <span
                                             style="font-size: 12px; color: rgb(170, 170, 170); line-height: 1.5em;">Copyright
                                             © 2024 All Rights Reserved. EnFuse Solutions</span>
-                                          
+
                                         </p>
                                         <!--[if gte mso 12]><p style="font-size: 0px; line-height: 0px; mso-line-height-rule:exactly;">&nbsp;</p><![endif]-->
                                       </td>

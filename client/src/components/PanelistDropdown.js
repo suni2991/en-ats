@@ -29,7 +29,7 @@ const PanelistDropdown = ({ onSelect }) => {
     <Select placeholder="Select Panelist" onChange={onSelect}>
       {panelists.map((panelist) => (
         <Option key={panelist._id} value={panelist.fullName}>
-          {panelist.fullName}
+          {panelist.fullName && panelist.fullName.length > 0 ? panelist.fullName[0].toUpperCase() + panelist.fullName.slice(1).toLowerCase() : panelist.fullName}
         </Option>
       ))}
       <Option value="HR">HR</Option> 

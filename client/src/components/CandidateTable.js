@@ -43,28 +43,42 @@ const CandidateTable = () => {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusStyles = (status) => {
     switch (status) {
       case 'HR':
-        return '#4DC230';
+        return { backgroundColor: '#4DC230', color: 'white' };
       case 'L1':
-        return 'yellow';
+        return { backgroundColor: 'yellow', color: 'black' };
       case 'L2':
-        return '#1884E8';
+        return { backgroundColor: '#1884E8', color: 'white' };
       case 'Rejected':
-        return 'red';
+        return { backgroundColor: 'red', color: 'white' };
       case 'Processing':
-        return '#00B4';
+        return { backgroundColor: '#00B4', color: 'white' };
       case 'Selected':
-        return '#00B4D2';
+        return { backgroundColor: '#00B4D2', color: 'white' };
       default:
-        return 'black';
+        return { backgroundColor: 'black', color: 'white' };
     }
   };
 
   const userColumns = [
-    { name: 'Name', selector: (row) => row.fullName, sortable: true, width: '200px' },
-    { name: 'Location', selector: (row) => row.currentLocation, sortable: true, width: '130px' },
+    { name: 'Name', selector: (row) => row.fullName,
+      cell: (row) => (
+        <div style={{
+         textTransform: 'capitalize', 
+        }}>
+          {row.fullName}
+        </div>
+      ),
+      sortable: true, width: '200px', },
+    { name: 'Location', selector: (row) => row.currentLocation,cell: (row) => (
+      <div style={{
+       textTransform: 'capitalize', 
+      }}>
+        {row.currentLocation}
+      </div>
+    ), sortable: true, width: '130px' },
     { name: 'Resume', cell: (row) => renderResumeLink(row), sortable: true, width: '130px' },
     { name: 'Notice Period', selector: (row) => row.noticePeriod, sortable: true },
     {
@@ -73,10 +87,9 @@ const CandidateTable = () => {
       sortable: true,
       cell: (row) => (
         <div style={{
-          backgroundColor: getStatusColor(row.status),
-          color: 'white',
+          ...getStatusStyles(row.status),
           padding: '5px 10px',
-          borderRadius: '5px',
+          borderRadiufs: '5px',
           textAlign: 'center',
           width: '80%'
         }}>

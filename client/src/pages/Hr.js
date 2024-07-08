@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Tooltip, Button, Input } from 'antd';
+import { Tooltip, Button, Input, Modal } from 'antd';
 import { FiGrid } from "react-icons/fi";
 import { FaTableList } from "react-icons/fa6";
 import axios from 'axios';
-import CustomModal from '../components/CustomModal';
-
 import CandidateCard from '../components/CandidateCard';
 import CandidateTable from '../components/CandidateTable';
 import Registration from '../components/Registration';
@@ -15,9 +13,21 @@ const Hr = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [candidates, setCandidates] = useState([]);
-  
+
   const showModal = () => {
     setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const toggleView = () => {
+    setView(view === 'tile' ? 'table' : 'tile');
+  };
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   useEffect(() => {
@@ -32,28 +42,15 @@ const Hr = () => {
     fetchJobs();
   }, []);
 
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
-
-  const toggleView = () => {
-    setView(view === 'tile' ? 'table' : 'tile');
-  };
-
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const filteredCandidates = candidates.filter(candidate => 
-    candidate.fullName.toLowerCase().includes(searchQuery.toLowerCase()) 
-   
+  const filteredCandidates = candidates.filter(candidate =>
+    candidate.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className='table-container'>
       <div className='topContainer'>
         <Tooltip title="Add Applicant" color='cyan'>
-          <Button colorPrimary='cyan' onClick={showModal} type='primary' className='add-button' >Add New Candidate</Button>
+          <Button onClick={showModal} type='text' className='add-button'>Add New Candidate</Button>
         </Tooltip>
         <Input
           placeholder="Search Candidates"
@@ -79,15 +76,15 @@ const Hr = () => {
         )}
       </div>
       <div>
-      <div className='hotpicks'>
-      <h1>Hot picks</h1>
-      </div>
-      
+        <div>
+       
+        
         <Hotpicks />
+        </div>
       </div>
-      <CustomModal isVisible={isModalVisible} onClose={closeModal}>
-        <Registration />
-      </CustomModal>
+      <Modal open={isModalVisible} onCancel={closeModal} footer={null} width={800} title={<h2>Add New Applicant</h2>}>
+        <Registration closeModal={closeModal} />
+      </Modal>
     </div>
   );
 };

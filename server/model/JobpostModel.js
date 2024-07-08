@@ -1,20 +1,6 @@
 const mongoose = require('mongoose');
 
-// // Define the schema for vacancy status
-// const vacancyStatusSchema = new mongoose.Schema({
-//     status: {
-//         type: String,
-//         enum: ['Active', 'Inactive','Hold'],
-//         required: true,
-//     },
-//     count: {
-//         type: Number,
-//         required: true,
-//         default: 0
-//     }
-// });
 
-// Define the schema for job posts
 const jobSchema = new mongoose.Schema({
     position: {
         type: String,
@@ -41,13 +27,18 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+
+    responsibilities:{
+        type: String,
+
+    },
    
     primarySkills:{
-        type: String,
-        
+        type: [String],
+        required: true,
     },
     secondarySkills:{
-        type:String,
+        type:[String],
     },
     postedAt: {
         type: Date,

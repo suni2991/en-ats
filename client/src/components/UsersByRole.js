@@ -30,7 +30,7 @@ const UsersByRole = () => {
     {usersByRole.filter(userRole => userRole._id !== 'Admin').map((userRole, index) => (
       <div key={userRole._id} className="role-box" style={{ backgroundColor: getCardColor(index) }}>
         <h1>{userRole._id}</h1>
-        <h2>{userRole.count}</h2>
+        <h1 style={{float:'right'}}>{userRole.count}</h1>
       </div>
     ))}
   </div>

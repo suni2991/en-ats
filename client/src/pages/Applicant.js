@@ -5,15 +5,17 @@ import { TbEyeCheck } from "react-icons/tb";
 import { List, Spin, Typography, Button, message, Pagination } from 'antd';
 import CandidateProfileDrawer from '../components/CandidateProfileDrawer';
 import EmailAllotModal from '../components/EmailAllotModal';
+import Statistics from './Statistics';
 
 const { Title } = Typography;
 
 const Applicant = () => {
   const [candidates, setCandidates] = useState([]);
+  const [onboardedCandidates, setOnboardedCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(6);
+  const [pageSize, setPageSize] = useState(8);
   const [currentOnboardedPage, setCurrentOnboardedPage] = useState(1);
   const [onboardedPageSize, setOnboardedPageSize] = useState(6);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -22,12 +24,13 @@ const Applicant = () => {
 
   useEffect(() => {
     fetchCandidates();
+    fetchOnboardedCandidates();
   }, []);
 
   const fetchCandidates = async () => {
     try {
       const response = await axios.get('http://localhost:5040/candidatesreport');
-      setCandidates(response.data);
+      setCandidates(response.data.reverse());
       setLoading(false);
     } catch (error) {
       console.error('Error fetching candidates:', error);
@@ -36,11 +39,22 @@ const Applicant = () => {
     }
   };
 
+  const fetchOnboardedCandidates = async () => {
+    try {
+      const response = await axios.get('http://localhost:5040/candidate/Onboarded');
+      setOnboardedCandidates(response.data.reverse());
+    } catch (error) {
+      console.error('Error fetching onboarded candidates:', error);
+      setError('Failed to fetch onboarded candidates');
+    }
+  };
+
   const deleteCandidate = async (id) => {
     try {
       await axios.delete(`http://localhost:5040/candidate/${id}`);
       message.success('Candidate deleted successfully');
       fetchCandidates();
+      fetchOnboardedCandidates();
     } catch (error) {
       console.error('Error deleting candidate:', error);
       message.error('Failed to delete candidate');
@@ -58,6 +72,7 @@ const Applicant = () => {
       if (response.data.status === 'SUCCESS') {
         message.success('Email allotted successfully');
         fetchCandidates();
+        fetchOnboardedCandidates();
       } else {
         message.error('Failed to allot email');
       }
@@ -72,7 +87,7 @@ const Applicant = () => {
       case 'HR':
         return '#4DC230';
       case 'L1':
-        return 'yellow';
+        return 'Green';
       case 'L2':
         return '#1884E8';
       case 'Rejected':
@@ -128,12 +143,12 @@ const Applicant = () => {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
-  const onboardedCandidates = candidates.filter(candidate => candidate.status === 'Onboarded');
   const paginatedCandidates = candidates.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginatedOnboardedCandidates = onboardedCandidates.slice((currentOnboardedPage - 1) * onboardedPageSize, currentOnboardedPage * onboardedPageSize);
 
   return (
-    <div className='applicant-page'>
+    <div className='vh-page'>
+    <Statistics />
       <div className='list-applicants'>
         <div className='title-container'>
           <Title level={5} className='fixed-title'>
@@ -147,18 +162,20 @@ const Applicant = () => {
             renderItem={candidate => (
               <List.Item
                 actions={[
-                  <Button type="text" danger onClick={() => deleteCandidate(candidate._id)}>
-                    <MdOutlineDeleteOutline size={20} />
-                  </Button>,
                   <Button type="text" color='cyan' onClick={() => handleViewCandidate(candidate._id)}>
                     <TbEyeCheck size={20} color='#00B4D2' />
+                  </Button>,
+                  <Button type="text" danger onClick={() => deleteCandidate(candidate._id)}>
+                    <MdOutlineDeleteOutline size={20} />
                   </Button>
+                  
                 ]}
               >
                 <List.Item.Meta
                   title={
                     <span style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span>{candidate.fullName}</span>
+                      <span style={{textAlign:'center'}}>{candidate.position}</span>
                       <span style={{ color: getStatusColor(candidate.status), textAlign: 'center', alignItems: 'center' }}>{candidate.status}</span>
                     </span>
                   }

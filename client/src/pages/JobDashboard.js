@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Tooltip, Button, Input, Modal, Table, Typography } from 'antd';
 import { FiGrid } from "react-icons/fi";
 import { FaTableList } from "react-icons/fa6";
-import JobDashboard from '../components/JobDashboard';
 import Viewjob from '../components/Viewjob';
 import Postjob from '../components/Postjob';
 import JobPositionPieChart from '../components/JobPosition';
@@ -10,7 +9,7 @@ import axios from 'axios';
 
 const { Text } = Typography;
 
-const Dashboard = () => {
+const JobDashboard = () => {
   const [view, setView] = useState('tile');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,7 +101,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className='dashboard-container'>
+    <div className='JobDashboard-container'>
       <div className='topContainer'>
         <Tooltip title="Post a Job" color='cyan'>
           <Button colorPrimary='cyan' onClick={showModal} type='text' className='add-button' style={{ float: 'left' }}>Add New Job</Button>
@@ -163,4 +162,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default JobDashboard;

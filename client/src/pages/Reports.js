@@ -12,14 +12,18 @@ const Reports = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5040/candidatesreport');
+        let url = 'http://localhost:5040/candidatesreport';
+        if (selectedCategory !== 'all') {
+          url += `?category=${selectedCategory}`;
+        }
+        const response = await axios.get(url);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
     fetchData();
-  }, []);
+  }, [selectedCategory]); // Include selectedCategory in dependency array to fetch data when it changes
 
   const userColumns = [
     {
@@ -53,111 +57,73 @@ const Reports = () => {
     {
       name: "Quantitative",
       width: "130px",
-      sortable: true,
       center: true,
-      selector: row => {
-        if (selectedCategory === "all" ? row.quantitative !== -1 : (selectedCategory === "Technical" && row.quantitative !== -1) || (selectedCategory === "Non-Technical" && row.quantitative !== -1)) {
-          return row.quantitative;
-        } else {
-          return 0;
-        }
-      },
+      selector: row => row.quantitative !== -1 ? row.quantitative : 0,
       sortable: true,
-      center: true,
+      omit: selectedCategory === "Non-Technical",
     },
     {
       name: "Vocabulary",
       width: "125px",
-      selector: row => {
-        if ((selectedCategory === "all" ? row.vocabulary !== -1 : selectedCategory === "Technical" && row.vocabulary !== -1) || (selectedCategory === "Non-Technical" && row.vocabulary !== -1)) {
-          return row.vocabulary;
-        } else {
-          return 0;
-        }
-      },
-      sortable: true,
       center: true,
+      selector: row => row.vocabulary !== -1 ? row.vocabulary : 0,
+      sortable: true,
+      omit: selectedCategory === "Non-Technical",
     },
     {
       name: "Psychometric",
       width: "140px",
-      selector: row => {
-        if (selectedCategory === "all" ? row.psychometric !== -1 : selectedCategory === "Technical" && row.psychometric !== -1) {
-          return row.psychometric;
-        } else {
-          return 0;
-        }
-      },
-      sortable: true,
       center: true,
+      selector: row => row.psychometric !== -1 ? row.psychometric : 0,
+      sortable: true,
       omit: selectedCategory === "Non-Technical",
     },
     {
       name: "Java",
       width: "110px",
-      selector: row => {
-        if (selectedCategory === "all" ? row.java !== -1 : selectedCategory === "Technical" && row.java !== -1) {
-          return row.java;
-        } else {
-          return 0;
-        }
-      },
-      sortable: true,
       center: true,
+      selector: row => row.java !== -1 ? row.java : 0,
+      sortable: true,
       omit: selectedCategory === "Non-Technical",
     },
     {
       name: "Excel",
       width: "120px",
-      selector: row => {
-        if (selectedCategory === "all" ? row.excel !== -1 : selectedCategory === "Non-Technical" && row.excel !== -1) {
-          return row.excel;
-        } else {
-          return 0;
-        }
-      },
-      sortable: true,
       center: true,
+      selector: row => row.excel !== -1 ? row.excel : 0,
+      sortable: true,
       omit: selectedCategory === "Technical",
     },
     {
       name: "Accounts",
       width: "130px",
-      selector: row => {
-        if (selectedCategory === "all" ? row.accounts !== -1 : selectedCategory === "Non-Technical" && row.accounts !== -1) {
-          return row.accounts;
-        } else {
-          return 0;
-        }
-      },
-      sortable: true,
       center: true,
+      selector: row => row.accounts !== -1 ? row.accounts : 0,
+      sortable: true,
       omit: selectedCategory === "Technical",
     }
   ];
 
   return (
     <div className='vh-page'>
-      <div className='topContainer2'>
-        <label>
-          <Select
-            value={selectedCategory}
-            onChange={(value) => setSelectedCategory(value)}
-            style={{minWidth:'100px', margin:'2px'}}
-          >
-            <Option value="all">All</Option>
-            <Option value="Technical">Technical</Option>
-            <Option value="Non-Technical">Non-Technical</Option>
-          </Select>
-        </label>
-
-        <h1 className='total-applicants' style={{ color: 'white',  background: '#00B4D2', height:'30px', borderRadius: '2px', margin:'7px', paddingTop:'5px' }}>Total Applicants :  {data.length}</h1>
-        </div>
       <Fetchtable
         url={`http://localhost:5040/candidatesreport`}
         columns={userColumns}
+        data={data} // Pass the fetched data to the Fetchtable component
+        extraContent={
+          <label>
+            <Select
+              value={selectedCategory}
+              onChange={(value) => setSelectedCategory(value)}
+              style={{minWidth:'150px', margin:'2px'}}
+            >
+              <Option value="all">All</Option>
+              <Option value="Technical">Technical</Option>
+              <Option value="Non-Technical">Non-Technical</Option>
+            </Select>
+          </label>
+        }
       />
-   
     </div>
   )
 }

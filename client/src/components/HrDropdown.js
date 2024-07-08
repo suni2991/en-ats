@@ -50,7 +50,7 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
       >
         {hrs.map((hr) => (
           <Option key={hr._id} value={hr.fullName}>
-            {hr.fullName}
+            {hr.fullName && hr.fullName.length > 0 ? hr.fullName[0].toUpperCase() + hr.fullName.slice(1).toLowerCase() : hr.fullName}
           </Option>
         ))}
       </Select>

@@ -6,7 +6,7 @@
 .role-boxes {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 8px;
    /* Space between the cards */
 }
 
@@ -21,8 +21,8 @@
 }
 
 .role-box h1 {
-  font-size: 24px;
-  margin: 0 0 10px;
+  font-size: 20px;
+  margin: 0 0 10px 0px;
 }
 
 .role-box h2 {

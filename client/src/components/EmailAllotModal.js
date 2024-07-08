@@ -29,6 +29,7 @@ const EmailAllotModal = ({ visible, onClose, onAllotEmail, candidateId }) => {
       <Form>
         <Form.Item
           label="Email"
+          placeholder="Please enter email with @enfuse-solutions.com only"
           rules={[
             { required: true, message: 'Please input the email address' },
             {

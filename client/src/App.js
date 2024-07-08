@@ -15,8 +15,7 @@ import JavaTest from './components/assessment/JavaTest.js';
 import Accounts from './components/assessment/AccountsTest.js';
 import Excel from './components/assessment/ExcelTest.js'
 import Reports from './pages/Reports.js';
-import View from './pages/View.js';
-import Edit from './pages/Edit.js';
+
 import './App.css'
 import Thankyou from './pages/Thankyou';
 import { FadeLoader } from "react-spinners";
@@ -28,12 +27,14 @@ import Admin from './pages/Admin.js';
 import Postjob from './components/Postjob.js';
 import Createhr from './components/Createhr.js';
 import Feedback from './pages/Feedbacks.js';
-import Profile from './pages/Profile.js';
+
 import ProfilePage from './components/ProfilePage.js';
 import Panelist from './components/Panelist.js';
 import JobDashboard from './components/JobDashboard.js';
 import Dashboard from './pages/Dashboard.js';
 import Applicant from './pages/Applicant.js';
+import Approve from './pages/Approve.js';
+import ApproveJobDetails from './pages/Approve.js';
 
 
 const App = () => {
@@ -55,6 +56,7 @@ const App = () => {
       <Sidebar>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/job/:id" element={<ApproveJobDetails />} />
           <Route element={<RequireAuth />} >
             <Route path="/admins" element={<Admin />} />
             <Route path="/registration" element={<Registration />} />
@@ -69,8 +71,7 @@ const App = () => {
             <Route path="/assessment/typing" element={<TypingTest />} />
             <Route path='/jobs' element={<Jobs />} />
             <Route path='/hr' element={<HR />}/>
-            <Route path='/hr/view/:id' element={<View />}/>
-            <Route path='/hr/edit/:id' element={<Edit />}/>
+           
             <Route path='/thankyou' element={<Thankyou />} />
             <Route path='/statistics' element={<Statistics />} />
             <Route path='/dashboard' element={<Dashboard />} />
@@ -78,10 +79,11 @@ const App = () => {
             <Route path='/postjob' element={<Postjob />} />
             <Route path='/create-hr' element={<Createhr />} />
             <Route path='/feedbacks' element={<Feedback/>} />
-            <Route path='/profile' element={<Profile />} />
+          
             <Route path='/editProfile' element={<ProfilePage />} />
             <Route path='/panelist/:id' element={<Panelist />} />
             <Route path='/applicants' element={<Applicant />} />
+            
           </Route>
         </Routes>
       </Sidebar>

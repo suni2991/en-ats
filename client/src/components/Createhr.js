@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/Regform.css';
-import { Tooltip, message } from 'antd';
+import { Tooltip, message, Button } from 'antd';
 
-const Createhr = () => {
+const Createhr = ({closeModal}) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -55,15 +55,7 @@ const Createhr = () => {
         const data = response.data;
         console.log(data);
 
-        const emailData = {
-          role: data.role,
-          confirmPassword: data.confirmPassword,
-          email: data.email,
-          fullName: data.fullName,
-        };
-
-        const emailResponse = await axios.post('http://localhost:5040/user/register', emailData);
-        console.log(emailResponse.data);
+       
 
         message.success("User Created Successfully");
         setFormData({
@@ -75,6 +67,8 @@ const Createhr = () => {
           role: '',
           empCount: 0,
         });
+        closeModal();
+        
       }
     } catch (error) {
       console.error('Error creating user:', error);
@@ -84,7 +78,7 @@ const Createhr = () => {
 
   return (
     <div>
-      <h1>Create User</h1>
+      
       <form>
         <div className='formContainer'>
           <div className='block'>
@@ -93,6 +87,7 @@ const Createhr = () => {
               <input
                 type="text"
                 id="firstName"
+                placeholder='Enter First Name'
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
@@ -104,6 +99,7 @@ const Createhr = () => {
               <input
                 type="text"
                 id="lastName"
+                placeholder='Enter Last Name'
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
@@ -116,6 +112,7 @@ const Createhr = () => {
                 type="email"
                 id="email"
                 name="email"
+                placeholder='Please enter Enfuse Email Id only'
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -129,6 +126,7 @@ const Createhr = () => {
                 type="text"
                 id="currentLocation"
                 name="currentLocation"
+                placeholder='Enter Current Location'
                 value={formData.currentLocation}
                 onChange={handleChange}
                 required
@@ -140,6 +138,7 @@ const Createhr = () => {
                 type="text"
                 id="department"
                 name="department"
+                placeholder='Choose Department'
                 value={formData.department}
                 onChange={handleChange}
                 required
@@ -152,6 +151,7 @@ const Createhr = () => {
                 <option value="HR">HR</option>
                 <option value="Admin">Admin</option>
                 <option value="Panelist">Panelist</option>
+                <option value="Ops-Manager">Ops-Manager</option>
                 
               </select>
             </div>
@@ -159,7 +159,7 @@ const Createhr = () => {
         </div>
         <div id='btnWrapper'>
           <Tooltip title="Submit" color='red'>
-            <button type="submit" onClick={handleSubmit}>Create User</button>
+            <Button type="submit" className='add-button' style={{backgroundColor:'#A50707'}} onClick={handleSubmit}>Create User</Button>
           </Tooltip>
         </div>
       </form>

@@ -72,6 +72,11 @@ const Sidebar = ({ children }) => {
       icon: <LuMonitorCheck />,
     },
     {
+      path: '/jobdashboard',
+      name: 'Job Dashboard',
+      icon: <LuMonitorCheck />,
+    },
+    {
       path: '/admins',
       name: 'EnFusians',
       icon: <FaAdn />,
@@ -88,7 +93,7 @@ const Sidebar = ({ children }) => {
     },
     {
       path: '/applicants',
-      name: 'Applicants',
+      name: 'Statistics',
       icon: <FaRegUser />,
     },
     {
@@ -96,11 +101,11 @@ const Sidebar = ({ children }) => {
       name: 'Scores',
       icon: <FaTh />,
     },
-    {
-      path: '/statistics',
-      name: 'Statistics',
-      icon: <FaRegChartBar />,
-    },
+    // {
+    //   path: '/statistics',
+    //   name: 'Statistics',
+    //   icon: <FaRegChartBar />,
+    // },
     {
       path: '/feedbacks',
       name: 'Feedback',
@@ -115,7 +120,7 @@ const Sidebar = ({ children }) => {
   };
 
   return (
-    <div>
+   
       <div className="container">
         {auth.role && (
           <div style={{ width: isOpen ? '180px' : '25px' }} className="sidebar">
@@ -125,7 +130,7 @@ const Sidebar = ({ children }) => {
               </button>
               {auth.role === 'Admin' || auth.role === 'Enfusian' ? (
                 <img
-                  style={{ width: '60%', borderRadius: '50%', background: 'white' }}
+                  style={{ width: '45%', borderRadius: '50%', background: 'white' }}
                   src={auth.image !== '' ? `http://localhost:5040${auth.image}` : require('../Assests/User.png')}
                   alt="logo"
                 />
@@ -136,7 +141,7 @@ const Sidebar = ({ children }) => {
             {menuItem.map((item, index) => {
               if (auth.role === 'Admin') {
                 return (
-                  (item.name === 'EnFusians' || item.name === 'Applicants' || item.name === 'Dashboard' || item.name === 'Statistics') && (
+                  (item.name === 'EnFusians' || item.name === 'Statistics' || item.name === 'Dashboard') && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className="icon">{item.icon}</div>
                       <div className="link-text">{item.name}</div>
@@ -157,7 +162,7 @@ const Sidebar = ({ children }) => {
                     </NavLink>
                   )
                 );
-              } else if (auth.role === 'Enfusian') {
+              } else if (auth.role === 'Panelist') {
                 return (
                   item.name === 'Feedback' && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
@@ -166,14 +171,23 @@ const Sidebar = ({ children }) => {
                     </NavLink>
                   )
                 );
+              }else if (auth.role === 'Ops-Manager') {
+                return ( item.name === 'Job Dashboard' || item.name === 'Feedback') && (
+                    <NavLink to={item.path} key={index} className="link" activeclassname="active">
+                      <div className="icon">{item.icon}</div>
+                      <div className="link-text">{item.name}</div>
+                    </NavLink>
+                  
+                );
               } else {
                 return null;
               }
             })}
           </div>
         )}
-        <main className={`main-container ${isDarkMode ? 'dark-mode' : ''}`}>
-          {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Enfusian') && (
+        <div className='main-container'>
+        <main>
+          {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Panelist' || auth.role === 'Ops-Manager') && (
             <nav className="navbar">
               <div className="navbar-right">
                 <Tooltip title="View & Update Profile" color='cyan'>
@@ -196,15 +210,17 @@ const Sidebar = ({ children }) => {
           {auth && <ProfilePage open={profileVisible} auth={auth} setAuth={setAuth} onClose={() => setProfileVisible(false)} />}
 
           {children}
-          {auth.role && (
-            <div className="footer">
-              @ 2024 EnFuse Solutions. All rights Reserved
-            </div>
-          )}
+        
         </main>
+        {auth.role && (
+          <div className="footer">
+            @ 2024 EnFuse Solutions. All rights Reserved
+          </div>
+        )}
+        </div>
       </div>
      
-    </div>
+   
   );
 };
 

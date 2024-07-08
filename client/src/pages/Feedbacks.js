@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Fetchtable from '../components/Fetchtable';
 import useAuth from '../hooks/useAuth';
 import { Tooltip, DatePicker, Form, Button, Modal, Select } from 'antd';
@@ -15,33 +15,46 @@ const Feedback = () => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [isJoiningDateModalVisible, setIsJoiningDateModalVisible] = useState(false);
   const [joiningDate, setJoiningDate] = useState(null);
-  const [updateType, setUpdateType] = useState('status');
   const [status, setStatus] = useState('');
-  
+  const [candidateData, setCandidateData] = useState([]);
+
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      try {
+        const panelistResponse = await axios.get(`http://localhost:5040/panelist/${auth.fullName}`);
+        setCandidateData(panelistResponse.data);
+      } catch (error) {
+        console.error('Error fetching candidates:', error);
+      }
+    };
+
+    fetchCandidates();
+  }, [auth.fullName]);
+
   const userColumns = [
     { name: 'Name', selector: (row) => row.fullName, sortable: true },
-    { name: 'Position', selector: (row) => row.position, sortable: true  },
-   
+    { name: 'Position', selector: (row) => row.position, sortable: true },
     { name: 'Resume', cell: (row) => renderResumeLink(row), sortable: true },
     { name: 'Status', selector: (row) => row.status, sortable: true },
     {
-      name: 'Action', 
+      name: 'Action',
       cell: (row) => (
         <div>
           <Tooltip title="Give Feedback" color='cyan'>
-            <Button to="#" className='table-btn' onClick={() => showModal(row)}>
+            <button className='table-btn' onClick={() => showModal(row)}>
               <VscFeedback />
-            </Button>
+            </button>
           </Tooltip>
           {auth.role === 'HR' && (
             <Tooltip title="Update" color='cyan'>
-              <Button to="#" className='table-btn' onClick={() => showJoiningDateModal(row)}>
+              <button className='table-btn' onClick={() => showJoiningDateModal(row)}>
                 <MdUpdate />
-              </Button>
+              </button>
             </Tooltip>
           )}
         </div>
       ),
+      width: '150px'
     },
   ];
 
@@ -62,7 +75,7 @@ const Feedback = () => {
     setSelectedCandidate(row);
     setIsModalVisible(true);
   };
-  
+
   const closeModal = () => {
     setIsModalVisible(false);
     setSelectedCandidate(null);
@@ -78,15 +91,10 @@ const Feedback = () => {
     setSelectedCandidate(null);
     setJoiningDate(null);
     setStatus('');
-    setUpdateType('status');
   };
 
   const handleJoiningDateChange = (date) => {
     setJoiningDate(date);
-  };
-
-  const handleUpdateTypeChange = (value) => {
-    setUpdateType(value);
   };
 
   const handleStatusChange = (value) => {
@@ -95,34 +103,36 @@ const Feedback = () => {
 
   const handleUpdate = async () => {
     if (selectedCandidate) {
-      console.log('Selected Candidate:', selectedCandidate); // Log the selected candidate
       try {
         const updates = {};
-        if (updateType === 'joiningDate' && joiningDate) {
+        if (joiningDate) {
           updates.joiningDate = joiningDate.toISOString();
-        } else if (updateType === 'status' && status) {
+        }
+        if (status) {
           updates.status = status;
           if (status === 'Onboarded') {
             updates.role = 'Enfusian';
+            updates.dateCreated = new Date().toISOString(); // Set dateCreated to current date
+          } else {
+            updates.role = 'Applicant';
           }
         }
-        await axios.put(`http://localhost:5040/feedback/${selectedCandidate._id}`, updates); // Ensure _id is used
+        await axios.put(`http://localhost:5040/feedback/${selectedCandidate._id}`, updates);
         closeJoiningDateModal();
       } catch (error) {
         console.error('Failed to update', error);
       }
     }
   };
-  
 
   return (
-    <div className='vh-page' style={{textTransform:'capitalize'}}>
+    <div className='vh-page' style={{textTransform: 'capitalize' }}>
       <Fetchtable
         url={`http://localhost:5040/panelist/${auth.fullName}`}
+        data={candidateData}
         columns={userColumns}
       />
       <Modal
-        title="Interview Feedback Form"
         open={isModalVisible}
         onCancel={closeModal}
         width={700}
@@ -137,29 +147,22 @@ const Feedback = () => {
         footer={null}
       >
         <Form layout="vertical">
-          <Form.Item label="Update Type">
-            <Select defaultValue="status" onChange={handleUpdateTypeChange}>
-              <Option value="status">Update Status</Option>
-              <Option value="joiningDate">Update Joining Date</Option>
+          <Form.Item label="Status">
+            <Select onChange={handleStatusChange} placeholder='Choose Status'>
+              <Option value="Selected">Selected</Option>
+              <Option value="Onboarded">Onboarded</Option>
+              <Option value="Rejected">Rejected</Option>
             </Select>
           </Form.Item>
-          {updateType === 'status' && (
-            <Form.Item label="Status">
-              <Select onChange={handleStatusChange}>
-                <Option value="Onboarded">Onboarded</Option>
-                <Option value="Rejected">Rejected</Option>
-              </Select>
-            </Form.Item>
-          )}
-          {updateType === 'joiningDate' && (
-            <Form.Item label="Joining Date">
-              <DatePicker onChange={handleJoiningDateChange} />
-            </Form.Item>
-          )}
+          <Form.Item label="Joining Date">
+            <DatePicker onChange={handleJoiningDateChange} style={{ width: '100%' }} />
+          </Form.Item>
         </Form>
-        <Button type="primary" onClick={handleUpdate}>
-          Update
-        </Button>
+        <center>
+          <Button type="primary" className='add-button' style={{ backgroundColor: '#A50707' }} onClick={handleUpdate}>
+            Update
+          </Button>
+        </center>
       </Modal>
     </div>
   );
