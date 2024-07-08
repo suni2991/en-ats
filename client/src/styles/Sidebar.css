@@ -7,23 +7,29 @@
   margin: 0 auto;
   display: flex;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   position: relative;
   border-style: solid 15px white;
- background: rgb(233, 233, 233);
+ background: #eceff1;
+ 
 }
 main{
-    width:100%;
-    height: 100vh;
-    background: rgb(233, 233, 233);
+    width:100vw;
+    min-height:100%;
+   position:relative;
+    background: #eceff1;
     justify-content: center;
-    padding-left: 30px;
+    /* padding-left: 30px; */
     box-shadow: 3px white;
-    overflow: auto;
-    margin-top: 5px !important;
+   display: flex;
+  
+    /* overflow: auto; */
+    /* margin-top: 5px !important; */
+    
+    /* border: 1px solid #00B4D2 ; */
 }
 main img{
- width: 60%;
+ width: 50%;
   padding-top: 15px;
   /* margin-bottom: 30px; */
 }
@@ -47,15 +53,20 @@ main img{
 .top-section img{
   width: 130px;
   float: left;
- 
+  margin-top: 2px !important;
+  margin-bottom: 10px;
 }
 .sidebar{
   background-color: white;
-  /* background-image: linear-gradient( #15f7f7, rgb(8, 8, 68)); */
-  color:rgba(3, 4, 44, 0.87);
+  z-index: 10;
+  /* background-image: linear-gradient( #15f7f7, rgb(38, 39, 130)); */
+  color:rgb(38, 39, 130);
   height: 100vh;
-  width: 35%;
+  width: 30vw;
   font-size: 14px;
+  position: fixed;
+  /* box-shadow: 0px 0px 6px rgb(38, 39, 130); */
+  /* margin-right: auto; */
   /* overflow:auto; */
   /* border-top-left-radius: 3em;
   border-bottom-left-radius: 3em;
@@ -76,17 +87,18 @@ main img{
   align-items: center;
   padding: 12px 5px 5px 5px;
   color: rgb(75, 178, 212);
+  z-index: 1000 !important;
   /* margin-bottom: 60px; */
-  margin-top: 15px;
+  
 }
 
 .link{
   display: flex;
-  color: #0a0430;
-  padding: 15px 15px 0px 10px;
+  color: rgb(38, 39, 130);
+  padding: 15px;
   gap: 10px;
   transition: all 0.5s;
-  font-size: 12px;
+  font-size: 14px;
  margin: 0px 0px 15px 0px;
   padding-inline-end: 5rem;
 }
@@ -98,26 +110,42 @@ main img{
   font-weight: bold;
   
 }
+
+.link-text.active{
+  background-color: #00B4D2;
+}
 .link:hover{
   color:#00B4D2;
   font-weight: bold;
   transition: all 0.5ms;
+  
+  
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
   /* text-shadow: rgb(9, 239, 255) 0.3em 0.3em 0.3em */
 }
-.link.active{
-  font-weight: bolder;
+.active{
+  font-weight: bold !important;
   color: #00B4D2;
   transition: cubic-bezier(2);
+  /* border: 1px solid #00B4D2 ; */
+  background-color: #eceff1;
+  /* border-right: 2px solid #eceff1; */
+  /* box-shadow: 0px 0px 6px rgb(38, 39, 130); */
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-top-right-radius: -10px;
+  border-bottom-right-radius: -10px;
   /* text-shadow: rgb(4, 4, 4) 0.3em 0.3em 0.3em */
 
 } 
 
 .icon{
-  /* background-image: linear-gradient( #15f7f7, rgb(8, 8, 68)); */
+  /* background-image: linear-gradient( #15f7f7, rgb(38, 39, 130)); */
   border-radius: 50%;
 
   padding: 6px;
-  margin-left: 7px;
+  /* margin-left: 7px; */
 }
 .active .icon{
 
@@ -131,16 +159,17 @@ main img{
 .icon-button{
   background-color: transparent;
   border: none;
-  margin: 60px 10px 5px 5px;
-  color: #00B4D2;
+  margin: 0px 5px 5px 5px;
+  color: red;
 }
 .icon-container {
-  /* background-image: linear-gradient( #00B4D2, rgb(8, 8, 68)); */
+  /* background-image: linear-gradient( #00B4D2, rgb(38, 39, 130)); */
   width: 16px;
+
   height: 16px;
-  margin-left: 10px;
+  /* margin-left: 10px; */
   border: none; 
-  padding: 6px;
+  /* padding: 6px; */
   border-radius: 50%;
 }
 .icon-container:hover{
@@ -169,13 +198,18 @@ main img{
 
 .navbar {
   display: flex;
-  justify-content:space-between;
+  justify-content:flex-end;
   align-items: center;
+  color:#00B4D2;
+  z-index: 1;
   /* padding: 1px 20px; */
   background-color: #ffffff;
-  border-bottom: 1px solid #e8e8e8;
-  height: 10vh;
-  width: 80vw !important;
+  position: fixed;
+  /* box-shadow: 0px 0px 2px blue ; */
+  height: 50px;
+  width: 87% !important;
+  margin-left: 150px;
+  padding-right: 20px;
 }
 
 .navbar-left {
@@ -186,7 +220,7 @@ main img{
 
 .navbar-right {
   display: flex;
-  align-items: center;
+  float: right;
 }
 
 .profile-name {
@@ -200,3 +234,15 @@ main img{
   font-size: 14px;
 }
 
+
+
+.footer {
+  position:relative;
+   bottom:0;
+  padding: 25px;
+  background: #1a2763;
+  color: #fff;
+  text-align: center;
+  height: 20px !important; /* Adjust as needed */
+  width: 100%;
+}

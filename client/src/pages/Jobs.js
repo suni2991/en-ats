@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import Viewjob from '../components/Viewjob'
+import { Tooltip } from 'antd';
 
 
 const Jobs = () => {
@@ -13,7 +14,7 @@ const Jobs = () => {
   return (
     <div className="table-container">
         <div>
-        <button onClick={handleClick} className="submit-button" style={{float: 'right'}}> Post a Job</button></div>
+        <Tooltip title="Post a Job" color='cyan'><button onClick={handleClick} className="submit-button" style={{float: 'right'}}> + Job</button></Tooltip></div>
         <div><Viewjob /></div>
         
     </div>

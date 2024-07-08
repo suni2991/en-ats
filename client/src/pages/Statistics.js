@@ -1,26 +1,27 @@
-import React from 'react'
-import VacanciesChart from '../components/Vacancies'
-import JobPositionPieChart from '../components/JobPosition'
-import ApplicationStatus from '../components/ApplicationStatus'
-import UsersByRole from '../components/UsersByRole'
-import CandidateScoresChart from '../components/CandidateScore'
+import React from 'react';
 
+import ApplicationStatus from '../components/ApplicationStatus';
+import UsersByRole from '../components/UsersByRole';
+
+import OnboardedCandidates from '../components/Onboarded';
 
 const Statistics = () => {
   return (
-    <div className='table-container'>
-    <UsersByRole />
-    <div className="statistics-container">
-      <div className="chart-container">
-      <CandidateScoresChart />
-        <VacanciesChart />
-        <JobPositionPieChart />
-        <ApplicationStatus />
-        
+    <div>
+      <UsersByRole />
+      <div className='stat-container'>
+        <div className='stat-repo1'>
+          <ApplicationStatus />
+        </div>
+        <div className='stat-repo2'>
+          <OnboardedCandidates />
+        </div>
       </div>
-    </div>
-    </div>
-  )
-}
 
-export default Statistics
+
+    </div>
+   
+  );
+};
+
+export default Statistics;

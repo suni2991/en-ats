@@ -4,12 +4,12 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceL
 
 const VacanciesChart = () => {
   const [vacanciesData, setVacanciesData] = useState([]);
-  const targetDate = '2024-05-10'; // Change this to the date you want to show the reference line for
+  const targetDate = '2024-05-10'; 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/vacancies-by-date'); // Assuming your backend route is configured correctly
+        const response = await axios.get('/vacancies-by-date'); 
         setVacanciesData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);

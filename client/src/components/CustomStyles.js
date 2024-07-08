@@ -1,119 +1,66 @@
-// const CustomStyles = {
-//   rows: {
-//     style: {
-//       backgroundColor: '#fff',
-//       minHeight: '35px', // Increase the minimum height to align checkboxes with text rows
-//       lineHeight: '35px',
-//       ':active': {
-//         color: 'rgb(8, 8, 68)',
-//       },
-//     },
-//   },
-//   headCells: {
-//     style: {
-//       backgroundColor: 'rgb(8, 8, 68)',
-//       color: '#FFFF',
-//       alignItems: 'left'
-//     },
-//   },
-//   cells: {
-//     style: {
-//       height: '35px !important', // Match the row height for consistency
-//       width: '180px',
-//       overflow: 'hidden',
-//       textOverflow: 'ellipsis',
-//       whiteSpace: 'nowrap',
-//       padding: '8px', // Add padding to cells for better spacing
-//     },
-//   },
-//   pagination: {
-//     style: {
-//       backgroundColor: '#fff',
-//       height: '30px !important',
-//       border: 'none',
-//       color: 'rgba(3, 4, 44, 0.87)',
-//       display: "flex",
-//       alignItems: "center",
-//       minHeight: '30px',
-//       lineHeight: '30px'
-//     },
-//     pageButtonsStyle: {
-//       border: 'none',
-//       cursor: 'pointer',
-//       margin: "0 5px",
-//       padding: '1px',
-//       width: '20%',
-//       color: '#fff !important',
-//       height: '23px !important',
-//     },
-//   },
-// };
-
-// export default CustomStyles;
 const customStyles = {
   rows: {
-    padding: '12px',
     style: {
-      minHeight: '30px',
-      lineHeight: '30px',
       backgroundColor: '#fff',
-      ':hover': {
-        backgroundColor: '#00B4D2',
-        color: '#fff',
-        fontWeight: 'bold',
-        borderRadius: 'none',
-      },
+      minHeight: '30px', // Increase the minimum height to align checkboxes with text rows
+      lineHeight: '30px',
+      display: 'flex', // Ensure rows use flexbox
+      alignItems: 'center', // Center align items vertically
       ':active': {
-        backgroundColor: '#00B4D2',
-        color: '#fff',
+        color: '#00B4D2',
       },
     },
   },
   headCells: {
     style: {
-      backgroundColor: '#28325A',
-      color: '#FFFF',
-      padding: '2px 0px 2px 0px',
-      height: '40px !important',
-      fontWeight: 'bolder'
+      backgroundColor: '#1a2763',
+      color: 'white',
+      borderRight: '1px solid #000000',
+      textAlign: 'center', // Center align text in header cells
+      display: 'flex', // Ensure head cells use flexbox
+      justifyContent: 'center', // Center align items horizontally
+      alignItems: 'center', // Center align items vertically
+      flexDirection: 'column', // Allow text to wrap in head cells
+       
+      fontWeight: 'bolder',
+      // whiteSpace: 'normal', // Allow text to wrap
+      // wordWrap: 'break-word'
     },
   },
   cells: {
     style: {
-      padding: '8px',
-      width: "100px",
+      height: '30px !important', 
+      width: '180px',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
+      borderRight: '1px solid #000000',
       whiteSpace: 'nowrap',
-      alignItems: 'center'
+      padding: '10px', 
+      textAlign: 'left', 
+      display: 'flex',
+      // justifyContent: 'center', 
+      // alignItems: 'center',
     },
   },
   pagination: {
     style: {
-      backgroundColor: '#28325A',
+      backgroundColor: '#fff',
+      height: '30px !important',
       border: 'none',
-      color: '#fff',
-      display: "flex",
-      alignItems: "center",
+      color: 'rgba(3, 4, 44, 0.87)',
+      display: 'flex',
+      alignItems: 'center',
       minHeight: '30px',
-      lineHeight: '30px'
+      lineHeight: '30px',
     },
     pageButtonsStyle: {
-      backgroundColor: '#fff',
       border: 'none',
       cursor: 'pointer',
-      margin: "0 5px",
+      margin: '0 5px',
       padding: '1px',
       width: '20%',
+      color: '#fff !important',
       height: '23px !important',
-      ':hover': {
-        backgroundColor: '#00B4D2',
-        color: 'rgb(14, 157, 157)',
-      },
-      ':active': {
-        backgroundColor: '#8C8C8C',
-        color: '#333',
-      },
     },
   },
 };

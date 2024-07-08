@@ -91,9 +91,11 @@ h1{
 
 
 .col1{
-    width: 40%;
+    /* width: 40%; */
     margin: 30px 30px 30px 50px;
-    float: left;
+    /* float: left; */
+    height: 10%;
+    
 }
 .col2{
     width: 40%;
@@ -104,7 +106,7 @@ label{
     color: #00B4D2;
     font-weight: 200;
 }
-.col1 .field1{
+/* .col1 .field1{
     background-color: #EDEDED;
     background: linear-gradient(to bottom, #98a3b5 0%, #dae0eb 100%);
 width: 90%;
@@ -115,7 +117,7 @@ box-shadow: 1px 2px 2px 1px rgb(178, 178, 178);
 margin-top: 6px;
 border: none;
 height: 20px;
-}
+} */
 .col2 .field1{
     /* background-color: #EDEDED; */
     background: linear-gradient(to bottom, #98a3b5 0%, #dae0eb 100%);
@@ -137,7 +139,7 @@ height: 20px;
     margin-top: 6px;
     border: none;
 }
-.col1 .field2{
+/* .col1 .field2{
     background: linear-gradient(to bottom, #98a3b5 0%, #dae0eb 100%); 
     width: 97% !important;
     padding: 8px;
@@ -145,8 +147,9 @@ height: 20px;
     box-shadow: 1px 2px 2px 1px rgb(178, 178, 178);
     border: none;
     margin-top: 6px;
-}
+} */
 .button-container{
 display: flex;
 justify-content: center;
 }
+

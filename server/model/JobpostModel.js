@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Define the schema for job posts
+
 const jobSchema = new mongoose.Schema({
     position: {
         type: String,
@@ -14,35 +14,31 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    jobType: {
-        type: String,
-       
-        required: true,
-    },
+    
     jobLocation: {
         type: String,
         required: true,
     },
     vacancies: {
         type: Number,
-        required: true,
-    },
-    // fulfilledBy: {
-    //     type: Date,
-    //     required: true,
-    // },
-    salaryRange: {
-        type: String,
-        required: true,
+        
     },
     experience: {
         type: String,
         required: true,
     },
-    modeOfJob: {
+
+    responsibilities:{
         type: String,
-       
+
+    },
+   
+    primarySkills:{
+        type: [String],
         required: true,
+    },
+    secondarySkills:{
+        type:[String],
     },
     postedAt: {
         type: Date,
@@ -50,11 +46,23 @@ const jobSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: "Processing"
-    }
+        default: "Active"
+    },
+    postedBy: {
+        type: String,
+        default: "HR"
+    },
+    // vacancyStatus: {
+    //     type: [vacancyStatusSchema],
+    //     default: [
+    //         { status: 'Selected', count: 0 },
+    //         { status: 'Rejected', count: 0 },
+    //         { status: 'L1', count: 0 },
+    //         { status: 'L2', count: 0 },
+    //     ]
+    // }
 });
 
-// Create the Job model based on the schema
 const Job = mongoose.model('Job', jobSchema);
 
 module.exports = Job;

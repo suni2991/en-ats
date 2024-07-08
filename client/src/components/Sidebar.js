@@ -8,11 +8,13 @@ import { LuMonitorCheck } from 'react-icons/lu';
 import useAuth from '../hooks/useAuth';
 import '../styles/Sidebar.css';
 import logo from '../Assests/enfuse-logo.png';
-import { IoKeyOutline } from 'react-icons/io5';
-import { Input, Button, AutoComplete, Modal, message, Tooltip } from 'antd';
+import { Layout, Tooltip, Button, AutoComplete, Modal } from 'antd';
 import ProfilePage from './ProfilePage';
 import { VscFeedback } from 'react-icons/vsc';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
+const { Footer } = Layout;
 
 const Sidebar = ({ children }) => {
   const navigate = useNavigate();
@@ -41,20 +43,12 @@ const Sidebar = ({ children }) => {
     setSelectedEmail(value);
     try {
       const response = await axios.get(`http://localhost:5040/candidates/search/${value}`);
-      console.log('API response:', response.data); // Add this line for debugging
-      setSelectedCandidateDetails(response.data[0]); // Assuming the API returns a single candidate based on email
+      console.log('API response:', response.data);
+      setSelectedCandidateDetails(response.data[0]);
       setModalVisible(true);
     } catch (error) {
       console.error('Error fetching candidate details:', error);
     }
-  };
-
-  const renderOption = (item) => {
-    return (
-      <AutoComplete.Option key={item.value} value={item.value}>
-        {item.value}
-      </AutoComplete.Option>
-    );
   };
 
   const handleCancel = () => {
@@ -68,9 +62,7 @@ const Sidebar = ({ children }) => {
   const logout = () => {
     setAuth({});
     navigate('/');
-    message.success('Logged out!', 'You have successfully logged out.', 'success');
-    
-
+    Swal.fire("You have been successfully logged out!!");
   };
 
   const menuItem = [
@@ -80,8 +72,13 @@ const Sidebar = ({ children }) => {
       icon: <LuMonitorCheck />,
     },
     {
+      path: '/jobdashboard',
+      name: 'Job Dashboard',
+      icon: <LuMonitorCheck />,
+    },
+    {
       path: '/admins',
-      name: 'Admin',
+      name: 'EnFusians',
       icon: <FaAdn />,
     },
     {
@@ -91,7 +88,12 @@ const Sidebar = ({ children }) => {
     },
     {
       path: '/hr',
-      name: 'Candidates',
+      name: 'ATS',
+      icon: <FaRegUser />,
+    },
+    {
+      path: '/applicants',
+      name: 'Statistics',
       icon: <FaRegUser />,
     },
     {
@@ -99,16 +101,11 @@ const Sidebar = ({ children }) => {
       name: 'Scores',
       icon: <FaTh />,
     },
-    {
-      path: '/statistics',
-      name: 'Statistics',
-      icon: <FaRegChartBar />,
-    },
-    {
-      path: '/credentials',
-      name: 'Assign Test',
-      icon: <IoKeyOutline />,
-    },
+    // {
+    //   path: '/statistics',
+    //   name: 'Statistics',
+    //   icon: <FaRegChartBar />,
+    // },
     {
       path: '/feedbacks',
       name: 'Feedback',
@@ -119,12 +116,11 @@ const Sidebar = ({ children }) => {
   const { pathname } = useLocation();
 
   const getCurrentMenuItem = () => {
-    console.log('Current pathname:', pathname);
     return menuItem.find(item => item.path === pathname);
   };
 
   return (
-    <div>
+   
       <div className="container">
         {auth.role && (
           <div style={{ width: isOpen ? '180px' : '25px' }} className="sidebar">
@@ -134,7 +130,7 @@ const Sidebar = ({ children }) => {
               </button>
               {auth.role === 'Admin' || auth.role === 'Enfusian' ? (
                 <img
-                  style={{ width: '60%', borderRadius: '50%', background: 'white' }}
+                  style={{ width: '45%', borderRadius: '50%', background: 'white' }}
                   src={auth.image !== '' ? `http://localhost:5040${auth.image}` : require('../Assests/User.png')}
                   alt="logo"
                 />
@@ -145,7 +141,7 @@ const Sidebar = ({ children }) => {
             {menuItem.map((item, index) => {
               if (auth.role === 'Admin') {
                 return (
-                  (item.name === 'Admin' || item.name === 'HR' || item.name === 'Dashboard' || item.name === 'Jobs' || item.name === 'Statistics') && (
+                  (item.name === 'EnFusians' || item.name === 'Statistics' || item.name === 'Dashboard') && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className="icon">{item.icon}</div>
                       <div className="link-text">{item.name}</div>
@@ -154,12 +150,11 @@ const Sidebar = ({ children }) => {
                 );
               } else if (auth.role === 'HR') {
                 return (
-                  (item.name === 'Jobs' ||
-                    item.name === 'Candidates' ||
+                  (
+                    item.name === 'ATS' ||
                     item.name === 'Dashboard' ||
                     item.name === 'Scores' ||
                     item.name === 'Statistics' ||
-                    item.name === 'Assign Test' ||
                     item.name === 'Feedback') && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className="icon">{item.icon}</div>
@@ -167,7 +162,7 @@ const Sidebar = ({ children }) => {
                     </NavLink>
                   )
                 );
-              } else if (auth.role === 'Enfusian') {
+              } else if (auth.role === 'Panelist') {
                 return (
                   item.name === 'Feedback' && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
@@ -176,77 +171,56 @@ const Sidebar = ({ children }) => {
                     </NavLink>
                   )
                 );
+              }else if (auth.role === 'Ops-Manager') {
+                return ( item.name === 'Job Dashboard' || item.name === 'Feedback') && (
+                    <NavLink to={item.path} key={index} className="link" activeclassname="active">
+                      <div className="icon">{item.icon}</div>
+                      <div className="link-text">{item.name}</div>
+                    </NavLink>
+                  
+                );
               } else {
                 return null;
               }
             })}
-
-            {auth.role && (
-              <button className="icon-button" onClick={logout}>
-                <span className="icon-container">
-                  <MdLogout />
-                </span>{' '}
-                <span className="text">Logout</span>
-              </button>
-            )}
           </div>
         )}
-        <main className={`main-container ${isDarkMode ? 'dark-mode' : ''}`}>
-          {auth.role && (
+        <div className='main-container'>
+        <main>
+          {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Panelist' || auth.role === 'Ops-Manager') && (
             <nav className="navbar">
-            <div className="breadcrumb">/{getCurrentMenuItem()?.name}</div> 
-              <div className="navbar-center">
-              <AutoComplete
-              value={searchValue}
-              options={suggestions}
-              onSelect={onSelect}
-              onChange={handleSearch}
-              style={{ width: '100%'}}
-              placeholder="Search by Name... "
-              filterOption={(inputValue, option) =>
-                option && option.value && option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-              }
-            >
-              <Input.Search allowClear />
-            </AutoComplete>
-
-                <Modal className= 'modal-container' title="User Details" visible={modalVisible} onCancel={handleCancel} footer={null}>
-                 
-                  {selectedCandidateDetails && (
-                    <div>
-                      <p>Name: {selectedCandidateDetails.fullName}</p>
-                      <p>Email: {selectedCandidateDetails.email}</p>
-                      <p>Role: {selectedCandidateDetails.role}</p>
-                      <p>Contact: {selectedCandidateDetails.contact}</p>
-                      <p>Qualification: {selectedCandidateDetails.qualification}</p>
-                      <p>Experience: {selectedCandidateDetails.totalExperience}</p>
-                      {auth.role === 'Candidate' && (
-                        <>
-                          
-                        <p>Relevant Experience: {selectedCandidateDetails.relevantExperience}</p>
-                          <p>Position: {selectedCandidateDetails.position}</p>
-                          <p>Notice Period: {selectedCandidateDetails.noticePeriod}</p>
-                          <p>Status: {selectedCandidateDetails.status}</p>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </Modal>
-              </div>
               <div className="navbar-right">
-              <Tooltip title="View & Update Profile">
-                <Button type="text"  onClick={() => setProfileVisible(true)} style={{color: '#00B4D2'}}>
-                  Hello, {auth.fullName}
-                </Button></Tooltip>
+                <Tooltip title="View & Update Profile" color='cyan'>
+                  <Button type="text" onClick={() => setProfileVisible(true)} style={{ color: '#00B4D2' }}>
+                    Welcome, {auth.fullName} |
+                  </Button>
+                </Tooltip>
               </div>
+
+              {auth.role && (
+                <button className="icon-button" onClick={logout}>
+                  <span className="icon-container">
+                    <MdLogout />
+                  </span>{' '}
+                  <span className="text">Logout</span>
+                </button>
+              )}
             </nav>
           )}
-          {auth && <ProfilePage visible={profileVisible} auth={auth} onClose={() => setProfileVisible(false)} />}
+          {auth && <ProfilePage open={profileVisible} auth={auth} setAuth={setAuth} onClose={() => setProfileVisible(false)} />}
 
           {children}
+        
         </main>
+        {auth.role && (
+          <div className="footer">
+            @ 2024 EnFuse Solutions. All rights Reserved
+          </div>
+        )}
+        </div>
       </div>
-    </div>
+     
+   
   );
 };
 

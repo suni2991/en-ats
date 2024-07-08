@@ -4,6 +4,7 @@ import { TiEyeOutline } from "react-icons/ti";
 import CandidateProfileDrawer from '../components/CandidateProfileDrawer';
 import Fetchtable from '../components/Fetchtable';
 import AssignInterview from '../components/AssignInterview'; // Import AssignInterview component
+import { Tooltip } from 'antd';
 
 const Monitor = () => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -31,7 +32,7 @@ const Monitor = () => {
       const downloadLink = `http://localhost:5040${row.resume}`;
       return (
         <a href={downloadLink} target="_blank" rel="noopener noreferrer" className='resume-link'>
-          {row.fullName} CV
+          {row.firstName} CV
         </a>
       );
     } else {
@@ -40,18 +41,19 @@ const Monitor = () => {
   };
 
   const userColumns = [
-    { name: 'Name', selector: (row) => row.fullName, sortable: true },
-    { name: 'Email', selector: (row) => row.email, sortable: true },
-    { name: 'Resume', cell: (row) => renderResumeLink(row), sortable: true },
-    { name: 'Status', selector: (row) => row.status, sortable: true },
+    { name: 'Name', selector: (row) => row.fullName, sortable: true, width: '200px' },
+    { name: 'Email', selector: (row) => row.email, sortable: true, width: '250px' },
+    { name: 'Resume', cell: (row) => renderResumeLink(row), sortable: true, width: '100px' },
+    { name: 'Status', selector: (row) => row.status, sortable: true, width:'290px'},
     {
       name: 'Actions',
       cell: (row) => (
         <div>
-          <button className='table-btn' name='Assign' onClick={() => handleAssign(row)}><MdOutlineAddTask /></button>
-          <button className='table-btn' name='View' onClick={() => handleView(row)}><TiEyeOutline /></button>
+          <Tooltip title="Assign Interview" color='cyan'><button className='table-btn' name='Assign' onClick={() => handleAssign(row)}><MdOutlineAddTask /></button></Tooltip>
+          <Tooltip title="View Details" color='cyan'><button className='table-btn' name='View' onClick={() => handleView(row)}><TiEyeOutline /></button></Tooltip>
         </div>
       ),
+      width: '150px'
     },
   ];
 
@@ -66,11 +68,11 @@ const Monitor = () => {
         setSelectedCandidate={setSelectedCandidate}
       />
       <AssignInterview 
-        visible={showDrawer} 
+        open={showDrawer} 
         onClose={handleDrawerClose} 
         candidateId={selectedCandidate ? selectedCandidate._id : ''}
       />
-      {profileOpen && <CandidateProfileDrawer visible={profileOpen} onClose={() => setProfileOpen(false)} candidateId={selectedCandidate ? selectedCandidate._id : ''} />}
+      {profileOpen && <CandidateProfileDrawer open={profileOpen} onClose={() => setProfileOpen(false)} candidateId={selectedCandidate ? selectedCandidate._id : ''} />}
     </div>
   );
 };

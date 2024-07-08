@@ -1,29 +1,95 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
-import '../styles/Regform.css'
-import Swal from 'sweetalert2';
+import '../styles/Regform.css';
+import HrDropdown from './HrDropdown';
+import { Button, message, Select } from 'antd';
+
+const { Option } = Select;
 
 const Postjob = () => {
-    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         position: '',
         department: '',
         description: '',
-        jobType: '',
         jobLocation: '',
         vacancies: '',
-        
-        salaryRange: '',
+        primarySkills: [],
+        secondarySkills: [],
         experience: '',
-        modeOfJob: '',
+        postedBy: '',
+        status:'Approval Pending'
     });
 
-    const handleRedirect = () => {
-        navigate('/jobs')
-    }
+    const [selectedHrName, setSelectedHrName] = useState('');
+    const [selectedHrEmail, setSelectedHrEmail] = useState('');
+
+    const handleSelectHr = (fullName, email) => {
+        setSelectedHrName(fullName);
+        setSelectedHrEmail(email);
+        setFormData((prevData) => ({
+            ...prevData,
+            postedBy: fullName,
+        }));
+    };
+
+    const deptList = [
+        'Data and Digital-DND',
+        'PACS',
+        'EdTech & Catalog Operations (ECO)',
+        'Analytics Practice',
+        'Adobe_Team',
+        'Software Services',
+        'Business Development',
+        'Human Resources',
+        'Administration',
+        'IT & Governance'
+    ];
+
+    const isAlphabetic = (value) => /^[A-Za-z\s,+\-]*$/.test(value);
+
+
+    const isNumeric = (value) => /^[0-9]*$/.test(value);
+
+    const validateField = (name, value) => {
+        if (name === 'experience' || name === 'vacancies') {
+            if (!isNumeric(value)) {
+                message.error(`${name} should contain only numbers`);
+                return false;
+            }
+        } else if (name !== 'department' && name !== 'postedBy') {
+            if (!isAlphabetic(value)) {
+                message.error(`${name} should contain only alphabets, spaces, commas, +, or -`);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const handlePaste = (e) => {
+        // Get pasted data
+        const clipboardData = e.clipboardData || window.clipboardData;
+        const pastedText = clipboardData.getData('Text');
+    
+        // Update the state with the pasted text
+        setFormData({
+            ...formData,
+            [e.target.name]: pastedText,
+        });
+    };
+    
+    
+
     const handleChange = (e) => {
         const { name, value } = e.target;
+        if (validateField(name, value)) {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
+        }
+    };
+
+    const handleSelectChange = (name, value) => {
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
@@ -31,68 +97,58 @@ const Postjob = () => {
     };
 
     const handleSubmit = async (e) => {
-        
-    let emptyFields = [];
-
-    // Check for empty fields
-    for (const key in formData) {
-      if (!formData[key]) {
-        emptyFields.push(key);
-      }
-    }
-
-    if (emptyFields.length > 3) {
-      // More than 3 fields are empty, show generic message
-      Swal.fire({
-        title: "Error!",
-        text: "Please fill in all the fields.",
-        icon: "error",
-        confirmButtonColor: "#00B4D2",
-        confirmButtonText: "OK",
-      });
-      return;
-    }
-
-    // Fire individual messages for empty fields
-    emptyFields.forEach((field) => {
-      Swal.fire({
-        title: "Error!",
-        text: `Please enter ${field === "jobType" ? "select" : ""} ${field}.`,
-        icon: "error",
-        confirmButtonColor: "#00B4D2",
-        confirmButtonText: "OK",
-      });
-    });
         e.preventDefault();
+        
+        // Check for required fields
+        const requiredFields = ['position', 'department', 'jobLocation', 'vacancies', 'primarySkills', 'experience'];
+        for (let field of requiredFields) {
+            if (!formData[field] || formData[field].length === 0) {
+                message.error(`${field} is required`);
+                return;
+            }
+        }
+
         try {
             const response = await axios.post('http://localhost:5040/createjob', formData);
             console.log('Job post submitted:', response.data);
-          
+            message.success('New Job created successfully and sent for Directors Approval');
+            const jobId = response.data._id;
+            const emailData = {
+                position: formData.position,
+                department: formData.department,
+                postedBy: formData.postedBy,
+                jobId : jobId
+            };
+      
+            const emailResponse = await axios.post('http://localhost:5040/job/approval', emailData);
+            console.log(emailResponse.data);
+
             setFormData({
                 position: '',
                 department: '',
                 description: '',
-                jobType: '',
                 jobLocation: '',
                 vacancies: '',
-                
-                salaryRange: '',
+                primarySkills: [],
+                secondarySkills: [],
                 experience: '',
-                modeOfJob: '',
+                postedBy: '',
             });
+            setSelectedHrName('');
+            setSelectedHrEmail('');
         } catch (error) {
+            message.error('Something went wrong!');
             console.error('Error submitting job post:', error);
         }
     };
 
     return (
-        <div className='table-container'>
-        <h1>Create a Job</h1>
+        <div>
             <form>
                 <div className='formContainer'>
                     <div className='block'>
                         <div>
-                            <label htmlFor="position">Job Role:</label><br />
+                            <label htmlFor="position">Job Title:<span className='require'>*</span></label><br />
                             <input
                                 type="text"
                                 name="position"
@@ -101,39 +157,57 @@ const Postjob = () => {
                                 onChange={handleChange}
                                 required
                                 placeholder='Job Title'
-
                             />
                         </div>
                         <div>
-                            <label htmlFor="department">Department:</label><br />
+                            <label htmlFor="vacancies">Vacancies:<span className='require'>*</span></label><br />
                             <input
                                 type="text"
+                                name="vacancies"
+                                id="vacancies"
+                                value={formData.vacancies}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="primarySkills">Primary Skills:<span className='require'>*</span></label><br />
+                            <Select
+                                mode="tags"
+                                style={{ width: '25vw' }}
+                                placeholder="Enter skill & press Enter Key"
+                                value={formData.primarySkills}
+                                onChange={(value) => handleSelectChange('primarySkills', value)}
+                                required
+                            >
+                                {formData.primarySkills.map((skill, index) => (
+                                    <Option key={index} value={skill}>
+                                        {skill}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </div>
+                        <div>
+                            <label htmlFor="department">Department:<span className='require'>*</span></label><br />
+                            <select
                                 name="department"
                                 id="department"
                                 value={formData.department}
                                 onChange={handleChange}
                                 required
-                                placeholder='Department'
-
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="jobType">Job Type:</label><br />
-                            <select
-                                name="jobType"
-                                id="jobType"
-                                value={formData.jobType}
-                                onChange={handleChange}
-                                required
-
                             >
-                                <option value="">Select Job Type</option>
-                                <option value="FullTime">Full Time</option>
-                                <option value="Contract">Contract Basis</option>
+                                <option value="">Select Department</option>
+                                {deptList.map((dept, index) => (
+                                    <option key={index} value={dept}>
+                                        {dept}
+                                    </option>
+                                ))}
                             </select>
-                        </div><br />
+                        </div>
+                    </div>
+                    <div className='block'>
                         <div>
-                            <label htmlFor="jobLocation">Job Location:</label><br />
+                            <label htmlFor="jobLocation">Location:<span className='require'>*</span></label><br />
                             <input
                                 type="text"
                                 name="jobLocation"
@@ -141,57 +215,11 @@ const Postjob = () => {
                                 value={formData.jobLocation}
                                 onChange={handleChange}
                                 required
-
+                                onPaste={handlePaste}
                             />
                         </div>
-                    </div>
-                    <div className='block'>
                         <div>
-                            <label htmlFor="vacancies">Vacancies:</label><br />
-                            <input
-                                type="number"
-                                name="vacancies"
-                                id="vacancies"
-                                value={formData.vacancies}
-                                onChange={handleChange}
-                                required
-                                placeholder='No of Vacancies'
-                            />
-                        </div>
-                        
-                        <div>
-                            <label htmlFor="modeOfJob">Mode of Job:</label><br />
-                            <select
-                                name="modeOfJob"
-                                id="modeOfJob"
-                                value={formData.modeOfJob}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="">Select Mode of Job</option>
-                                <option value="Remote">Remote</option>
-                                <option value="Office">Office</option>
-                            </select>
-                        </div><br />
-                        <div>
-                            <label htmlFor="salaryRange">Salary Range:</label><br />
-                            <select
-                                name="salaryRange"
-                                id="salaryRange"
-                                value={formData.salaryRange}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select Salary Range</option>
-                                <option value="Below 5,00,000">Below 5,00,000</option>
-                                <option value="5,00,000-100000">5,00,000 - 10,00,000</option>
-                                <option value="10,00,000-15,00,000">10,00,000 - 15,00,000</option>
-                                <option value="15,00,000-20,00,000">15,00,000 - 20,00,000</option>
-
-                            </select>
-
-                        </div><br />
-                        <div>
-                            <label htmlFor="experience">Experience:</label><br />
+                            <label htmlFor="experience">Experience:<span className='require'>*</span></label><br />
                             <input
                                 type="text"
                                 name="experience"
@@ -199,27 +227,56 @@ const Postjob = () => {
                                 value={formData.experience}
                                 onChange={handleChange}
                                 required
-
                             />
+                        </div>
+                        <div>
+                            <label htmlFor="secondarySkills">Secondary Skills:</label><br />
+                            <Select
+                                mode="tags"
+                                style={{ width: '25vw' }}
+                                placeholder="Enter skill & press Enter Key"
+                                value={formData.secondarySkills}
+                                
+                                onChange={(value) => handleSelectChange('secondarySkills', value)}
+                            >
+                                {formData.secondarySkills.map((skill, index) => (
+                                    <Option key={index} value={skill}>
+                                        {skill}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </div>
+                        <div style={{ width: '25vw', padding: '15px' }}>
+                            <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} style={{ width: '100%' }} />
                         </div>
                     </div>
                 </div>
                 <div id='desc'>
+                <div>
+                <label htmlFor="rolesNResponsibilities">Roles & Responsibilities:</label><br />
+                <textarea
+                    name="responsibilities"
+                    id="responsibilities"
+                    value={formData.responsibilities}
+                    onChange={handleChange}
+                    onPaste={handlePaste}
+                    style={{ width: '90%', height: '60px', padding: '5px', marginLeft:'35px', border: '1px solid #00B4D2' }}
+                />
+            </div>
                     <div>
-                        <label htmlFor="description">Description:</label><br />
+                        <label htmlFor="description">Job Description:</label><br />
                         <textarea
                             name="description"
                             id="description"
                             value={formData.description}
+                            onPaste={handlePaste}
                             onChange={handleChange}
-                            required
-                            style={{ width: '100%', height: '110px', padding: '8px' }}
+                            style={{ width: '90%', height: '110px', padding: '5px', marginLeft:'35px', border: '1px solid #00B4D2' }}
                         />
                     </div>
                 </div>
                 <div id='btnWrapper'>
-                    <button type="submit" className="submit-button1" onClick={handleSubmit}>Post</button>
-                    <button type="submit" className="submit-button1" onClick={handleRedirect}>Back</button>
+                    <Button type="submit" className="form-btn" onClick={handleSubmit}>Submit</Button>
                 </div>
             </form>
         </div>

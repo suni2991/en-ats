@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Drawer } from 'antd';
+import userlogo from '../Assests/Applicant.jpg';
+import { Drawer, Collapse } from 'antd';
 
-const CandidateProfileDrawer = ({ visible, onClose, candidateId }) => {
+const { Panel } = Collapse;
+
+const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
   const [candidateData, setCandidateData] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5040/candidate/${candidateId}`);
+        const response = await fetch(`http://localhost:5040/candidate/profile/${candidateId}`);
         const data = await response.json();
         
         if (data.status === "SUCCESS") {
@@ -24,46 +26,87 @@ const CandidateProfileDrawer = ({ visible, onClose, candidateId }) => {
       }
     };
 
-    if (visible && candidateId) {
+    if (open && candidateId) {
       fetchData();
     }
-  }, [visible, candidateId]);
+  }, [open, candidateId]);
+
+  const drawerTitle = candidateData.fullName ? `${candidateData.fullName}'s Profile` : "Candidate Profile";
+
+  const labelStyle = { fontWeight: 'bold' };
+  const valueStyle = { marginLeft: '30px', textTransform: 'capitalize' };
+
+  const getPanelBackgroundColor = (roundName) => {
+    switch (roundName) {
+      case 'L1':
+        return '#3AAFB9';
+      case 'L2':
+        return '#64E9EE';
+      case 'HR':
+        return '#92DCE5';
+      default:
+        return '#51C4D3'; // Default color
+    }
+  };
+
+  const panelHeaderStyle = {
+    color: 'white',
+    textTransform: 'capitalize'
+  };
 
   return (
     <Drawer
-      title="Candidate Profile"
+      title={<div style={{ backgroundColor: '#001242', color: 'white', padding: '10px', textTransform: 'capitalize' }}>{drawerTitle}</div>}
       placement="right"
       closable={false}
       onClose={onClose}
-      visible={visible}
-      width={500}
+      open={open}
+      width={400}
     >
-      <div className="profile-info">
-        <p>First Name: {candidateData.firstName}</p>
-        <p>Last Name: {candidateData.lastName}</p>
-        <p>Email: {candidateData.email}</p>
-        <p>DoB: {candidateData.dob}</p>
-        <p>Qualification: {candidateData.qualification}</p>
-        <p>Experience: {candidateData.totalExperience}</p>
-        <p>Contact: {candidateData.contact}</p>
-        <p>City: {candidateData.currentLocation}</p>
-        <p>District: {candidateData.district}</p>
-        <p>Manager Name: {candidateData.mgrName}</p>
-        {candidateData.evaluationDetails && (
-          <div>
-            <h3>Skills - Evaluation Details</h3>
+      <div className="profile-header">
+        <img src={userlogo} alt="User Logo" className="user-logo" width={100} />
+        <h1>{candidateData.position}</h1>
+        <br />
+      </div>
+      
+      <Collapse defaultActiveKey={['1']} accordion>
+        <Panel header={<span style={panelHeaderStyle}>About</span>} key="1" style={{ backgroundColor: '#001242' }}>
+          <p><span style={labelStyle}>First Name</span><span style={valueStyle}>: {candidateData.firstName}</span></p>
+          <p><span style={labelStyle}>Last Name</span><span style={valueStyle}>: {candidateData.lastName}</span></p>
+          <p><span style={labelStyle}>Qualification</span><span style={valueStyle}>: {candidateData.qualification}</span></p>
+          <p><span style={labelStyle}>Experience</span><span style={valueStyle}>: {candidateData.totalExperience}</span></p>
+        </Panel>
+        <Panel header={<span style={panelHeaderStyle}>Contact</span>} key="2" style={{ backgroundColor: '#093A3E' }}>
+          <p><span style={labelStyle}>Email</span><span>: {candidateData.email}</span></p>
+          <p><span style={labelStyle}>Contact</span><span style={valueStyle}>: {candidateData.contact}</span></p>
+          <p><span style={labelStyle}>Address</span><span style={valueStyle}>: {candidateData.currentLocation}, {candidateData.state}</span></p>
+        </Panel>
+        {candidateData.round && candidateData.round.length > 0 && candidateData.round.map((round, index) => (
+          <Panel header={`${round.roundName}-Round`} key={index} style={{ backgroundColor: getPanelBackgroundColor(round.roundName), textTransform: 'capitalize' }}>
+            <p><span style={labelStyle}>Round Name</span><span style={valueStyle}>: {round.roundName}</span></p>
+            <p><span style={labelStyle}>Panelist Name</span><span style={valueStyle}>: {round.panelistName}</span></p>
+            <p><span style={labelStyle}>Interview Date</span><span style={valueStyle}>: {new Date(round.interviewDate).toLocaleDateString()}</span></p>
+            <p><span style={labelStyle}>Feedback Provided</span><span style={valueStyle}>: {round.feedbackProvided ? 'Yes' : 'No'}</span></p>
             <ul>
-              {candidateData.skills.map((skill, index) => (
-                <li key={index}>
+              {round.skills && round.skills.map((skill, skillIndex) => (
+                <li key={skillIndex}>
                   <strong>{skill.name}</strong>: {skill.rating} - {skill.comments}
                 </li>
               ))}
             </ul>
-            <p>Panelist: {candidateData.panelistName}</p>
-            <h1>Status: {candidateData.status}</h1>
-          </div>
-        )}
-      </div>
+          </Panel>
+        ))}
+      </Collapse>
+      <Collapse>
+        <Panel header={<span>Others</span>} key="4" style={{ backgroundColor: '#D8E3E7', color: '#000', textTransform: 'capitalize' }}>
+         
+            <div>
+              <p><span style={labelStyle}>Status</span><span style={valueStyle}>: {candidateData.status}</span></p>
+              <p><span style={labelStyle}>HR</span><span style={valueStyle}>: {candidateData.mgrName}</span></p>
+            </div>
+       
+        </Panel>
+      </Collapse>
     </Drawer>
   );
 };

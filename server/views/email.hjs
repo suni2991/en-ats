@@ -274,8 +274,8 @@
                                                               >Greetings!!
                                                               </span></p>
                                                          <p style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
-                                                          <span>Welcome to EnFuse Hiring Process. Please find below credentials for your assessment login:<br /> <br />
-                                                              <p><b>Username:   {{username}}               
+                                                          <span>Welcome to EnFuse Solutions Private Ltd. You have successfully registered as {{role}}. Please find below credentials to login:<br /> <br />
+                                                              <p><b>email:   {{email}}               
                                                                 <br />
                                                               Password:   {{confirmPassword}}</b></p>
                                                               
@@ -355,6 +355,7 @@
                     <tbody class="components__item">
                       <tr>
                         <td>
+                          
                           <!-- START COMPONENT: FOOTER 1 -->
                           <table cellspacing="0" cellpadding="0" border="0" role="presentation"
                             class="component footer-1" style="width: 100%; border-collapse: collapse; ">
@@ -364,6 +365,7 @@
                                   style="white-space: normal; border-collapse: collapse; width: 100%;">
                                   <tbody>
                                     <tr>
+
                                       <td align="center">
                                         
                                         <p
@@ -371,7 +373,7 @@
                                           <img src="cid:enfuse-logo" alt="EnFuse-logo" />
                                           <span
                                             style="font-size: 12px; color: rgb(170, 170, 170); line-height: 1.5em;">Copyright
-                                            © 2022 All Rights Reserved. EnFuse Solutions</span>
+                                            © 2024 All Rights Reserved. EnFuse Solutions</span>
                                           
                                         </p>
                                         <!--[if gte mso 12]><p style="font-size: 0px; line-height: 0px; mso-line-height-rule:exactly;">&nbsp;</p><![endif]-->

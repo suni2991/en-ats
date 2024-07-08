@@ -40,9 +40,9 @@ function Home() {
           navigate("/dashboard");
         } else if (response.data.role === "HR") {
           navigate("/dashboard");
-        } else if (response.data.role === "Candidate") {
+        } else if (response.data.role === "Applicant") {
           navigate("/candidate/candidate");
-        } else if(response.data.role === "Enfusian"){
+        } else if(response.data.role === "Panelist"){
           navigate('/feedbacks')
         }
       }
@@ -86,7 +86,8 @@ function Home() {
         :  <div>
         <div className='LoginContainer'>
           <div className='formWrapper'>
-            <h2 className='customeText'>Welcome</h2>
+            <h2 className='customeText'>Welcome</h2><br/> <br/><br/> <br/>
+            
             <img src={logo} />
             <form>
               <div>

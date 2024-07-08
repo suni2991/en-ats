@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../styles/UserRoles.css'; // Import CSS file for styling
+// import '../styles/UserRoles.css'; // Import CSS file for styling
 
 const UsersByRole = () => {
   const [usersByRole, setUsersByRole] = useState([]);
@@ -18,17 +18,22 @@ const UsersByRole = () => {
     fetchUsersByRole();
   }, []);
 
+  const getCardColor = (index) => {
+    const colors = ['#969596', '#1a2763', '#00B4D2', '#ba11a4']; // Define your colors here
+    return colors[index % colors.length];
+  };
+
   return (
     <div className="user-roles-container">
-      <h2>Users </h2>
-      <div className="role-boxes">
-        {usersByRole.map((userRole) => (
-          <div key={userRole._id} className="role-box">
-            <h1>{userRole._id}</h1>
-            <h2>{userRole.count}</h2>
-          </div>
-        ))}
+      
+    <div className="role-boxes">
+    {usersByRole.filter(userRole => userRole._id !== 'Admin').map((userRole, index) => (
+      <div key={userRole._id} className="role-box" style={{ backgroundColor: getCardColor(index) }}>
+        <h1>{userRole._id}</h1>
+        <h1 style={{float:'right'}}>{userRole.count}</h1>
       </div>
+    ))}
+  </div>
     </div>
   );
 };
