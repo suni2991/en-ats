@@ -12,6 +12,8 @@ const capitalizeWords = (str) => {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
+const token = process.env.REACT_APP_JWT_TOKEN
+
 const Fetchtable = ({ url, columns, title, onViewClick, filteredData, extraContent }) => {
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,7 +23,12 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData, extraConte
     if (!filteredData) {
       const fetchData = async () => {
         try {
-          const response = await axios.get(url);
+          const response = await axios.get(url,
+            {
+              headers:{
+                Authorization: `Bearer ${token}`
+              }
+            });
           setData(response.data.reverse());
         } catch (error) {
           console.error('Error fetching data:', error);
