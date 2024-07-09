@@ -20,7 +20,6 @@ const Dashboard = () => {
   const [role, setRole] = useState(""); // Add state for role
 
   useEffect(() => {
-    const token = process.env.REACT_APP_JWT_TOKEN;
     const fetchJobs = async () => {
       try {
         const response = await axios.get("http://localhost:5040/viewjobs", {
@@ -37,7 +36,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    const token = process.env.REACT_APP_JWT_TOKEN;
+    
     const fetchPendingJobs = async () => {
       try {
         const response = await axios.get("http://localhost:5040/pendingjobs", {
@@ -54,7 +53,6 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    const token = process.env.REACT_APP_JWT_TOKEN;
     // Fetch the user's role from an API or other source
     const fetchUserRole = async () => {
       try {

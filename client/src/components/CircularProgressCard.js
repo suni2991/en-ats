@@ -2,13 +2,20 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, Progress } from 'antd';
 
-const CircularProgressCard = ({ job }) => {
+const token = process.env.REACT_APP_JWT_TOKEN
+const CircularProgressCard = ({ job }) => {  
   const [onboardedCount, setOnboardedCount] = useState(0);
-
   useEffect(() => {
+
     const fetchOnboardedCount = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/candidate/onboarded/${job.position}`);
+        const response = await axios.get(`http://localhost:5040/candidate/onboarded/${job.position}`,
+          {
+            headers:{
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
         setOnboardedCount(response.data.length);
       } catch (error) {
         console.error('Error fetching onboarded candidates:', error);
