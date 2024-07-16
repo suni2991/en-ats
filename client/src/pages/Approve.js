@@ -24,24 +24,35 @@ const ApproveJobDetails = () => {
         fetchJobDetails();
     }, [id]);
 
-    const handleApprove = async () => {
+    const updateJobStatus = async (newStatus, note) => {
         try {
-            await axios.put(`/job-posts/${id}`, { status: 'Active' });
-            setJob(prevJob => ({ ...prevJob, status: 'Active' }));
-            message.success('Job Approved successfully')
+            const updatedJob = {
+                ...job,
+                status: newStatus,
+                history: [
+                    ...job.history,
+                    {
+                        updatedBy: 'Directors',
+                        updatedAt: new Date(),
+                        note: note
+                    }
+                ]
+            };
+            await axios.put(`http://localhost:5040/job-posts/${id}`, updatedJob);
+            setJob(prevJob => ({ ...prevJob, status: newStatus }));
+            message.success(`Job ${note === "Job has been Approved & Active" ? "Approved" : "Rejected"} successfully`);
         } catch (error) {
-            console.error('Approve request failed:', error);
+            console.error('Update request failed:', error);
+            message.error(`Failed to ${note === "Job has been Approved & Active" ? "approve" : "reject"} job`);
         }
     };
 
-    const handleReject = async () => {
-        try {
-            await axios.put(`/job-posts/${id}`, { status: 'Denied' });
-            setJob(prevJob => ({ ...prevJob, status: 'Denied' }));
-            message.info('Job Rejected Successfully')
-        } catch (error) {
-            console.error('Reject request failed:', error);
-        }
+    const handleApprove = () => {
+        updateJobStatus('Active', 'Job has been Approved & Active');
+    };
+
+    const handleReject = () => {
+        updateJobStatus('Denied', 'Job has been Denied');
     };
 
     if (loading) return <p>Loading...</p>;
@@ -56,11 +67,11 @@ const ApproveJobDetails = () => {
     return (
         <div className='bg'>
             <div className="job-details">
-            {(job.status === 'Active' || job.status === 'Denied') && (
-                <p style={statusMessageStyle}>
-                    The current Job is already {job.status} on {new Date(job.postedAt).toLocaleString()}
-                </p>
-            )}
+                {(job.status === 'Active' || job.status === 'Denied') && (
+                    <p style={statusMessageStyle}>
+                        The current Job is already {job.status} on {new Date(job.postedAt).toLocaleString()}
+                    </p>
+                )}
                 <h2>{job.position}</h2><br/><br/>
                 <p><strong>Department:</strong> {job.department}</p>
                 <p><strong>Description:</strong> {job.description}</p>
@@ -74,8 +85,6 @@ const ApproveJobDetails = () => {
                 )}
                 <p><strong>Status:</strong> {job.status}</p>
                 <p><strong>Posted By:</strong> {job.postedBy} on {new Date(job.postedAt).toLocaleString()}</p>
-
-              
 
                 {(job.status !== 'Active' && job.status !== 'Denied') && (
                     <div className="button-container">

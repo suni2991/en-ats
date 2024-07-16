@@ -8,13 +8,13 @@ const { Option } = Select;
 const Reports = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [data, setData] = useState([]);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         let url = 'http://localhost:5040/candidatesreport';
         if (selectedCategory !== 'all') {
-          url += `?category=${selectedCategory}`;
+          url += `?selectedCategory=${selectedCategory}`;
         }
         const response = await axios.get(url);
         setData(response.data);
@@ -22,8 +22,9 @@ const Reports = () => {
         console.error('Error fetching data:', error);
       }
     };
+
     fetchData();
-  }, [selectedCategory]); // Include selectedCategory in dependency array to fetch data when it changes
+  }, [selectedCategory]);
 
   const userColumns = [
     {
@@ -42,10 +43,10 @@ const Reports = () => {
     },
     {
       name: "Name",
-      width: "150px",
+      
       selector: row => row.fullName,
       sortable: true,
-      cell: row => <span className="custom-cell" style={{textTransform:'capitalize'}}>{row.fullName}</span>
+      cell: row => <span className="custom-cell" style={{ textTransform: 'capitalize' }}>{row.fullName}</span>
     },
     {
       name: "Email",
@@ -60,7 +61,6 @@ const Reports = () => {
       center: true,
       selector: row => row.quantitative !== -1 ? row.quantitative : 0,
       sortable: true,
-      omit: selectedCategory === "Non-Technical",
     },
     {
       name: "Vocabulary",
@@ -68,7 +68,6 @@ const Reports = () => {
       center: true,
       selector: row => row.vocabulary !== -1 ? row.vocabulary : 0,
       sortable: true,
-      omit: selectedCategory === "Non-Technical",
     },
     {
       name: "Psychometric",
@@ -109,13 +108,14 @@ const Reports = () => {
       <Fetchtable
         url={`http://localhost:5040/candidatesreport`}
         columns={userColumns}
-        data={data} // Pass the fetched data to the Fetchtable component
+        title="Candidates Report"
+        filteredData={data} // Pass the fetched data to the Fetchtable component
         extraContent={
           <label>
             <Select
               value={selectedCategory}
               onChange={(value) => setSelectedCategory(value)}
-              style={{minWidth:'150px', margin:'2px'}}
+              style={{ minWidth: '150px', margin: '2px' }}
             >
               <Option value="all">All</Option>
               <Option value="Technical">Technical</Option>

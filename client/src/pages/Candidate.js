@@ -73,13 +73,20 @@ const Hire = () => {
       auth.excel,
       auth.accounts
     ].filter(score => score >= 0).length;
+    const historyNote = 'Assessment Completed'; // This should be dynamically set based on your use case
+  const historyUpdate = {
+    updatedBy: auth.fullName, // This could be set to the current user's name or ID
+    updatedAt: new Date(),
+    note: historyNote
+  };
   
     if (auth && completedTestsCount >= 4) {
       setIsChecked(false);
-      const userDataWithTimestamp = { ...useData, dateCreated: new Date(), status: "Assessment Done" }; // Add the dateCreated property
+      const userDataWithTimestamp = { ...useData, dateCreated: new Date() }; // Add the dateCreated property
       axios.put(`http://localhost:5040/candidate/${auth._id}`, {
         ...auth,
         ...userDataWithTimestamp,
+        ...historyUpdate,
       });
       navigate('/thankyou');
     } else {

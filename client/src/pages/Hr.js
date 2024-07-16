@@ -3,6 +3,7 @@ import { Tooltip, Button, Input, Modal } from 'antd';
 import { FiGrid } from "react-icons/fi";
 import { FaTableList } from "react-icons/fa6";
 import axios from 'axios';
+import useAuth from '../hooks/useAuth';
 import CandidateCard from '../components/CandidateCard';
 import CandidateTable from '../components/CandidateTable';
 import Registration from '../components/Registration';
@@ -12,6 +13,7 @@ const Hr = () => {
   const [view, setView] = useState('tile');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const {auth} = useAuth();
   const [candidates, setCandidates] = useState([]);
 
   const showModal = () => {
@@ -72,7 +74,7 @@ const Hr = () => {
         {view === 'tile' ? (
           <CandidateCard candidates={filteredCandidates} />
         ) : (
-          <CandidateTable />
+          <CandidateTable auth={auth}/>
         )}
       </div>
       <div>

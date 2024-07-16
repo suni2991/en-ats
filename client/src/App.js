@@ -19,7 +19,7 @@ import Reports from './pages/Reports.js';
 import './App.css'
 import Thankyou from './pages/Thankyou';
 import { FadeLoader } from "react-spinners";
-import TypingTest from './components/assessment/TypingTest.js';
+
 import Jobs from './pages/Jobs.js'
 import Statistics from './pages/Statistics.js';
 import Monitor from './pages/Monitor.js';
@@ -68,7 +68,7 @@ const App = () => {
             <Route path="/assessment/java" element={<JavaTest />} />
             <Route path="/assessment/accounts" element={<Accounts />} />
             <Route path="/assessment/excel" element={<Excel />} />
-            <Route path="/assessment/typing" element={<TypingTest />} />
+            
             <Route path='/jobs' element={<Jobs />} />
             <Route path='/hr' element={<HR />}/>
            

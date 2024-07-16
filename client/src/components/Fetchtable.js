@@ -30,7 +30,7 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData, extraConte
 
       fetchData();
     } else {
-      setData(filteredData);
+      setData(filteredData.reverse());
     }
   }, [url, filteredData]);
 
@@ -108,10 +108,10 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData, extraConte
           placeholder="Search by FullName/ Job Title or Location"
           value={searchQuery}
           onChange={handleSearch}
-          style={{ float: 'left', width: '50%', padding:'6px', margin:'2px' }}
+          style={{ float: 'left', width: '50%', padding: '6px', margin: '2px' }}
         />
         <Button 
-          style={{ background: '#A60808', margin: '0px',color: '#FFF', float: 'right' }} 
+          style={{ background: '#A60808', margin: '0px', color: '#FFF', float: 'right' }} 
           onClick={() => handleExportToExcel(filteredResults.length ? filteredResults : data)}
         >
           <MdOutlineDownload /> Download Excel

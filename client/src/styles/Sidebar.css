@@ -8,9 +8,10 @@
   display: flex;
   width: 100%;
   height: 100%;
+ 
   position: relative;
   border-style: solid 15px white;
- background: #eceff1;
+  background: #eceff1;
  
 }
 main{
@@ -18,15 +19,10 @@ main{
     min-height:100%;
    position:relative;
     background: #eceff1;
-    justify-content: center;
-    /* padding-left: 30px; */
     box-shadow: 3px white;
    display: flex;
-  
-    /* overflow: auto; */
-    /* margin-top: 5px !important; */
+  flex-direction: column;
     
-    /* border: 1px solid #00B4D2 ; */
 }
 main img{
  width: 50%;
@@ -118,43 +114,29 @@ main img{
   color:#00B4D2;
   font-weight: bold;
   transition: all 0.5ms;
-  
-  
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
-  /* text-shadow: rgb(9, 239, 255) 0.3em 0.3em 0.3em */
 }
 .active{
   font-weight: bold !important;
   color: #00B4D2;
   transition: cubic-bezier(2);
-  /* border: 1px solid #00B4D2 ; */
   background-color: #eceff1;
-  /* border-right: 2px solid #eceff1; */
-  /* box-shadow: 0px 0px 6px rgb(38, 39, 130); */
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   border-top-right-radius: -10px;
   border-bottom-right-radius: -10px;
-  /* text-shadow: rgb(4, 4, 4) 0.3em 0.3em 0.3em */
-
 } 
 
 .icon{
-  /* background-image: linear-gradient( #15f7f7, rgb(38, 39, 130)); */
   border-radius: 50%;
-
   padding: 6px;
-  /* margin-left: 7px; */
 }
 .active .icon{
-
   background-color: transparent;
   border-radius: 50%; 
-  color:#00B4D2; 
-  
+  color:#00B4D2;  
 }
-
 
 .icon-button{
   background-color: transparent;

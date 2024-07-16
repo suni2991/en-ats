@@ -92,7 +92,6 @@ function Registration({ closeModal }) {
   ];
 
   const handleSelectState = (selectedState) => {
-
     setFormData((prevState) => ({
       ...prevState,
       state: selectedState,
@@ -116,17 +115,13 @@ function Registration({ closeModal }) {
 
     if (!formData.firstName) {
       message.error('Enter First Name')
-
       isValid = false;
     } else if (!/^[A-Za-z]+$/.test(formData.firstName)) {
       message.error('Firstname should be of Alphabets without spaces & special Characters(!@#$%^,..)')
-
       isValid = false;
     }
-
     if (!formData.lastName) {
       message.error('Enter Last Name')
-
       isValid = false;
     } else if (!/^[A-Za-z]+$/.test(formData.lastName)) {
       message.error('Lastname should be of Alphabets without spaces & special Characters(!@#$%^,..)')
@@ -152,14 +147,11 @@ function Registration({ closeModal }) {
       isValid = false;
     } else if (!/^\d{10}$/.test(formData.contact)) {
       message.error('Enter Valid 10 - digit contact Number')
-
       isValid = false;
     }
 
-
     if (!formData.qualification || formData.qualification.length < 2) {
       message.error('Add Custom Qualification')
-
       isValid = false;
     }
 
@@ -185,7 +177,7 @@ function Registration({ closeModal }) {
   useEffect(() => {
     fetchJobPositions();
   }, []);
-
+ 
   const fetchJobPositions = async () => {
     try {
       const response = await axios.get('http://localhost:5040/viewjobs');
@@ -314,9 +306,14 @@ function Registration({ closeModal }) {
     const password = Math.random().toString(36).slice(-8);
     const createdAt = new Date();
 
+    const historyNote = 'Initial registration of an Applicant'; // This should be dynamically set based on your use case
+  const historyUpdate = {
+    updatedBy: formData.mgrName, // This could be set to the current user's name or ID
+    updatedAt: new Date(),
+    note: historyNote
+  };
 
-
-    const formDataWithFullName = {
+  const formDataWithFullName = {
       ...formData,
       fullName: fullName,
       username: username,
@@ -326,6 +323,7 @@ function Registration({ closeModal }) {
       mgrName: selectedHrName,
       mgrEmail: selectedHrEmail,
       currentLocation: formData.city,
+      history: [historyUpdate],
     };
     const isValid = validateForm();
     if (isValid) {
@@ -411,8 +409,20 @@ function Registration({ closeModal }) {
               <input type="file" name="resume" path={formData.resume}  onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
             </div>
             <div>
-            <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
-          </div>
+          <label>Reference</label><br />
+          <input type="text" name="reference" value={formData.reference} required onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
+           
+          <div>
+                  <DatePicker
+                    name="lwd"
+                    required
+                    value={formData.lwd ? moment(formData.lwd) : null}
+                    onChange={handleDateChange}
+                    placeholder="Choose Last Working Day"
+                    style={{ width: '320px', border: '1px solid #00B4D2', padding: '0px' }}
+                  />
+                </div>
+          
           </div>
 
          
@@ -465,27 +475,18 @@ function Registration({ closeModal }) {
   
                 </select>
               </div>
+              <div style={{marginTop:'38px'}}>
+              <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
+            </div>
                 
-                <div>
-                  <DatePicker
-                    name="lwd"
-                    required
-                    value={formData.lwd ? moment(formData.lwd) : null}
-                    onChange={handleDateChange}
-                    placeholder="Choose Last Working Day"
-                    style={{ width: '320px', border: '1px solid #00B4D2', padding: '0px', marginTop:'15px'  }}
-                  />
-                </div>
-             </div>
-          </div>
-           
-
-        
-        <div id='btnWrapper'>
-          <Button className='add-button' style={{ backgroundColor: '#A50707', marginLeft: '400px' }} type="submit" onClick={handleSubmit} >Submit</Button>
-          <center><p>* All fields are required</p></center>
+                
+                <div id='btnWrapper'>
+          <Button className='add-button' style={{ backgroundColor: '#A50707', float:'end', marginTop:'15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
         </div> 
+             </div>    
+          </div>
       </form>
+      <center><p>* All fields are required</p></center>
    </div>
   )
 }

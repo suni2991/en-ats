@@ -4,64 +4,65 @@ const Candidate = require('../model/CandidateModel')
 
 // POST route to create a new job post
 jobRouter.post('/createjob', async (req, res) => {
-    try {
-        const {
-            position,
-            department,
-            description,
-            responsibilities,
-            jobLocation,
-            vacancies,
-           
-            secondarySkills,
-            primarySkills,
-            experience,
-            
-            status
-        } = req.body;
-       
-        const newJob = new Job({
-            position,
-            department,
-            description,
-            responsibilities,
-            jobLocation,
-            vacancies,
-           
-            secondarySkills,
-            primarySkills,
-            experience,
-           
-            status,
-        });
+  const { position, department, description, jobLocation, vacancies, experience, primarySkills, secondarySkills, postedBy, status, mgrRole } = req.body;
 
+    const newJob = new Job({
+        position,
+        department,
+        description,
+        jobLocation,
+        vacancies,
+        experience,
+        primarySkills,
+        secondarySkills,
+        postedBy,
+        status,
+        mgrRole,
+        history: [{
+            updatedBy: postedBy,
+            updatedAt: new Date(),
+            note: 'New Job created & sent for Approval'
+        }]
+    });
+
+    try {
         const savedJob = await newJob.save();
         res.status(201).json(savedJob);
     } catch (error) {
-        res.status(500).json({ error: 'Error creating job post' });
+        res.status(500).json({ error: error.message });
     }
 });
 
 
 // GET route to fetch all job posts
 jobRouter.get('/viewjobs', async (req, res) => {
+  const { mgrRole, fullName } = req.query;
+ 
   try {
-      const jobPosts = await Job.find({ status: { $ne: 'Approval Pending' } });
-      res.status(200).json(jobPosts);
+    let jobs;
+    if (mgrRole === 'HR' || mgrRole === 'Admin') {
+      jobs = await Job.find({ status: { $nin: ['Approval Pending', 'Denied'] } });
+    } else {
+      const fullNameRegex = new RegExp(fullName, 'i');
+      jobs = await Job.find({ 
+        postedBy: fullNameRegex,
+        status: { $nin: ['Approval Pending', 'Denied'] }
+      });
+    }
+    res.json(jobs);
   } catch (error) {
-      console.error('Error fetching job posts:', error);
-      res.status(500).json({ error: 'Error fetching job posts' });
+    res.status(500).json({ error: 'Error fetching jobs' });
   }
 });
-
 //by postedBy
 jobRouter.get('/viewpositions/postedBy/:fullName', async (req, res) => {
   const { fullName } = req.params;
 
   try {
     // Retrieve jobs posted by the specific user and not in 'Approval Pending' status
+    const fullNameRegex = new RegExp(`^${fullName}$`, 'i');
     const jobPosts = await Job.find({ 
-      postedBy: fullName, 
+      postedBy: fullNameRegex, 
       status: { $ne: 'Approval Pending' } 
     });
     res.status(200).json(jobPosts);
@@ -72,16 +73,23 @@ jobRouter.get('/viewpositions/postedBy/:fullName', async (req, res) => {
 });
 
 jobRouter.get('/pendingjobs', async (req, res) => {
+  const { mgrRole, fullName } = req.query;
+
   try {
-      const jobPosts = await Job.find({ 
-          status: { 
-              $in: ['Approval Pending', 'Denied'] 
-          } 
+    let jobPosts;
+    if (mgrRole === 'HR' || mgrRole === 'Admin') {
+      jobPosts = await Job.find({ status: { $in: ['Approval Pending', 'Denied'] } });
+    } else {
+      const fullNameRegex = new RegExp(fullName, 'i');
+      jobPosts = await Job.find({ 
+        postedBy: fullNameRegex,
+        status: { $in: ['Approval Pending', 'Denied'] }
       });
-      res.status(200).json(jobPosts);
+    }
+    res.status(200).json(jobPosts);
   } catch (error) {
-      console.error('Error fetching job posts:', error);
-      res.status(500).json({ error: 'Error fetching job posts' });
+    console.error('Error fetching job posts:', error);
+    res.status(500).json({ error: 'Error fetching job posts' });
   }
 });
 
@@ -276,65 +284,53 @@ jobRouter.get('/vacancy-status/:position', async (req, res) => {
     }
   });
 
-//   jobRouter.put('/job-posts/:id', async (req, res) => {
-//     const jobId = req.params.id;
-//     const { status } = req.body;
-  
-//     try {
-//       const updatedJob = await Job.findByIdAndUpdate(jobId, { status }, { new: true });
-  
-//       if (!updatedJob) {
-//         return res.status(404).json({ message: 'Job not found' });
-//       }
-  
-//       res.status(200).json(updatedJob);
-//     } catch (error) {
-//       console.error('Error updating job status:', error);
-//       res.status(500).json({ message: 'Server error' });
-//     }
-//   });
-  
-jobRouter.put('/job-posts/:id', async (req, res) => {
+  jobRouter.put('/job-posts/:id', async (req, res) => {
     const jobId = req.params.id;
     const {
-      position,
-      department,
-      jobLocation,
-      experience,
-      vacancies,
-      postedBy,
-      status,
-      description,
-      responsibilities,
+        position,
+        department,
+        jobLocation,
+        experience,
+        vacancies,
+        postedBy,
+        status,
+        description,
+        responsibilities,
+        history
     } = req.body;
-  
+
     try {
-      const updatedJob = await Job.findByIdAndUpdate(
-        jobId,
-        {
-          position,
-          department,
-          jobLocation,
-          experience,
-          vacancies,
-          postedBy,
-          status,
-          description,
-          responsibilities
-        },
-        { new: true }
-      );
-  
-      if (!updatedJob) {
-        return res.status(404).json({ message: 'Job not found' });
-      }
-  
-      res.status(200).json(updatedJob);
+        // Find the job by ID
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        // Add a new history entry
+        if (history && history.length > 0) {
+            job.history.push(history[history.length - 1]);
+        }
+
+        // Update job details
+        job.position = position;
+        job.department = department;
+        job.jobLocation = jobLocation;
+        job.experience = experience;
+        job.vacancies = vacancies;
+        job.postedBy = postedBy;
+        job.status = status;
+        job.description = description;
+        job.responsibilities = responsibilities;
+
+        // Save the updated job
+        const updatedJob = await job.save();
+
+        res.status(200).json(updatedJob);
     } catch (error) {
-      console.error('Error updating job details:', error);
-      res.status(500).json({ message: 'Server error' });
+        console.error('Error updating job details:', error);
+        res.status(500).json({ message: 'Server error' });
     }
-  });
+});
   
   
 

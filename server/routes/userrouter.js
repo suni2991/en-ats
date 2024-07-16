@@ -30,7 +30,7 @@ userRouter.post('/register/candidate', async (req, res) => {
       accounts,
       excel,
       dob,
-     
+      history,
       role,
       state,
       district,
@@ -44,6 +44,7 @@ userRouter.post('/register/candidate', async (req, res) => {
       panelistName,
       round,
       evaluationDetails,
+      reference,
     } = req.body;
 
     const encryptedPassword = CryptoJS.AES.encrypt(
@@ -90,6 +91,8 @@ userRouter.post('/register/candidate', async (req, res) => {
       panelistName,
       round,
       evaluationDetails,
+      history,
+      reference,
     });
 
     const savedCandidate = await newCandidate.save();
@@ -134,10 +137,29 @@ userRouter.get('/hrs', async (req, res) => {
   res.json(docs)
 })
 
+// userRouter.get('/candidatesreport', async (req, res) => {
+//   const docs = await Candidate.find({ role: {$in: ["Applicant", "Candidate"] }});
+//   res.json(docs)
+// })
+
 userRouter.get('/candidatesreport', async (req, res) => {
-  const docs = await Candidate.find({ role: {$in: ["Applicant", "Candidate"] }});
-  res.json(docs)
-})
+  try {
+    const { selectedCategory } = req.query;
+    let query = { role: { $in: ["Applicant", "Candidate"] } };
+
+    if (selectedCategory && selectedCategory !== 'all') {
+      query.selectedCategory = selectedCategory;
+    }
+
+    const docs = await Candidate.find(query);
+    res.json(docs);
+  } catch (error) {
+    console.error('Error fetching candidates:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 
 userRouter.get('/candidates/:email', async (req, res) => {
   const docs = await Candidate.find({ email: req.params.email });
@@ -159,6 +181,8 @@ userRouter.get('/candidates/search/:query', async (req, res) => {
   });
   res.json(docs);
 });
+
+
 
 userRouter.get('/candidates-status', async (req, res) => {
   try {
@@ -219,20 +243,7 @@ userRouter.get('/users-by-role', async (req, res) => {
   }
 });
 
-// userRouter.get('/candidate/status/:status', async (req, res) => {
-//   const { status } = req.params;
-//   try {
-//     let docs;
-//     if (status === "Selected" || status === "Onboarded") {
-//       docs = await Candidate.find({ status });
-//     } else {
-//       docs = await Candidate.find();
-//     }
-//     res.json(docs);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error fetching candidates", error });
-//   }
-// });
+
 
 
 userRouter.get('/candidate/:status', async (req, res) => {
@@ -286,37 +297,14 @@ userRouter.get("/candidate/profile/:id", async (req, res) => {
 
 })
 
-//update records
-// userRouter.put('/candidate/:id', async (req, res) => {
-//   try {
-//     const _id = req.params.id;
-//     const result = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
-//     if (!result) {
-//       res.json({
-//         status: "FAILED",
-//         message: "record is not updated successfully",
-        
-//       })
-//     }
-//     else {
-//       res.json({
-//         status: "SUCCESS",
-//         message: "records updated successfully",
-//         data: result
-//       })
-//     }
-//   }
-//   catch (e) {
-//     res.send(e)
-//   }
-// })
 
 userRouter.put('/evaluate/:id', async (req, res) => {
-  const _id = req.params.id; // Correctly extracting the id
-  const { round, status } = req.body;
+  const { id } = req.params;
+  const { round, status, history } = req.body;
 
   try {
-    const candidate = await Candidate.findById(_id);
+    const candidate = await Candidate.findById(id);
+
     if (!candidate) {
       return res.status(404).json({ message: 'Candidate not found' });
     }
@@ -324,7 +312,16 @@ userRouter.put('/evaluate/:id', async (req, res) => {
     // Add new round details
     candidate.round.push(round);
 
-   
+    // Add history details
+    if (history && Array.isArray(history)) {
+      history.forEach(entry => {
+        candidate.history.push({
+          updatedBy: entry.updatedBy,
+          updatedAt: entry.updatedAt,
+          note: entry.note
+        });
+      });
+    }
 
     // Update status
     candidate.status = status;
@@ -338,72 +335,143 @@ userRouter.put('/evaluate/:id', async (req, res) => {
   }
 });
 
-userRouter.put('/feedback/:id', async (req, res) => {
-  const { id } = req.params;
+// userRouter.put('/feedback/:id', async (req, res) => {
+//   const { id } = req.params;
 
+//   try {
+//     const candidate = await Candidate.findById(id);
+//     if (!candidate) {
+//       return res.status(404).json({ message: 'Candidate not found' });
+//     }
+
+//     // Update candidate skills, status, and evaluation details
+//     candidate.skills = req.body.skills;
+//     candidate.status = req.body.status;
+//     candidate.evaluationDetails = req.body.evaluationDetails;
+//     candidate.lwd = req.body.lwd;
+//     candidate.joiningDate = req.body.joiningDate;
+//     candidate.role = req.body.role;
+//     candidate.dateCreated = req.body.dateCreated;
+//     await candidate.save();
+
+//     res.status(200).json({ message: 'Candidate evaluation updated successfully' });
+//   } catch (error) {
+//     console.error('Error updating candidate evaluation:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+//edited 16.7
+// userRouter.put('/evaluate/:id', async (req, res) => {
+//   try {
+//     const candidateId = req.params.id;
+//     const { roundIndex, feedback, feedbackProvided, skills } = req.body;
+
+//     // Validate required fields
+//     if (roundIndex === undefined || feedback === undefined || feedbackProvided === undefined) {
+//       return res.status(400).json({ message: 'roundIndex, feedback, and feedbackProvided are required' });
+//     }
+
+//     const candidate = await Candidate.findById(candidateId);
+//     if (!candidate) {
+//       return res.status(404).json({ message: 'Candidate not found' });
+//     }
+
+//     // Ensure the roundIndex is valid
+//     if (roundIndex < 0 || roundIndex >= candidate.round.length) {
+//       return res.status(400).json({ message: 'Invalid round index' });
+//     }
+
+//     // Update feedback and feedbackProvided
+//     candidate.round[roundIndex].feedback = feedback;
+//     candidate.round[roundIndex].feedbackProvided = feedbackProvided;
+
+//     // Update skills if provided
+//     if (skills && Array.isArray(skills)) {
+//       candidate.round[roundIndex].skills = skills;
+//     }
+
+//     await candidate.save();
+//     res.status(200).json(candidate);
+//   } catch (error) {
+//     console.error('Error updating feedback:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+userRouter.put('/evaluate/:id', async (req, res) => {
   try {
-    const candidate = await Candidate.findById(id);
+    const candidateId = req.params.id;
+    const { roundIndex, feedback, feedbackProvided, skills, history } = req.body;
+
+    // Validate required fields
+    if (roundIndex === undefined || feedback === undefined || feedbackProvided === undefined) {
+      return res.status(400).json({ message: 'roundIndex, feedback, and feedbackProvided are required' });
+    }
+
+    const candidate = await Candidate.findById(candidateId);
     if (!candidate) {
       return res.status(404).json({ message: 'Candidate not found' });
     }
 
-    // Update candidate skills, status, and evaluation details
-    candidate.skills = req.body.skills;
-    candidate.status = req.body.status;
-    candidate.evaluationDetails = req.body.evaluationDetails;
-    candidate.lwd = req.body.lwd;
-    candidate.joiningDate = req.body.joiningDate;
-    candidate.role = req.body.role;
-    candidate.dateCreated = req.body.dateCreated;
+    // Ensure the roundIndex is valid
+    if (roundIndex < 0 || roundIndex >= candidate.round.length) {
+      return res.status(400).json({ message: 'Invalid round index' });
+    }
+
+    // Update feedback and feedbackProvided
+    candidate.round[roundIndex].feedback = feedback;
+    candidate.round[roundIndex].feedbackProvided = feedbackProvided;
+
+    // Update skills if provided
+    if (skills && Array.isArray(skills)) {
+      candidate.round[roundIndex].skills = skills;
+    }
+
+    // Update history if provided
+    if (history && Array.isArray(history)) {
+      candidate.history = candidate.history.concat(history);
+    }
+
     await candidate.save();
-
-    res.status(200).json({ message: 'Candidate evaluation updated successfully' });
+    res.status(200).json(candidate);
   } catch (error) {
-    console.error('Error updating candidate evaluation:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error updating feedback:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-userRouter.put('/evaluate/:id', async (req, res) => {
+
+//to update interview feedback
+userRouter.put('/update-feedback/:id', async (req, res) => {
   try {
-    const { panelistName, round, meetingDate, skills, status } = req.body;
     const candidateId = req.params.id;
+    const { roundIndex, feedback, feedbackProvided, skills, history } = req.body;
 
-    // Update candidate details in the database
-    await Candidate.findByIdAndUpdate(
-      candidateId,
-      { $set: { round, meetingDate, skills, status, panelistName } },
-      { new: true }
-    );
+    if (roundIndex === undefined || feedback === undefined || feedbackProvided === undefined) {
+      return res.status(400).json({ message: 'RoundIndex, feedback, and feedbackProvided are required' });
+    }
 
-    res.status(200).json({ message: 'Candidate details updated successfully.' });
+    const candidate = await Candidate.findById(candidateId);
+    if (!candidate) {
+      return res.status(404).json({ message: 'Candidate not found' });
+    }
+
+    if (roundIndex < 0 || roundIndex >= candidate.round.length) {
+      return res.status(400).json({ message: 'Invalid round index' });
+    }
+
+    candidate.round[roundIndex].feedback = feedback;
+    candidate.round[roundIndex].feedbackProvided = feedbackProvided;
+
+    if (skills && Array.isArray(skills)) {
+      candidate.round[roundIndex].skills = skills;
+    }
+
+    await candidate.save();
+    res.status(200).json(candidate);
   } catch (error) {
-    console.error('Error updating candidate details:', error);
-    res.status(500).json({ message: 'Failed to update candidate details.' });
-  }
-});
-
-//no of applicants for this position
-
-
-userRouter.get('/candidates/position/:position', async (req, res) => {
-  try {
-    const position = req.params.position;
-    const count = await Candidate.countDocuments({ position });
-    res.status(200).json({ count });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-userRouter.get('/applicants/position/:position', async (req, res) => {
-  try {
-    const position = req.params.position;
-    const candidates = await Candidate.find({ position });
-    res.json(candidates);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching candidates', error });
+    console.error('Error updating feedback:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -423,13 +491,15 @@ userRouter.get('/candidates/counts', async (req, res) => {
   }
 });
 
+
 userRouter.get('/panelists/enfusian', async (req, res) => {
   try {
-    const panelist = await Candidate.find({ role: 'Panelist' }, 'fullName'); // Fetch fullName and email of HRs
-    res.json(panelist);
+    // Fetch panelists with role 'Panelist' but exclude 'Ops-Manager' role
+    const panelists = await Candidate.find({ role: 'Panelist', 'Ops-Manager': { $ne: true } }, 'fullName');
+    res.json(panelists);
   } catch (error) {
-    console.error('Error fetching Panelists:', error);f
-    res.status(500).json({ message: 'Error fetching Panelists' });
+    console.error('Error fetching panelists:', error);
+    res.status(500).json({ message: 'Error fetching panelists' });
   }
 });
 
@@ -447,8 +517,8 @@ userRouter.get('/panelist/:panelistName', async (req, res) => {
   const { panelistName } = req.params;
 
   try {
-    // Find candidates where panelistName matches and role is "Candidate"
-    const candidates = await Candidate.find({ panelistName, role: 'Applicant' });
+    // Find candidates where panelistName exists in any round
+    const candidates = await Candidate.find({ 'round.panelistName': panelistName, role: 'Applicant' });
 
     if (candidates.length === 0) {
       return res.status(404).json({ error: 'Candidates not found for this panelist' });
@@ -560,6 +630,44 @@ userRouter.get('/selected-candidates', async (req, res) => {
   }
 });
 
+userRouter.get('/applicants/position/:position', async (req, res) => {
+  try {
+    const { position } = req.params;
 
+    // Query the database for candidates with the specified position
+    const candidates = await Candidate.find({ position });
 
+    // Send the candidates as a JSON response
+    res.json(candidates);
+  } catch (error) {
+    console.error('Error fetching candidates:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+userRouter.put('/candidates/:id', async (req, res) => {
+  const { id } = req.params;
+  const { email, status, historyUpdate } = req.body; // Extract email, status, and historyUpdate from request body
+
+  try {
+    const candidate = await Candidate.findByIdAndUpdate(id, { email, status }, { new: true });
+
+    if (!candidate) {
+      return res.status(404).json({ error: 'Candidate not found' });
+    }
+
+    // Update history if historyUpdate is provided
+    if (historyUpdate) {
+      candidate.history.push(historyUpdate);
+    }
+
+    // Save the updated candidate document
+    await candidate.save();
+
+    res.json({ status: 'SUCCESS' });
+  } catch (error) {
+    console.error('Error updating candidate:', error);
+    res.status(500).json({ error: 'Failed to update candidate' });
+  }
+});
 module.exports = userRouter;

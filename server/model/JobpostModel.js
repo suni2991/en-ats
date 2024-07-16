@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
+const historySchema = new Schema({
+    updatedBy: { type: String },
+    updatedAt: { type: Date, default: Date.now  },
+    note: { type: String }
+});
 
 const jobSchema = new mongoose.Schema({
     position: {
@@ -46,21 +52,20 @@ const jobSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: "Active"
+        default: "Approval Pending"
     },
     postedBy: {
         type: String,
         default: "HR"
     },
-    // vacancyStatus: {
-    //     type: [vacancyStatusSchema],
-    //     default: [
-    //         { status: 'Selected', count: 0 },
-    //         { status: 'Rejected', count: 0 },
-    //         { status: 'L1', count: 0 },
-    //         { status: 'L2', count: 0 },
-    //     ]
-    // }
+   mgrRole:{
+    type: String,
+    enum:["HR", "Admin", "Ops-Manager"]
+   },
+   history:[historySchema],
+
+   
+
 });
 
 const Job = mongoose.model('Job', jobSchema);
