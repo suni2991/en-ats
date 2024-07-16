@@ -144,8 +144,8 @@ const JobPositionPieChart = () => {
   const colors = ['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#a4de6c', '#d0ed57'];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ paddingLeft: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFFF', height: '48px', width: '74vw' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth:'100%' }}>
+      <div style={{ paddingLeft: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFFF', height: '48px', width: '76vw' }}>
         <Select
           placeholder="Select Department"
           style={{ width: 240 }}

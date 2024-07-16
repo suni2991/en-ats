@@ -29,13 +29,9 @@ const JobDashboard = ({ jobs }) => {
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
-        const counts = await Promise.all(jobs.map(async (job) => {
-          const countResponse = await axios.get(`http://localhost:5040/candidates/position/${job.position}`);
-          return { position: job.position, count: countResponse.data.count };
-        }));
-
-        const countsObject = counts.reduce((acc, { position, count }) => {
-          acc[position] = count;
+        const response = await axios.get(`http://localhost:5040/positions`);
+        const countsObject = response.data.reduce((acc, job) => {
+          acc[job.position] = job.registeredCandidates;
           return acc;
         }, {});
 
@@ -47,6 +43,7 @@ const JobDashboard = ({ jobs }) => {
 
     fetchCandidateCounts();
   }, [jobs]);
+
 
   const showApplicants = async (position) => {
     try {
@@ -146,7 +143,7 @@ const JobDashboard = ({ jobs }) => {
         pageSize={pageSize}
         total={jobs.length}
         onChange={(page) => setCurrentPage(page)}
-        style={{ textAlign: 'right', marginTop: '20px', background:'#fff', width: '74vw', height: '40px'}}
+        style={{ textAlign: 'right', marginTop: '20px', background:'#fff', maxWidth: '100%', height: '40px'}}
       />
       <Modal
         title={`Applicants for ${selectedJob}`}

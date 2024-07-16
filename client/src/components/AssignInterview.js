@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Drawer, Form, Button, Select, message, DatePicker, Checkbox } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'; // Import the icons
+import { Drawer, Form, Button, Select, message, DatePicker, Checkbox, Input } from 'antd';
 import PanelistDropdown from './PanelistDropdown';
 
 const { Option } = Select;
+const { TextArea } = Input;
 
-const AssignInterview = ({ open, onClose, candidateId }) => {
+const AssignInterview = ({ open, onClose, candidateId, auth }) => {
+  const defaultSkills = ['Communication', 'Teamwork', 'Problem Solving']; // Default static skills
   const [candidateData, setCandidateData] = useState({});
   const [formData, setFormData] = useState({
     round: {
@@ -14,12 +15,14 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
       panelistName: '',
       interviewDate: null,
       feedbackProvided: false,
-      skills: [],
+      skills: [...defaultSkills.map(skill => ({ name: skill, rating: 0, comments: 'No comments' }))], // Initialize with default skills
     },
+    note: '',
   });
 
   const [jobData, setJobData] = useState([]);
   const [childrenDrawer, setChildrenDrawer] = useState(false);
+  const [isHRRound, setIsHRRound] = useState(false);
 
   const fetchJobData = async () => {
     try {
@@ -31,23 +34,23 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
   };
 
   const handleSubskillChange = (subskill, checked) => {
-    if (checked) {
-      setFormData((prevData) => ({
+    setFormData((prevData) => {
+      const updatedSkills = checked
+        ? [...prevData.round.skills, { name: subskill, rating: 0, comments: 'No comments' }]
+        : prevData.round.skills.filter((skill) => skill.name !== subskill);
+      
+      // Ensure default skills are always included
+      const skillsWithDefaults = [...new Set([...defaultSkills, ...updatedSkills.map(skill => skill.name)])]
+        .map(name => updatedSkills.find(skill => skill.name === name) || { name, rating: 0, comments: 'No comments' });
+      
+      return {
         ...prevData,
         round: {
           ...prevData.round,
-          skills: [...prevData.round.skills, { name: subskill, rating: 0, comments: 'No comments' }],
+          skills: skillsWithDefaults,
         },
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        round: {
-          ...prevData.round,
-          skills: prevData.round.skills.filter((skill) => skill.name !== subskill),
-        },
-      }));
-    }
+      };
+    });
   };
 
   const handleDrawerClose = () => {
@@ -58,8 +61,9 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
         panelistName: '',
         interviewDate: null,
         feedbackProvided: false,
-        skills: [],
+        skills: [...defaultSkills.map(skill => ({ name: skill, rating: 0, comments: 'No comments' }))], // Reset with default skills
       },
+      note: '',
     });
   };
 
@@ -71,7 +75,7 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
         const response = await axios.get(`http://localhost:5040/candidate/profile/${candidateId}`);
         const data = response.data;
         if (data.status === 'SUCCESS') {
-          const { fullName, position } = data.data;
+          const { fullName, position, status } = data.data;
           setCandidateData(data.data);
           setFormData((prevData) => ({
             ...prevData,
@@ -103,27 +107,28 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
 
   const handleSubmit = async () => {
     try {
-      const { round } = formData;
+      const { round, note } = formData;
       const status = round.roundName;
-
-      const requestBody = {
-        round,
-        status,
+      const historyNote = note || `${status} assigned to Applicant`;
+      const historyUpdate = {
+        updatedBy: auth.fullName,
+        updatedAt: new Date(),
+        note: historyNote,
       };
-
+      const requestBody = { round, status, history: [historyUpdate] }; // Ensure history is an array with a single object
       const response = await axios.put(`http://localhost:5040/evaluate/${candidateId}`, requestBody);
-
       if (response.status === 200) {
-        message.success('Interview assigned successfully.');
+        message.success('Interview assigned successfully');
         onClose();
       } else {
         throw new Error('Failed to assign interview. Please try again later.');
       }
     } catch (error) {
       console.error('Error updating interview details:', error);
-      message.error(error.message || 'Failed to assign interview. Please try again later.');
+      message.error(error.message || 'Failed to assign intervicew. Please try again later.');
     }
   };
+  
 
   const showChildrenDrawer = () => {
     setChildrenDrawer(true);
@@ -141,24 +146,33 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
     return [];
   };
 
+  const handleRoundChange = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      round: { ...prevData.round, roundName: value },
+    }));
+    setIsHRRound(value === 'HR' && candidateData.status === 'Processing');
+  };
+
+  const handleNoteChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      note: e.target.value,
+    }));
+  };
+
   return (
     <Drawer title="Assign Interview" open={open} onClose={handleDrawerClose} width={600}>
       <div>
         <h1>Full Name: {candidateData.fullName}</h1>
         <h2>Position: {candidateData.position}</h2>
       </div>
+      <br/>
+      <br/>
       <Form layout="vertical" onFinish={handleSubmit}>
         <PanelistDropdown onSelect={handlePanelistSelect} />
         <Form.Item label="Round" name="round">
-          <Select
-            onChange={(value) =>
-              setFormData((prevData) => ({
-                ...prevData,
-                round: { ...prevData.round, roundName: value },
-              }))
-            }
-            value={formData.round.roundName}
-          >
+          <Select onChange={handleRoundChange} value={formData.round.roundName}>
             <Option value="L1">L1 Round</Option>
             <Option value="L2">L2 Round</Option>
             <Option value="HR">HR Round</Option>
@@ -175,6 +189,15 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
             value={formData.round.interviewDate}
           />
         </Form.Item>
+        {isHRRound && (
+          <Form.Item label="Note" name="note">
+            <TextArea
+              onChange={handleNoteChange}
+              value={formData.note}
+              placeholder="Enter note for assigning HR round. Mention if the Applicant is referred by any Enfusian"
+            />
+          </Form.Item>
+        )}
         <Button type="primary" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} htmlType="submit">
           Assign Interview
         </Button>
@@ -190,9 +213,9 @@ const AssignInterview = ({ open, onClose, candidateId }) => {
               </Checkbox>
             ))}
           </div>
-          <div style={{ marginTop: 20 }}>
-            <Button type="primary" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} onClick={onChildrenDrawerClose}>
-              Ok
+          <div style={{ marginTop: 16 }}>
+            <Button type="primary" onClick={onChildrenDrawerClose}>
+              Submit
             </Button>
           </div>
         </Drawer>

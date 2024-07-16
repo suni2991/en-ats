@@ -6,7 +6,8 @@ import Fetchtable from '../components/Fetchtable';
 import AssignInterview from '../components/AssignInterview';
 import { Tooltip } from 'antd';
 
-const CandidateTable = () => {
+
+const CandidateTable = ({auth}) => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -128,6 +129,7 @@ const CandidateTable = () => {
       <AssignInterview 
         open={showDrawer} 
         onClose={handleDrawerClose} 
+        auth={auth}
         candidateId={selectedCandidate ? selectedCandidate._id : ''}
       />
       {profileOpen && 

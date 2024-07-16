@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import '../styles/Regform.css';
 import HrDropdown from './HrDropdown';
 import { Button, message, Select } from 'antd';
 
+
 const { Option } = Select;
 
 const Postjob = () => {
+    const { role } = useParams(); // Get the role from the URL params
+    const [mgrRole, setMgrRole] = useState('');
+
+    useEffect(() => {
+        setMgrRole(role); // Set the mgrRole state with the role from params
+        setFormData((prevData) => ({
+            ...prevData,
+            mgrRole: role,
+        }));
+    }, [role]);
     const [formData, setFormData] = useState({
         position: '',
         department: '',
@@ -17,7 +29,8 @@ const Postjob = () => {
         secondarySkills: [],
         experience: '',
         postedBy: '',
-        status:'Approval Pending'
+        status:'Approval Pending',
+        mgrRole: role,
     });
 
     const [selectedHrName, setSelectedHrName] = useState('');
@@ -49,14 +62,13 @@ const Postjob = () => {
 
 
     const isNumeric = (value) => /^[0-9]*$/.test(value);
-
     const validateField = (name, value) => {
         if (name === 'experience' || name === 'vacancies') {
             if (!isNumeric(value)) {
                 message.error(`${name} should contain only numbers`);
                 return false;
             }
-        } else if (name !== 'department' && name !== 'postedBy') {
+        } else if (name !== 'department' && name !== 'postedBy' && name !== 'position' && name !== 'responsibilities' && name !== 'description') {
             if (!isAlphabetic(value)) {
                 message.error(`${name} should contain only alphabets, spaces, commas, +, or -`);
                 return false;
@@ -64,6 +76,7 @@ const Postjob = () => {
         }
         return true;
     };
+    
 
     const handlePaste = (e) => {
         // Get pasted data

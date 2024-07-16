@@ -79,7 +79,7 @@ const Createhr = ({closeModal}) => {
   return (
     <div>
       
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className='formContainer'>
           <div className='block'>
             <div>

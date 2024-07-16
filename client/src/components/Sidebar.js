@@ -172,7 +172,7 @@ const Sidebar = ({ children }) => {
                   )
                 );
               }else if (auth.role === 'Ops-Manager') {
-                return ( item.name === 'Job Dashboard' || item.name === 'Feedback') && (
+                return ( item.name === 'Dashboard' || item.name === 'Feedback') && (
                     <NavLink to={item.path} key={index} className="link" activeclassname="active">
                       <div className="icon">{item.icon}</div>
                       <div className="link-text">{item.name}</div>
@@ -187,6 +187,7 @@ const Sidebar = ({ children }) => {
         )}
         <div className='main-container'>
         <main>
+        <div>
           {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Panelist' || auth.role === 'Ops-Manager') && (
             <nav className="navbar">
               <div className="navbar-right">
@@ -208,15 +209,18 @@ const Sidebar = ({ children }) => {
             </nav>
           )}
           {auth && <ProfilePage open={profileVisible} auth={auth} setAuth={setAuth} onClose={() => setProfileVisible(false)} />}
-
+          </div>
+          <div className='main-content'>
           {children}
+          </div>
         
-        </main>
         {auth.role && (
           <div className="footer">
             @ 2024 EnFuse Solutions. All rights Reserved
           </div>
+          
         )}
+        </main>
         </div>
       </div>
      
