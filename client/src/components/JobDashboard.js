@@ -127,11 +127,7 @@ const JobDashboard = ({ jobs }) => {
                   >
                     <div className="card-title" style={{ cursor: "pointer" }}>
                       <span
-                        style={{
-                          fontWeight: "bold",
-                          textDecoration: "underline",
-                          color: "#00B4D2",
-                        }}
+                      style={{ fontWeight: 'bold', textDecoration: 'underline', color: '#00B4D2', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }} 
                         onClick={() => showApplicants(job.position)}
                       >
                         {job.position}
@@ -145,23 +141,12 @@ const JobDashboard = ({ jobs }) => {
                       {job.postedBy}
                     </p>
                     <p>
-                      <strong>Department:</strong> {job.department}
+                      <strong>Department:</strong>{job.department}
                     </p>
                     <p>
-                      <strong>Vacancies:</strong>
-                      {job.vacancies}
+                      <strong>Vacancies:</strong>{job.vacancies}
                     </p>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      <span
-                        style={{
-                          color: colors[job.status],
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {job.status}
-                      </span>
-                    </p>
+                    <p><strong>Status:</strong> <span style={{ color: colors[job.status], fontWeight: 'bold' }}> {job.status}</span></p>
                   </Card>
                   <Card
                     className="card-back"
@@ -189,13 +174,7 @@ const JobDashboard = ({ jobs }) => {
         pageSize={pageSize}
         total={jobs.length}
         onChange={(page) => setCurrentPage(page)}
-        style={{
-          textAlign: "right",
-          marginTop: "20px",
-          background: "#fff",
-          maxWidth: "100%",
-          height: "40px",
-        }}
+        style={{ textAlign: 'right', marginTop: '20px', background:'#fff', maxWidth: '100%', height: '40px'}}
       />
       <Modal
         title={`Applicants for ${selectedJob}`}
