@@ -131,6 +131,9 @@ const JobDashboard = ({ jobs }) => {
                           fontWeight: "bold",
                           textDecoration: "underline",
                           color: "#00B4D2",
+                          textOverflow: 'ellipsis', 
+                          whiteSpace: 'nowrap', 
+                          overflow: 'hidden'
                         }}
                         onClick={() => showApplicants(job.position)}
                       >
@@ -192,9 +195,10 @@ const JobDashboard = ({ jobs }) => {
         style={{
           textAlign: "right",
           marginTop: "20px",
+          paddingTop: '10px', 
           background: "#fff",
           maxWidth: "100%",
-          height: "40px",
+          height: "50px",
         }}
       />
       <Modal

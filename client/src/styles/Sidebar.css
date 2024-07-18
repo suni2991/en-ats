@@ -72,6 +72,12 @@ main img{
   /* margin: 2px 0px 0px 0px; */
   
 }
+
+.main-content {
+  min-height: 90vh;
+}
+
+
 @media screen and (max-width:480px){
   .sidebar{
     width: 110px !important;
@@ -220,11 +226,14 @@ main img{
 
 .footer {
   position:relative;
-   bottom:0;
+  bottom:0;
   padding: 25px;
   background: #1a2763;
   color: #fff;
   text-align: center;
   height: 20px !important; /* Adjust as needed */
-  width: 100%;
+  width: 94%;
+  /* width: -webkit-calc(100% - 189px);
+  width:    -moz-calc(100% - 189px);
+  width:         calc(100% - 189px); */
 }

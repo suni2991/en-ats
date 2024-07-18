@@ -5,7 +5,7 @@
     align-content: center;
     padding: 5px;
     gap:2rem;
-    margin: 40px 40px 5px 40px;
+    margin: 50px 30px 10px 0px;
     
 }
 .block{
@@ -27,7 +27,7 @@
 .table-container button{
     width: initial!important;
     /* margin: 10px; */
-    padding: 2px 15px 0px 15px;
+    /* padding: 2px 15px 0px 15px; */
     
 }
 select{
@@ -46,29 +46,45 @@ select{
 .block label{
     background-color: white;
     padding: 2px;
-    top: 2px;
-    left: 15px;
+    top: -12px;
+    left: 10px;
     position: absolute;
     color: #00B4D2;
+    display: block;
+    z-index: 999;
 }
+
+/* .block label{
+    background-color: white;
+    padding: 10px 0;
+    color: #00B4D2;
+    display: block;
+} */
 
 #desc label{
     background-color: white;
     padding: 2px;
-    top: 4px;
-    left: 50px;
+    top: -12px;
+    left: 30px;
     position: absolute;
     color: #00B4D2;
+    display: block;
+    z-index: 999;
 }
 
 .block input{
     border: 1px solid #00B4D2;
-    padding: 5px;
-    width: 24vw !important;
+    padding: 10px 10px;
+    width: 20vw !important;
 }
 
 .block select{
     border: 1px solid #00B4D2;
-    width: 25vw !important;
-    padding: 5px;
+    width: 21vw !important;
+    padding: 10px 10px;
+    margin-bottom: 20px;
+}
+
+.ant-select-selection-placeholder, .ant-select-selection-item {
+    padding-top: 7px;
 }

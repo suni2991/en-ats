@@ -222,7 +222,7 @@ const JobPositionPieChart = () => {
       <br />
       <div className="pie-chart">
         {filteredVacanciesData && filteredVacanciesData.length > 0 ? (
-          <PieChart width={400} height={400}>
+          <PieChart width={400} height={400} cursor="pointer">
             <Pie
               dataKey="value"
               data={filteredVacanciesData}
@@ -232,6 +232,7 @@ const JobPositionPieChart = () => {
               fill="#8884d8"
               label
               onClick={handleClick}
+              style={{outline: 'none'}}
             >
               {filteredVacanciesData.map((entry, index) => (
                 <Cell
@@ -254,11 +255,11 @@ const JobPositionPieChart = () => {
             positionData.length > 0 &&
             Object.keys(positionData[0]).length > 0 ? (
               <>
-                <p style={{ float: "right", marginBottom: "10px" }}>
+                <div style={{ float: 'right', marginBottom: '10px', border: '1px solid #cccccc', padding: '5px', background: '#f9f9f9', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>
                   {clickedPosition}
                   {jobLocation && `, ${jobLocation}`}
-                </p>
-                <BarChart width={500} height={300} data={positionData}>
+                </div>
+                <BarChart width={500} height={350} data={positionData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
