@@ -30,11 +30,7 @@ userRouter.post("/register/candidate", async (req, res) => {
       accounts,
       excel,
       dob,
-<<<<<<< HEAD
-
-=======
       history,
->>>>>>> 4019d5a646d8d0c0f67a15d81a80cb6be5a0d6be
       role,
       state,
       district,
@@ -233,7 +229,7 @@ userRouter.get("/candidate/:status", async (req, res) => {
 
 
 
-userRouter.get('/candidates/:fullName', async (req, res) => {
+
 
 userRouter.get("/candidates/:fullName", async (req, res) => {
   try {
