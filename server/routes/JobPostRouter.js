@@ -57,11 +57,11 @@ jobRouter.get('/viewjobs', async (req, res) => {
 
 
 jobRouter.get('/pendingjobs', async (req, res) => {
-  const { mgrRole, fullName } = req.query;
+  const { role, fullName } = req.query;
 
   try {
     let jobPosts;
-    if (mgrRole === 'HR' || mgrRole === 'Admin') {
+    if (role === 'HR' || role === 'Admin') {
       jobPosts = await Job.find({ status: { $in: ['Approval Pending', 'Denied'] } });
     } else {
       const fullNameRegex = new RegExp(fullName, 'i');

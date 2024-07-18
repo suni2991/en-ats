@@ -159,142 +159,141 @@ const Postjob = () => {
 
     return (
         <div>
-            <form>
-                <div className='formContainer'>
-                    <div className='block'>
-                        <div>
-                            <label htmlFor="position">Job Title:<span className='require'>*</span></label><br />
-                            <input
-                                type="text"
-                                name="position"
-                                id="position"
-                                value={formData.position}
-                                onChange={handleChange}
-                                required
-                                placeholder='Job Title'
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="vacancies">Vacancies:<span className='require'>*</span></label><br />
-                            <input
-                                type="text"
-                                name="vacancies"
-                                id="vacancies"
-                                value={formData.vacancies}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="primarySkills">Primary Skills:<span className='require'>*</span></label><br />
-                            <Select
-                                mode="tags"
-                                style={{ width: '25vw' }}
-                                placeholder="Enter skill & press Enter Key"
-                                value={formData.primarySkills}
-                                onChange={(value) => handleSelectChange('primarySkills', value)}
-                                required
-                            >
-                                {formData.primarySkills.map((skill, index) => (
-                                    <Option key={index} value={skill}>
-                                        {skill}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </div>
-                        <div>
-                            <label htmlFor="department">Department:<span className='require'>*</span></label><br />
-                            <select
-                                name="department"
-                                id="department"
-                                value={formData.department}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="">Select Department</option>
-                                {deptList.map((dept, index) => (
-                                    <option key={index} value={dept}>
-                                        {dept}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                    <div className='block'>
-                        <div>
-                            <label htmlFor="jobLocation">Location:<span className='require'>*</span></label><br />
-                            <input
-                                type="text"
-                                name="jobLocation"
-                                id="jobLocation"
-                                value={formData.jobLocation}
-                                onChange={handleChange}
-                                required
-                                onPaste={handlePaste}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="experience">Experience:<span className='require'>*</span></label><br />
-                            <input
-                                type="text"
-                                name="experience"
-                                id="experience"
-                                value={formData.experience}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="secondarySkills">Secondary Skills:</label><br />
-                            <Select
-                                mode="tags"
-                                style={{ width: '25vw' }}
-                                placeholder="Enter skill & press Enter Key"
-                                value={formData.secondarySkills}
-
-                                onChange={(value) => handleSelectChange('secondarySkills', value)}
-                            >
-                                {formData.secondarySkills.map((skill, index) => (
-                                    <Option key={index} value={skill}>
-                                        {skill}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </div>
-                        <div style={{ width: '25vw', padding: '15px' }}>
-                            <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} style={{ width: '100%' }} />
-                        </div>
-                    </div>
-                </div>
-                <div id='desc'>
+        <form>
+            <div className='formContainer'>
+                <div className='block'>
                     <div>
-                        <label htmlFor="rolesNResponsibilities">Roles & Responsibilities:</label><br />
-                        <textarea
-                            name="responsibilities"
-                            id="responsibilities"
-                            value={formData.responsibilities}
+                        <label htmlFor="position">Job Title:<span className='require'>*</span></label>
+                        <input
+                            type="text"
+                            name="position"
+                            id="position"
+                            value={formData.position}
                             onChange={handleChange}
-
-                            style={{ width: '90%', height: '60px', padding: '5px', marginLeft: '35px', border: '1px solid #00B4D2' }}
+                            required
                         />
                     </div>
                     <div>
-                        <label htmlFor="description">Job Description:</label><br />
-                        <textarea
-                            name="description"
-                            id="description"
-                            value={formData.description}
-
+                        <label htmlFor="vacancies">Vacancies:<span className='require'>*</span></label>
+                        <input
+                            type="text"
+                            name="vacancies"
+                            id="vacancies"
+                            value={formData.vacancies}
                             onChange={handleChange}
-                            style={{ width: '90%', height: '110px', padding: '5px', marginLeft: '35px', border: '1px solid #00B4D2' }}
+                            required
                         />
                     </div>
+                    <div>
+                        <label htmlFor="primarySkills">Primary Skills:<span className='require'>*</span></label>
+                        <Select
+                            mode="tags"
+                            style={{ width: '25vw' }}
+                            placeholder="Enter skill & press Enter Key"
+                            value={formData.primarySkills}
+                            onChange={(value) => handleSelectChange('primarySkills', value)}
+                            required
+                        >
+                            {formData.primarySkills.map((skill, index) => (
+                                <Option key={index} value={skill}>
+                                    {skill}
+                                </Option>
+                            ))}
+                        </Select>
+                    </div>
+                    <div style={{ marginTop: '25px' }}>
+                        <label htmlFor="department">Department:<span className='require'>*</span></label>
+                        <select
+                            name="department"
+                            id="department"
+                            value={formData.department}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Select Department</option>
+                            {deptList.map((dept, index) => (
+                                <option key={index} value={dept}>
+                                    {dept}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
-                <div id='btnWrapper'>
-                    <Button type="submit" className="form-btn" onClick={handleSubmit}>Submit</Button>
+                <div className='block'>
+                    <div>
+                        <label htmlFor="jobLocation">Location:<span className='require'>*</span></label>
+                        <input
+                            type="text"
+                            name="jobLocation"
+                            id="jobLocation"
+                            value={formData.jobLocation}
+                            onChange={handleChange}
+                            required
+                            onPaste={handlePaste}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="experience">Experience:<span className='require'>*</span></label>
+                        <input
+                            type="text"
+                            name="experience"
+                            id="experience"
+                            value={formData.experience}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="secondarySkills">Secondary Skills:</label>
+                        <Select
+                            mode="tags"
+                            style={{ width: '25vw' }}
+                            placeholder="Enter skill & press Enter Key"
+                            value={formData.secondarySkills}
+
+                            onChange={(value) => handleSelectChange('secondarySkills', value)}
+                        >
+                            {formData.secondarySkills.map((skill, index) => (
+                                <Option key={index} value={skill}>
+                                    {skill}
+                                </Option>
+                            ))}
+                        </Select>
+                    </div>
+                    <div style={{ marginTop: '25px' }}>
+                        <label></label>
+                        <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} style={{ width: '100%' }} />
+                    </div>
                 </div>
-            </form>
+            </div>
+            <div id='desc'>
+            <div>
+            <label htmlFor="rolesNResponsibilities">Roles & Responsibilities:</label>
+            <textarea
+                name="responsibilities"
+                id="responsibilities"
+                value={formData.responsibilities}
+                onChange={handleChange}
+                onPaste={handlePaste}
+                style={{ width: '92%', height: '60px', padding: '10px 5px', margin: '0 0 20px 20px', border: '1px solid #00B4D2' }}
+            />
         </div>
+                <div>
+                    <label htmlFor="description">Job Description:</label>
+                    <textarea
+                        name="description"
+                        id="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        style={{ width: '92%', height: '70px', padding: '10px 5px', margin: '0 0 20px 20px', border: '1px solid #00B4D2' }}
+                    />
+                </div>
+            </div>
+            <div id='btnWrapper'>
+                <Button type="submit" className="form-btn" onClick={handleSubmit}>Submit</Button>
+            </div>
+        </form>
+    </div>
     );
 };
 

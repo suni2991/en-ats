@@ -357,6 +357,7 @@ userRouter.get('/panelists/enfusian', async (req, res) => {
 userRouter.get('/hrs/name', async (req, res) => {
   try {
     const hrs = await Candidate.find({ role: 'HR' }, 'fullName email');
+    res.json(hrs);
   } catch (error) {
     console.error('Error fetching HRs:', error);
     res.status(500).json({ message: 'Error fetching HRs' });
