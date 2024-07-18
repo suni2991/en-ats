@@ -305,31 +305,6 @@ userRouter.put('/evaluate/:id', async (req, res) => {
   }
 });
 
-userRouter.put('/feedback/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const candidate = await Candidate.findById(id);
-    if (!candidate) {
-      return res.status(404).json({ message: 'Candidate not found' });
-    }
-
-    candidate.skills = req.body.skills;
-    candidate.status = req.body.status;
-    candidate.evaluationDetails = req.body.evaluationDetails;
-    candidate.lwd = req.body.lwd;
-    candidate.joiningDate = req.body.joiningDate;
-    candidate.role = req.body.role;
-    candidate.dateCreated = req.body.dateCreated;
-    await candidate.save();
-
-    res.status(200).json({ message: 'Candidate evaluation updated successfully' });
-  } catch (error) {
-    console.error('Error updating candidate evaluation:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 userRouter.put('/update-feedback/:id', async (req, res) => {
   try {
     const candidateId = req.params.id;
