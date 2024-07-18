@@ -33,15 +33,15 @@ main().catch((err) => {
   console.error("Error connecting to MongoDB:", err);
 });
 
-app.use((req, res, next) => {
-  if (req.originalUrl === "/api/login") {
-    next();
-  } else if (req.originalUrl === "/viewjobs") {
-    next();
-  } else {
-    CheckTokenMiddleware(req, res, next);
-  }
-});
+// app.use((req, res, next) => {
+//   if (req.originalUrl === "/api/login") {
+//     next();
+//   } else if (req.originalUrl === "/viewjobs") {
+//     next();
+//   } else {
+//     CheckTokenMiddleware(req, res, next);
+//   }
+// });
 
 app.use(userRouter);
 app.use(emailRouter);

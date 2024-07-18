@@ -12,8 +12,7 @@ import {
 } from "recharts";
 import * as XLSX from "xlsx";
 import { MdOutlineDownload } from "react-icons/md";
-import { Select, Button } from 'antd';
-
+import { Select, Button } from "antd";
 
 const { Option } = Select;
 const token = process.env.REACT_APP_JWT_TOKEN;
@@ -54,26 +53,15 @@ const JobPositionPieChart = () => {
       try {
         if (selectedDepartment) {
           const response = await axios.get(
-            `http://localhost:5040/positions-with-vacancies/${selectedDepartment}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+            `http://localhost:5040/positions-with-vacancies/${selectedDepartment}`
           );
           setVacanciesData(response.data.positions);
 
-          
           const onboardedCounts = {};
           await Promise.all(
             response.data.positions.map(async (pos) => {
               const res = await axios.get(
-                `http://localhost:5040/vacancy-status/${pos.position}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
+                `http://localhost:5040/vacancy-status/${pos.position}`
               );
               const onboardedCount = res.data
                 .filter((item) => item._id === "Onboarded")
@@ -96,12 +84,7 @@ const JobPositionPieChart = () => {
       try {
         if (clickedPosition) {
           const response = await axios.get(
-            `http://localhost:5040/vacancy-status/${clickedPosition}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+            `http://localhost:5040/vacancy-status/${clickedPosition}`
           );
           const formattedData = response.data.reduce((acc, item) => {
             acc[item._id] = item.count;
@@ -139,12 +122,7 @@ const JobPositionPieChart = () => {
 
       const vacancyStatusPromises = positionsData.map(async (position) => {
         const response = await axios.get(
-          `http://localhost:5040/vacancy-status/${position.position}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          `http://localhost:5040/vacancy-status/${position.position}`
         );
         return { position: position.position, status: response.data };
       });
@@ -201,8 +179,25 @@ const JobPositionPieChart = () => {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth:'100%' }}>
-      <div style={{ paddingLeft: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFFF', height: '48px', width: '76vw' }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        maxWidth: "100%",
+      }}
+    >
+      <div
+        style={{
+          paddingLeft: "5px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: "#FFFF",
+          height: "48px",
+          width: "76vw",
+        }}
+      >
         <Select
           placeholder="Select Department"
           style={{ width: 240 }}
