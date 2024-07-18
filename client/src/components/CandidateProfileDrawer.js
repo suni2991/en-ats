@@ -46,7 +46,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
       case 'HR':
         return '#92DCE5';
       default:
-        return '#51C4D3'; // Default color
+        return '#51C4D3'; 
     }
   };
 
@@ -112,12 +112,15 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
             <div>
               <p><span style={labelStyle}>Status</span><span style={valueStyle}>: {candidateData.status}</span></p>
               <p><span style={labelStyle}>HR</span><span style={valueStyle}>: {candidateData.mgrName}</span></p>
+              <p><span style={labelStyle}>Reference</span><span style={valueStyle}>: {candidateData.reference}</span></p>
             </div>
           </Panel>
         </Collapse>
-        <Button type="primary" onClick={handleHistoryDrawerOpen} style={{ marginTop: '20px' }}>
+        <center>
+        <Button type="primary" onClick={handleHistoryDrawerOpen} style={{ marginTop: '20px', background:'#00B4D2' }}>
           View History
         </Button>
+        </center>
       </Drawer>
 
       <Drawer

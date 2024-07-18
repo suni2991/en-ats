@@ -18,14 +18,13 @@ const CandidateTable = ({auth}) => {
   };
 
   const handleView = (row) => {
-    console.log("Viewing candidate:", row); // Debugging log
+    
     setSelectedCandidate(row);
     setShowDrawer(false);
     setProfileOpen(true);
   };
   
   const handleAssign = (row) => {
-    console.log("Assigning candidate:", row); // Debugging log
     setSelectedCandidate(row);
     setShowDrawer(true);
     setProfileOpen(false);

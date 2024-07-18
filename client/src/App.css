@@ -793,7 +793,7 @@ h2::after{
 /* Panelist.css */
 /* Panelist.css */
 .modalContent {
-  max-height: 80vh; /* Ensures modal content is never taller than 80% of the viewport height */
+  height: 100%; /* Ensures modal content is never taller than 80% of the viewport height */
   
   padding: 10px; 
   width: 100%;/* Adds some padding around the content */

@@ -1,8 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import '../styles/Applicant.css';
-import { useNavigate } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
 import Swal from 'sweetalert2'
 import axios from 'axios';
 import HrDropdown from './HrDropdown';
@@ -11,8 +9,7 @@ import '../styles/Regform.css';
 import moment from 'moment';
 
 function Registration({ closeModal }) {
-  const navigate = useNavigate()
-  const auth = useAuth();
+
   const [positions, setPositions] = useState([]);
   const [qualifications, setQualifications] = useState([])
   const [customPosition, setCustomPosition] = useState([]);
@@ -40,6 +37,7 @@ function Registration({ closeModal }) {
     state: '',
     district: '',
     city: '',
+    reference: '',
   })
 
   const [selectedHrName, setSelectedHrName] = useState('');
@@ -177,7 +175,7 @@ function Registration({ closeModal }) {
   useEffect(() => {
     fetchJobPositions();
   }, []);
- 
+
   const fetchJobPositions = async () => {
     try {
       const response = await axios.get('http://localhost:5040/viewjobs');
@@ -306,14 +304,14 @@ function Registration({ closeModal }) {
     const password = Math.random().toString(36).slice(-8);
     const createdAt = new Date();
 
-    const historyNote = 'Initial registration of an Applicant'; // This should be dynamically set based on your use case
-  const historyUpdate = {
-    updatedBy: formData.mgrName, // This could be set to the current user's name or ID
-    updatedAt: new Date(),
-    note: historyNote
-  };
+    const historyNote = 'Initial registration of an Applicant';
+    const historyUpdate = {
+      updatedBy: formData.mgrName,
+      updatedAt: new Date(),
+      note: historyNote
+    };
 
-  const formDataWithFullName = {
+    const formDataWithFullName = {
       ...formData,
       fullName: fullName,
       username: username,
@@ -322,6 +320,7 @@ function Registration({ closeModal }) {
       createdAt: createdAt,
       mgrName: selectedHrName,
       mgrEmail: selectedHrEmail,
+      reference: formData.reference,
       currentLocation: formData.city,
       history: [historyUpdate],
     };
@@ -335,21 +334,20 @@ function Registration({ closeModal }) {
         }
       })
       const data = await response.json();
-      console.log(data);
-      // const emailData = {
-      //   role: data.role,
-      //   confirmPassword: data.confirmPassword,
-      //   email: data.email,
-      //   fullName: data.fullName,
-      // };
 
-      // const emailResponse = await axios.post('http://localhost:5040/user/register', emailData);
-      // console.log(emailResponse.data);
+      const emailData = {
+        role: data.role,
+        confirmPassword: data.confirmPassword,
+        email: data.email,
+        fullName: data.fullName,
+      };
+
+      const emailResponse = await axios.post('http://localhost:5040/user/register', emailData);
+
       if (response.status === 201) {
         message.success('Applicant saved successfully')
         closeModal();
-        // auth.empCount += 1;
-        // navigate('/hr')
+
       } else if (response.status === 409) {
         message.error('Email or Username already in use')
 
@@ -406,88 +404,88 @@ function Registration({ closeModal }) {
 
             <div>
               <label>Resume<span className='require'>*</span></label><br />
-              <input type="file" name="resume" path={formData.resume}  onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
+              <input type="file" name="resume" path={formData.resume} onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
             </div>
             <div>
-          <label>Reference</label><br />
-          <input type="text" name="reference" value={formData.reference} required onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
-           
-          <div>
-                  <DatePicker
-                    name="lwd"
-                    required
-                    value={formData.lwd ? moment(formData.lwd) : null}
-                    onChange={handleDateChange}
-                    placeholder="Choose Last Working Day"
-                    style={{ width: '320px', border: '1px solid #00B4D2', padding: '0px' }}
-                  />
-                </div>
-          
-          </div>
+              <label>Reference</label><br />
+              <input type="text" name="reference" value={formData.reference} required onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
 
-         
-            <div className='block' style={{ float: 'right' }}>
-              <div>
-                <label>Last Name<span className='require'>*</span></label><br />
-                <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange}></input>
-                </div>
-
-              <div><label>Contact Number<span className='require'>*</span></label><br />
-                <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No."></input>
-                </div>
-                <div><label>Relevant Experience<span className='require'>*</span></label><br />
-                  <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="in years"></input>
-                </div>
-                <div><label>Qualification<span className='require'>*</span></label><br />
-                  <select name="qualification" value={formData.qualification} style={{ width: '100%' }} onChange={handleChange} placeholder="Enter Highest qualification">
-                    <option value="">Choose One</option>
-                    <option value="Btech">Btech</option>
-                    <option value="PhD">PhD</option>
-                    <option value="PG">PG</option>
-                    <option value="UG">UG</option>
-                  </select>
-                </div>
-                <div>
-                  <label>District</label><br />
-                  <input
-                    type="text"
-                    name="district"
-                    value={formData.district}
-                    maxLength={20}
-                    placeholder="Enter district"
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div><label>Applied Position<span className='require'>*</span></label><br />
-                  <select name="position" style={{ width: '100%', marginBottom:'15px' }} value={formData.position} onChange={handleChange}>
-                    <option value="">Choose One</option>
-                    {positions.map((position) => (
-                      <option key={position._id} value={position.position}>{position.position}</option>
-                    ))}
-                  </select>
-                </div>
-                <div><label>Category<span className='require'>*</span></label><br />
-                <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
-                  <option value="">Choose One</option>
-                <option value="Techincal">Technical</option>
-                  <option value="Non-Technical">Non-Technical</option>
-  
-                </select>
-              </div>
-              <div style={{marginTop:'38px'}}>
-              <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
+            <div>
+              <DatePicker
+                name="lwd"
+                required
+                value={formData.lwd ? moment(formData.lwd) : null}
+                onChange={handleDateChange}
+                placeholder="Choose Last Working Day"
+                style={{ width: '320px', border: '1px solid #00B4D2', padding: '0px' }}
+              />
             </div>
-                
-                
-                <div id='btnWrapper'>
-          <Button className='add-button' style={{ backgroundColor: '#A50707', float:'end', marginTop:'15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
-        </div> 
-             </div>    
+
           </div>
+
+
+          <div className='block' style={{ float: 'right' }}>
+            <div>
+              <label>Last Name<span className='require'>*</span></label><br />
+              <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange}></input>
+            </div>
+
+            <div><label>Contact Number<span className='require'>*</span></label><br />
+              <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No."></input>
+            </div>
+            <div><label>Relevant Experience<span className='require'>*</span></label><br />
+              <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="in years"></input>
+            </div>
+            <div><label>Qualification<span className='require'>*</span></label><br />
+              <select name="qualification" value={formData.qualification} style={{ width: '100%' }} onChange={handleChange} placeholder="Enter Highest qualification">
+                <option value="">Choose One</option>
+                <option value="Btech">Btech</option>
+                <option value="PhD">PhD</option>
+                <option value="PG">PG</option>
+                <option value="UG">UG</option>
+              </select>
+            </div>
+            <div>
+              <label>District</label><br />
+              <input
+                type="text"
+                name="district"
+                value={formData.district}
+                maxLength={20}
+                placeholder="Enter district"
+                onChange={handleChange}
+              />
+            </div>
+
+            <div><label>Applied Position<span className='require'>*</span></label><br />
+              <select name="position" style={{ width: '100%', marginBottom: '15px' }} value={formData.position} onChange={handleChange}>
+                <option value="">Choose One</option>
+                {positions.map((position) => (
+                  <option key={position._id} value={position.position}>{position.position}</option>
+                ))}
+              </select>
+            </div>
+            <div><label>Category<span className='require'>*</span></label><br />
+              <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
+                <option value="">Choose One</option>
+                <option value="Techincal">Technical</option>
+                <option value="Non-Technical">Non-Technical</option>
+
+              </select>
+            </div>
+            <div style={{ marginTop: '38px' }}>
+              <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} required />
+            </div>
+
+
+            <div id='btnWrapper'>
+              <Button className='add-button' style={{ backgroundColor: '#A50707', float: 'end', marginTop: '15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
+            </div>
+          </div>
+        </div>
       </form>
       <center><p>* All fields are required</p></center>
-   </div>
+    </div>
   )
 }
 

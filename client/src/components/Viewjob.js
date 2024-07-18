@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Fetchtable from './Fetchtable'; // Assuming Fetchtable is a custom component for fetching data
-import { Modal, Button, Spin, Tooltip, Typography,List, Select, message, Input, Row, Col, Drawer } from 'antd';
+import Fetchtable from './Fetchtable';
+import { Modal, Button, Spin, Tooltip, List, Select, message, Input, Row, Col, Drawer } from 'antd';
 import { TiEyeOutline } from "react-icons/ti";
 import axios from 'axios';
-import moment from 'moment'; 
+import moment from 'moment';
 import { CiEdit } from "react-icons/ci";
 import { AiOutlineCheckCircle, AiOutlineDelete } from "react-icons/ai";
 
@@ -16,7 +16,7 @@ const Viewjob = ({ auth }) => {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [candidateCounts, setCandidateCounts] = useState({});
+
   const [selectedStatus, setSelectedStatus] = useState('');
   const [isEditClicked, setIsEditClicked] = useState(false);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
@@ -33,7 +33,7 @@ const Viewjob = ({ auth }) => {
     postedBy: '',
     status: '',
     description: '',
-    note: '' // Add note field
+    note: ''
   });
 
   const colors = {
@@ -49,10 +49,10 @@ const Viewjob = ({ auth }) => {
           params: { mgrRole: auth.role, fullName: auth.fullName }
         });
         setJobs(response.data);
-        setFilteredJobs(response.data); // Initially set filtered jobs same as fetched jobs
+        setFilteredJobs(response.data);
       } catch (error) {
         console.error('Error fetching jobs:', error);
-        // Handle error state or display a notification
+
       }
     };
 
@@ -154,11 +154,11 @@ const Viewjob = ({ auth }) => {
         setFilteredJobs(updatedJobs);
         message.success('Job deleted successfully!');
       } else {
-        console.error('Job deletion failed:', response.data);
+
         message.error('Failed to delete job. Please check server logs for details.');
       }
     } catch (error) {
-      console.error('Error deleting job:', error);
+
       message.error('An error occurred while deleting the job', error);
     } finally {
       setIsConfirmModalVisible(false);
@@ -210,7 +210,7 @@ const Viewjob = ({ auth }) => {
 
   const handleHistoryClick = (job) => {
     if (job.history) {
-      // Sort history data in descending order by date
+
       const sortedHistory = job.history.reverse();
       setHistoryData(sortedHistory);
     } else {
@@ -249,7 +249,7 @@ const Viewjob = ({ auth }) => {
                   selectedJob.position
                 )}
               </h2>
-              <div style={{ display: 'flex', justifyContent:'flex-end'}}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button style={{ marginRight: '10px' }} onClick={() => handleHistoryClick(selectedJob)}>
                   History
                 </Button>
@@ -283,42 +283,42 @@ const Viewjob = ({ auth }) => {
                 )}
               </div>
             </div>
-            <Row gutter={16} style={{marginTop:'30px'}}>
+            <Row gutter={16} style={{ marginTop: '30px' }}>
               <Col span={24}>
                 <Row gutter={16}>
-  <Col span={8}>
-    <div>
-      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Department:</h3>
-      <p>{isEditClicked ? (
-        <Input name="department" value={editFields.department} onChange={handleInputChange} />
-      ) : (
-        selectedJob.department
-      )}</p>
-    </div>
-  </Col>
-  <Col span={8}>
-    <div>
-      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Location:</h3>
-      <p>{isEditClicked ? (
-        <Input name="jobLocation" value={editFields.jobLocation} onChange={handleInputChange} />
-      ) : (
-        selectedJob.jobLocation
-      )}</p>
-    </div>
-  </Col>
-  <Col span={8}>
-    <div>
-      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Experience:</h3>
-      <p>{isEditClicked ? (
-        <Input name="experience" value={editFields.experience} onChange={handleInputChange} />
-      ) : (
-        selectedJob.experience
-      )}</p>
-    </div>
-  </Col>
-</Row>
+                  <Col span={8}>
+                    <div>
+                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Department:</h3>
+                      <p>{isEditClicked ? (
+                        <Input name="department" value={editFields.department} onChange={handleInputChange} />
+                      ) : (
+                        selectedJob.department
+                      )}</p>
+                    </div>
+                  </Col>
+                  <Col span={8}>
+                    <div>
+                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Location:</h3>
+                      <p>{isEditClicked ? (
+                        <Input name="jobLocation" value={editFields.jobLocation} onChange={handleInputChange} />
+                      ) : (
+                        selectedJob.jobLocation
+                      )}</p>
+                    </div>
+                  </Col>
+                  <Col span={8}>
+                    <div>
+                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Experience:</h3>
+                      <p>{isEditClicked ? (
+                        <Input name="experience" value={editFields.experience} onChange={handleInputChange} />
+                      ) : (
+                        selectedJob.experience
+                      )}</p>
+                    </div>
+                  </Col>
+                </Row>
                 <Row gutter={16}>
-                 <Col span={8}>
+                  <Col span={8}>
                     <div>
                       <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Vacancies:</h3>
                       <p>{isEditClicked ? (
@@ -338,9 +338,9 @@ const Viewjob = ({ auth }) => {
                       )}</p>
                     </div>
                   </Col>
-                 
+
                 </Row>
-                
+
                 <Row gutter={16}>
                   <Col span={24}>
                     <div>
@@ -378,35 +378,35 @@ const Viewjob = ({ auth }) => {
       >
         <p>Are you sure you want to delete this job?</p>
       </Modal>
-    <Drawer
-  title="History Data"
-  placement="left"
-  closable={true}
-  onClose={handleDrawerClose}
-  open={isDrawerVisible}
-  width={400}
->
-  {historyData.length > 0 ? (
-    <List
-      dataSource={historyData}
-      renderItem={(item, index) => (
-        <List.Item key={index}>
-          <List.Item.Meta
-            title={`Date: ${moment(item.date).format('DD MMMM YYYY, HH:mm')}`}
-            description={
-              <>
-                <p>Comments: {item.note}</p>
-                <p>Updated By: {item.updatedBy}</p>
-              </>
-            }
+      <Drawer
+        title="History Data"
+        placement="left"
+        closable={true}
+        onClose={handleDrawerClose}
+        open={isDrawerVisible}
+        width={400}
+      >
+        {historyData.length > 0 ? (
+          <List
+            dataSource={historyData}
+            renderItem={(item, index) => (
+              <List.Item key={index}>
+                <List.Item.Meta
+                  title={`Date: ${moment(item.date).format('DD MMMM YYYY, HH:mm')}`}
+                  description={
+                    <>
+                      <p>Comments: {item.note}</p>
+                      <p>Updated By: {item.updatedBy}</p>
+                    </>
+                  }
+                />
+              </List.Item>
+            )}
           />
-        </List.Item>
-      )}
-    />
-  ) : (
-    <p>No history available</p>
-  )}
-</Drawer>
+        ) : (
+          <p>No history available</p>
+        )}
+      </Drawer>
     </div>
   );
 };

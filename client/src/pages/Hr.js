@@ -54,12 +54,14 @@ const Hr = () => {
         <Tooltip title="Add Applicant" color='cyan'>
           <Button onClick={showModal} type='text' className='add-button'>Add New Candidate</Button>
         </Tooltip>
-        <Input
-          placeholder="Search Candidates"
-          value={searchQuery}
-          onChange={handleSearch}
-          className='ant-searchIn'
-        />
+        {view === 'tile' && (
+          <Input
+            placeholder="Search Candidates"
+            value={searchQuery}
+            onChange={handleSearch}
+            className='ant-searchIn'
+          />
+        )}
         <div className='toggle-button'>
           <Button onClick={toggleView} type='text' icon={<FiGrid />} className={view === 'tile' ? 'active-button' : ''}>
             Tile View
