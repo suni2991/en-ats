@@ -72,6 +72,12 @@ main img{
   /* margin: 2px 0px 0px 0px; */
   
 }
+
+.main-content {
+  min-height: 90vh;
+}
+
+
 @media screen and (max-width:480px){
   .sidebar{
     width: 110px !important;

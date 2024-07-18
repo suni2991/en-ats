@@ -82,8 +82,9 @@ select{
     border: 1px solid #00B4D2;
     width: 21vw !important;
     padding: 10px 10px;
+    margin-bottom: 20px;
 }
 
-.ant-select-selection-placeholder {
+.ant-select-selection-placeholder, .ant-select-selection-item {
     padding-top: 7px;
 }

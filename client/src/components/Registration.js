@@ -364,7 +364,7 @@ function Registration({ closeModal }) {
     <div>
 
       <form onSubmit={handleSubmit}>
-        <div className='formContainer'>
+        <div className='formContainer' style={{ gap: '4rem' }}>
 
           <div className='block' >
             <div>
@@ -407,17 +407,18 @@ function Registration({ closeModal }) {
               <input type="file" name="resume" path={formData.resume}  onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
             </div>
             <div>
-          <label>Reference</label><br />
+          <label>Reference</label>
           <input type="text" name="reference" value={formData.reference} required onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
            
           <div>
+          <label>Last Working Day</label>
                   <DatePicker
                     name="lwd"
                     required
                     value={formData.lwd ? moment(formData.lwd) : null}
                     onChange={handleDateChange}
                     placeholder="Choose Last Working Day"
-                    style={{ width: '320px', border: '1px solid #00B4D2', padding: '0px' }}
+                    style={{ width: '320px', border: '1px solid #00B4D2', padding: '5px 10px 0 10px', }}
                   />
                 </div>
           
@@ -426,17 +427,17 @@ function Registration({ closeModal }) {
          
             <div className='block' style={{ float: 'right' }}>
               <div>
-                <label>Last Name<span className='require'>*</span></label><br />
+                <label>Last Name<span className='require'>*</span></label>
                 <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange}></input>
                 </div>
 
-              <div><label>Contact Number<span className='require'>*</span></label><br />
+              <div><label>Contact Number<span className='require'>*</span></label>
                 <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No."></input>
                 </div>
-                <div><label>Relevant Experience<span className='require'>*</span></label><br />
+                <div><label>Relevant Experience<span className='require'>*</span></label>
                   <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="in years"></input>
                 </div>
-                <div><label>Qualification<span className='require'>*</span></label><br />
+                <div><label>Qualification<span className='require'>*</span></label>
                   <select name="qualification" value={formData.qualification} style={{ width: '100%' }} onChange={handleChange} placeholder="Enter Highest qualification">
                     <option value="">Choose One</option>
                     <option value="Btech">Btech</option>
@@ -446,7 +447,7 @@ function Registration({ closeModal }) {
                   </select>
                 </div>
                 <div>
-                  <label>District</label><br />
+                  <label>District</label>
                   <input
                     type="text"
                     name="district"
@@ -457,15 +458,15 @@ function Registration({ closeModal }) {
                   />
                 </div>
 
-                <div><label>Applied Position<span className='require'>*</span></label><br />
-                  <select name="position" style={{ width: '100%', marginBottom:'15px' }} value={formData.position} onChange={handleChange}>
+                <div><label>Applied Position<span className='require'>*</span></label>
+                  <select name="position" style={{ width: '100%', marginBottom:'25px' }} value={formData.position} onChange={handleChange}>
                     <option value="">Choose One</option>
                     {positions.map((position) => (
                       <option key={position._id} value={position.position}>{position.position}</option>
                     ))}
                   </select>
                 </div>
-                <div><label>Category<span className='require'>*</span></label><br />
+                <div><label>Category<span className='require'>*</span></label>
                 <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
                   <option value="">Choose One</option>
                 <option value="Techincal">Technical</option>
@@ -473,15 +474,15 @@ function Registration({ closeModal }) {
   
                 </select>
               </div>
-              <div style={{marginTop:'38px'}}>
+              <div style={{marginTop:'10px'}}>
               <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
             </div>
                 
                 
-                <div id='btnWrapper'>
-          <Button className='add-button' style={{ backgroundColor: '#A50707', float:'end', marginTop:'15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
-        </div> 
              </div>    
+          </div>
+          <div id='btnWrapper'>
+            <Button className='add-button' style={{ backgroundColor: '#A50707', float:'end', marginTop:'15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
           </div>
       </form>
       <center><p>* All fields are required</p></center>

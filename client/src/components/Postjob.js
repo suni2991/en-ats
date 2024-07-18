@@ -201,7 +201,7 @@ const Postjob = () => {
                                 ))}
                             </Select>
                         </div>
-                        <div style={{ marginTop: '25px', marginBottom: '20px' }}>
+                        <div style={{ marginTop: '25px' }}>
                             <label htmlFor="department">Department:<span className='require'>*</span></label>
                             <select
                                 name="department"
@@ -284,9 +284,8 @@ const Postjob = () => {
                             name="description"
                             id="description"
                             value={formData.description}
-
                             onChange={handleChange}
-                            style={{ width: '90%', height: '110px', padding: '5px', marginLeft:'35px', border: '1px solid #00B4D2' }}
+                            style={{ width: '92%', height: '70px', padding: '10px 5px', margin: '0 0 20px 20px', border: '1px solid #00B4D2' }}
                         />
                     </div>
                 </div>
