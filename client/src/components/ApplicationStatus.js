@@ -8,7 +8,7 @@ const ApplicationStatus = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/candidates-status'); // Assuming the endpoint is correctly set up
+        const response = await axios.get('/candidates-status'); 
         setCandidatesData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -18,7 +18,7 @@ const ApplicationStatus = () => {
     fetchData();
   }, []);
 
-  // Check if candidatesData is empty or null
+  
   if (!candidatesData || candidatesData.length === 0) {
     return <div>No data available</div>;
   }

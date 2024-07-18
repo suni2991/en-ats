@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-// import '../styles/UserRoles.css'; // Import CSS file for styling
+
 
 const UsersByRole = () => {
   const [usersByRole, setUsersByRole] = useState([]);
@@ -19,7 +19,7 @@ const UsersByRole = () => {
   }, []);
 
   const getCardColor = (index) => {
-    const colors = ['#969596', '#1a2763', '#00B4D2', '#ba11a4']; // Define your colors here
+    const colors = ['#969596', '#1a2763', '#00B4D2', '#ba11a4']; 
     return colors[index % colors.length];
   };
 

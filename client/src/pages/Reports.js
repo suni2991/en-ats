@@ -108,8 +108,8 @@ const Reports = () => {
       <Fetchtable
         url={`http://localhost:5040/candidatesreport`}
         columns={userColumns}
-        title="Candidates Report"
-        filteredData={data} // Pass the fetched data to the Fetchtable component
+       
+        filteredData={data} 
         extraContent={
           <label>
             <Select

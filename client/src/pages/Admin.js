@@ -75,7 +75,7 @@ const Admin = () => {
     try {
       await axios.delete(`http://localhost:5040/candidate/${id}`);
       message.success('Candidate deleted successfully');
-      // Refresh the table data
+   
       setRefreshKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error('Error deleting candidate:', error);
@@ -89,7 +89,7 @@ const Admin = () => {
         <Fetchtable 
           url={`http://localhost:5040/hrs`}
           columns={userColumns}
-          key={refreshKey} // Use refreshKey to trigger a re-fetch
+          key={refreshKey}
           extraContent={<Tooltip title="Create HR/Panelist" color='cyan'><Button onClick={showModal} className='add-button' type='primary' style={{marginTop:'1px'}} >Create User</Button></Tooltip>}
         />
       </div>

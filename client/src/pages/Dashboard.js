@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Modal, Table, Tooltip, Typography } from 'antd';
+import { Button, Input, Modal, Table, Tooltip } from 'antd';
 import { FiGrid } from 'react-icons/fi';
 import { FaTableList } from 'react-icons/fa6';
 import axios from 'axios';
@@ -9,10 +9,10 @@ import Viewjob from '../components/Viewjob';
 import Postjob from '../components/Postjob';
 import JobPositionPieChart from '../components/JobPosition';
 
-const { Text } = Typography;
+
 
 const Dashboard = () => {
-  const { auth } = useAuth(); // Ensure auth object is properly used
+  const { auth } = useAuth();
   const [view, setView] = useState('tile');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,7 +30,7 @@ const Dashboard = () => {
         setJobs(response.data.reverse());
       } catch (error) {
         console.error('Error fetching jobs:', error);
-        // Handle error state or display a notification
+        
       }
     };
 
@@ -48,7 +48,7 @@ const Dashboard = () => {
         setPendingJobs(response.data.reverse());
       } catch (error) {
         console.error('Error fetching pending jobs:', error);
-        // Handle error state or display a notification
+       
       }
     };
 
@@ -151,7 +151,7 @@ const Dashboard = () => {
       </div>
 
       <Modal
-        open={isModalVisible} // Correct prop name is visible, not open
+        open={isModalVisible}
         onCancel={closeModal}
         footer={null}
         title={<h2>Add New Job Posting</h2>}

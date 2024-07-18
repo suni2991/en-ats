@@ -115,7 +115,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
         updatedAt: new Date(),
         note: historyNote,
       };
-      const requestBody = { round, status, history: [historyUpdate] }; // Ensure history is an array with a single object
+      const requestBody = { round, status, history: [historyUpdate] }; 
       const response = await axios.put(`http://localhost:5040/evaluate/${candidateId}`, requestBody);
       if (response.status === 200) {
         message.success('Interview assigned successfully');
@@ -214,7 +214,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
             ))}
           </div>
           <div style={{ marginTop: 16 }}>
-            <Button type="primary" onClick={onChildrenDrawerClose}>
+            <Button type="primary" style={{background:'#00B4D2'}} onClick={onChildrenDrawerClose}>
               Submit
             </Button>
           </div>
