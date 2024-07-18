@@ -294,8 +294,6 @@ userRouter.put('/evaluate/:id', async (req, res) => {
         });
       });
     }
-
-
     candidate.status = status;
 
     await candidate.save();
@@ -332,49 +330,6 @@ userRouter.put('/feedback/:id', async (req, res) => {
   }
 });
 
-
-userRouter.put('/evaluate/:id', async (req, res) => {
-  try {
-    const candidateId = req.params.id;
-    const { roundIndex, feedback, feedbackProvided, skills, history } = req.body;
-
-
-    if (roundIndex === undefined || feedback === undefined || feedbackProvided === undefined) {
-      return res.status(400).json({ message: 'roundIndex, feedback, and feedbackProvided are required' });
-    }
-
-    const candidate = await Candidate.findById(candidateId);
-    if (!candidate) {
-      return res.status(404).json({ message: 'Candidate not found' });
-    }
-
-
-    if (roundIndex < 0 || roundIndex >= candidate.round.length) {
-      return res.status(400).json({ message: 'Invalid round index' });
-    }
-
-    candidate.round[roundIndex].feedback = feedback;
-    candidate.round[roundIndex].feedbackProvided = feedbackProvided;
-
-    if (skills && Array.isArray(skills)) {
-      candidate.round[roundIndex].skills = skills;
-    }
-
-
-    if (history && Array.isArray(history)) {
-      candidate.history = candidate.history.concat(history);
-    }
-
-    await candidate.save();
-    res.status(200).json(candidate);
-  } catch (error) {
-    console.error('Error updating feedback:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-
-//to update interview feedback
 userRouter.put('/update-feedback/:id', async (req, res) => {
   try {
     const candidateId = req.params.id;
