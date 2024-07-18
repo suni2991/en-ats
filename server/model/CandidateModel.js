@@ -69,7 +69,7 @@ const candidateSchema = new mongoose.Schema({
   dob: { type: Date },
   meetingDate: { type: Date },
   history: [historySchema],
-  refernce:{type: String},
+  reference:{type: String},
 });
 
 const Candidate = mongoose.model('Candidate', candidateSchema);

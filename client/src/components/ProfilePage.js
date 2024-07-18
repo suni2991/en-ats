@@ -63,7 +63,7 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
       setEditedData(updatedResponse.data);
       message.success("Your updates will be applied shortly after review.");
     } catch (error) {
-      console.error("Error updating profile:", error);
+      
       message.error("Error updating profile");
     }
   };
@@ -94,18 +94,20 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
         width={400}
       >
         {editMode ? (
-          <Form layout="vertical" onFinish={handleUpdate} initialValues={{ ...auth, dob: null }}>
-            <StyledFormItem label="DoB" name="dob" rules={[{ validator: (_, value) => validateDate(value) }]}>
-              <DatePicker
-                onChange={handleDateChange}
-                format="DD-MM-YYYY"
-                placeholder="Select Date"
-              />
-            </StyledFormItem>
+          <Form layout="vertical" onFinish={handleUpdate} initialValues={{ ...auth, dob: auth.dob ? moment(auth.dob) : null }}>
+          <StyledFormItem label="DoB" name="dob" rules={[{ validator: (_, value) => validateDate(value) }]}>
+          <DatePicker
+            onChange={handleDateChange}
+            format="DD-MM-YYYY"
+            placeholder="Select Date"
+            defaultValue={editMode ? null : moment(auth.dob)}
+          />
+        </StyledFormItem>
+        
             <StyledFormItem label="Qualification" name="qualification" rules={[{ pattern: /^[a-zA-Z,@-]*$/, message: "Invalid characters" }]}>
               <Input />
             </StyledFormItem>
-            <StyledFormItem label="Experience" name="totalExperience" rules={[{ pattern: /^[a-zA-Z,@-]*$/, message: "Invalid characters" }]}>
+            <StyledFormItem label="Experience" name="totalExperience" rules={[{ pattern: /^[0-4]?\d$/, message: "Experience must be a number between 0 and 49" }]}>
               <Input />
             </StyledFormItem>
             <StyledFormItem label="Contact" name="contact" rules={[

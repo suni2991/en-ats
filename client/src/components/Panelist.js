@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+
 import { Button, Rate, Input, Tabs } from 'antd';
 
 const { TabPane } = Tabs;
 
-const Panelist = ({ candidateData }) => {
-  const navigate = useNavigate();
+const Panelist = ({ candidateData, auth }) => {
+
   const [rounds, setRounds] = useState([]);
   const [rating, setRating] = useState({});
   const [formData, setFormData] = useState({
@@ -17,8 +17,9 @@ const Panelist = ({ candidateData }) => {
     noticePeriod: '',
     panelistName: '',
     feedback: '',
-    role: 'Applicant', // Set default role as 'Applicant'
+    role: 'Applicant', 
   });
+  const [isFeedbackGiven, setIsFeedbackGiven] = useState(false);
 
   useEffect(() => {
     if (candidateData) {
@@ -40,6 +41,10 @@ const Panelist = ({ candidateData }) => {
         return acc;
       }, {});
       setRating(skillsData);
+
+      if (candidateData.status === 'Selected' || candidateData.status === 'Rejected' || candidateData.round.some(round => round.feedbackProvided)) {
+        setIsFeedbackGiven(true);
+      }
     }
   }, [candidateData]);
 
@@ -77,12 +82,11 @@ const Panelist = ({ candidateData }) => {
     }
 
     const updatedRounds = rounds.map((round, index) => {
-      if (index === rounds.length - 1) { // Update the last round
+      if (index === rounds.length - 1) { 
         return {
           ...round,
           feedbackProvided: true,
           panelistName: panelistName,
-          feedback: feedback,
           skills: round.skills.map(skill => ({
             ...skill,
             rating: rating[skill.name.toLowerCase()] || 0,
@@ -93,7 +97,7 @@ const Panelist = ({ candidateData }) => {
       return round;
     });
 
-    const roundIndex = rounds.length - 1; // Assuming you're always updating the last round
+    const roundIndex = rounds.length - 1; 
     const requestBody = {
       roundIndex: roundIndex,
       feedback: feedback,
@@ -102,9 +106,43 @@ const Panelist = ({ candidateData }) => {
     };
 
     try {
+      
       const response = await axios.put(`http://localhost:5040/update-feedback/${candidateData._id}`, requestBody);
 
       if (response.status === 200) {
+
+        let newStatus;
+        switch (feedback) {
+          case 'L2':
+            newStatus = 'Shortlisted for L2';
+            break;
+          case 'HR':
+            newStatus = 'Shortlist to HR';
+            break;
+          case 'Rejected':
+            newStatus = 'Rejected';
+            break;
+          case 'Selected':
+            newStatus = 'Selected';
+            break;
+          default:
+            newStatus = 'Processing';
+        }
+
+        const historyUpdate = {
+          updatedBy: auth.fullName,
+          updatedAt: new Date(),
+          note: `Status updated to ${newStatus} based on ${feedback} feedback.`
+        };
+
+        const statusUpdate = {
+          status: newStatus,
+          historyUpdate: historyUpdate
+        };
+
+        await axios.put(`http://localhost:5040/candidates/${candidateData._id}`, statusUpdate);
+
+        
         Swal.fire({
           title: "Success",
           text: "Interview feedback updated successfully.",
@@ -112,6 +150,7 @@ const Panelist = ({ candidateData }) => {
           confirmButtonText: "OK"
         }).then(() => {
           
+          setIsFeedbackGiven(true); 
         });
       } else {
         throw new Error("Failed to update feedback. Please try again later.");
@@ -142,9 +181,9 @@ const Panelist = ({ candidateData }) => {
           <p>Total Experience: {candidateData.totalExperience}</p>
           <p>Availability / Notice Period: {candidateData.noticePeriod}</p>
 
-          {candidateData.status === 'Selected' || candidateData.status === 'Rejected' ? (
+          {isFeedbackGiven && (
             <p style={{ color: 'red', marginTop: '10px' }}>Feedback is already given</p>
-          ) : null}
+          )}
         </>
       )}
 
@@ -171,19 +210,19 @@ const Panelist = ({ candidateData }) => {
                       <Rate
                         value={rating[skill.name.toLowerCase()] || 0}
                         onChange={(value) => handleRateChange(value, skill.name)}
-                        disabled={index !== rounds.length - 1}
+                        disabled={index !== rounds.length - 1 || isFeedbackGiven}
                       />
                     </td>
                     <td>
                       <Input.TextArea
-                        value={formData[`${skill.name.toLowerCase()}Comments`] || skill.comments}
+                        value={formData[`${skill.name.toLowerCase()}Comments`] || (skill.comments && skill.comments !== 'No comments' ? skill.comments : '')}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
                             [`${skill.name.toLowerCase()}Comments`]: e.target.value,
                           })
                         }
-                        disabled={index !== rounds.length - 1}
+                        disabled={index !== rounds.length - 1 || isFeedbackGiven}
                       />
                     </td>
                   </tr>
@@ -191,7 +230,7 @@ const Panelist = ({ candidateData }) => {
               </tbody>
             </table>
 
-            {index === rounds.length - 1 && (
+            {index === rounds.length - 1 && !isFeedbackGiven && (
               <div className='panelistTable'>
                 <label htmlFor='feedback'>Final Feedback:</label>
                 <select name='feedback' value={formData.feedback} onChange={handleChange}>
@@ -207,7 +246,7 @@ const Panelist = ({ candidateData }) => {
         ))}
       </Tabs>
 
-      {rounds.length > 0 && (
+      {rounds.length > 0 && !isFeedbackGiven && (
         <div id='panelistbtn' onClick={handleSubmit}>
           <center><Button style={{ background: '#A50707' }} className='add-button'>Submit</Button></center>
         </div>

@@ -12,7 +12,7 @@ const OnboardedCandidates = () => {
       try {
         const response = await axios.get('http://localhost:5040/candidate/Onboarded');
         const onboardedCandidates = response.data.filter(candidate => candidate.status === 'Onboarded');
-        // Sort candidates by dateCreated in descending order and take the first 5
+       
         const sortedCandidates = onboardedCandidates.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated));
         setCandidates(sortedCandidates.slice(0, 5));
         setLoading(false);

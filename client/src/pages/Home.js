@@ -3,7 +3,7 @@ import '../styles/Login.css';
 import useAuth from "../hooks/useAuth";
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from "axios";
-import { FadeLoader } from "react-spinners";
+
 import Swal from 'sweetalert2';
 import logo from '../Assests/enfuse-logo.png';
 import bgImg from '../Assests/Hire bg.jpg';
@@ -18,7 +18,7 @@ function Home() {
   const [password, setPassword] = useState("");
 
   const onLogin = async (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault(); 
     const credentials = {
       email,
       password,

@@ -68,14 +68,14 @@ const Applicant = () => {
     }
 
     try {
-      // Prepare history update details
+     
       const historyUpdate = {
         updatedBy: 'Admin',
         updatedAt: new Date(),
         note: 'Onboarded Applicant allotted Enfuse email successfully'
       };
 
-      // Update candidate's email, status to 'Onboarded', and history
+    
       const response = await axios.put(`http://localhost:5040/candidates/${candidateId}`, {
         email,
         status: 'Onboarded',

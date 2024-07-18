@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as BarTooltip, Lege
 import * as XLSX from 'xlsx';
 import { MdOutlineDownload } from "react-icons/md";
 import { Select, Button } from 'antd';
-import CircularProgressCard from './CircularProgressCard';
+
 
 const { Option } = Select;
 
@@ -47,7 +47,7 @@ const JobPositionPieChart = () => {
           const response = await axios.get(`http://localhost:5040/positions-with-vacancies/${selectedDepartment}`);
           setVacanciesData(response.data.positions);
 
-          // Fetch onboarded counts for each position
+          
           const onboardedCounts = {};
           await Promise.all(response.data.positions.map(async (pos) => {
             const res = await axios.get(`http://localhost:5040/vacancy-status/${pos.position}`);
