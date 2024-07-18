@@ -1,59 +1,31 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { FaTh, FaAdn, FaRegUser } from 'react-icons/fa';
 import { MdLogout } from 'react-icons/md';
 import { TiBriefcase } from 'react-icons/ti';
-import { FaRegChartBar } from 'react-icons/fa';
+
 import { LuMonitorCheck } from 'react-icons/lu';
 import useAuth from '../hooks/useAuth';
 import '../styles/Sidebar.css';
 import logo from '../Assests/enfuse-logo.png';
-import { Layout, Tooltip, Button, AutoComplete, Modal } from 'antd';
+import { Tooltip, Button } from 'antd';
 import ProfilePage from './ProfilePage';
 import { VscFeedback } from 'react-icons/vsc';
-import axios from 'axios';
+
 import Swal from 'sweetalert2';
 
-const { Footer } = Layout;
+
 
 const Sidebar = ({ children }) => {
   const navigate = useNavigate();
   const [isOpen] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
+
   const [profileVisible, setProfileVisible] = useState(false);
   const { auth, setAuth } = useAuth();
 
-  const [suggestions, setSuggestions] = useState([]);
-  const [selectedEmail, setSelectedEmail] = useState('');
-  const [selectedCandidateDetails, setSelectedCandidateDetails] = useState({});
-  const [modalVisible, setModalVisible] = useState(false);
 
-  const handleSearch = async (value) => {
-    setSearchValue(value);
-    try {
-      const response = await axios.get(`/candidates/search/${value}`);
-      setSuggestions(response.data.map(candidate => ({ value: candidate.firstName })));
-    } catch (error) {
-      console.error('Error fetching candidates:', error);
-    }
-  };
 
-  const onSelect = async (value) => {
-    setSelectedEmail(value);
-    try {
-      const response = await axios.get(`http://localhost:5040/candidates/search/${value}`);
-      console.log('API response:', response.data);
-      setSelectedCandidateDetails(response.data[0]);
-      setModalVisible(true);
-    } catch (error) {
-      console.error('Error fetching candidate details:', error);
-    }
-  };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-  };
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -101,11 +73,7 @@ const Sidebar = ({ children }) => {
       name: 'Scores',
       icon: <FaTh />,
     },
-    // {
-    //   path: '/statistics',
-    //   name: 'Statistics',
-    //   icon: <FaRegChartBar />,
-    // },
+
     {
       path: '/feedbacks',
       name: 'Feedback',
@@ -113,114 +81,115 @@ const Sidebar = ({ children }) => {
     },
   ];
 
-  const { pathname } = useLocation();
 
-  const getCurrentMenuItem = () => {
-    return menuItem.find(item => item.path === pathname);
-  };
+
 
   return (
-   
-      <div className="container">
-        {auth.role && (
-          <div style={{ width: isOpen ? '180px' : '25px' }} className="sidebar">
-            <div className="top-section">
-              <button style={{ background: 'none', border: 'none', float: 'left' }} onClick={toggleDarkMode}>
-                <img src={logo} alt="EnFuse" />
-              </button>
-              {auth.role === 'Admin' || auth.role === 'Enfusian' ? (
-                <img
-                  style={{ width: '45%', borderRadius: '50%', background: 'white' }}
-                  src={auth.image !== '' ? `http://localhost:5040${auth.image}` : require('../Assests/User.png')}
-                  alt="logo"
-                />
-              ) : null}
-              <br />
+
+    <div className="container">
+      {auth.role && (
+        <div style={{ width: isOpen ? '180px' : '25px' }} className="sidebar">
+          <div className="top-section">
+            <button style={{ background: 'none', border: 'none', float: 'left' }} onClick={toggleDarkMode}>
+              <img src={logo} alt="EnFuse" />
+            </button>
+            {auth.role === 'Admin' || auth.role === 'Enfusian' ? (
+              <img
+                style={{ width: '45%', borderRadius: '50%', background: 'white' }}
+                src={auth.image !== '' ? `http://localhost:5040${auth.image}` : require('../Assests/User.png')}
+                alt="logo"
+              />
+            ) : null}
+            <br />
+          </div>
+
+          {menuItem.map((item, index) => {
+            if (auth.role === 'Admin') {
+              return (
+                (item.name === 'EnFusians' || item.name === 'Statistics' || item.name === 'Dashboard') && (
+                  <NavLink to={item.path} key={index} className="link" activeclassname="active">
+                    <div className="icon">{item.icon}</div>
+                    <div className="link-text">{item.name}</div>
+                  </NavLink>
+                )
+              );
+            } else if (auth.role === 'HR') {
+              return (
+                (
+                  item.name === 'ATS' ||
+                  item.name === 'Dashboard' ||
+                  item.name === 'Scores' ||
+                  item.name === 'Statistics' ||
+                  item.name === 'Feedback') && (
+                  <NavLink to={item.path} key={index} className="link" activeclassname="active">
+                    <div className="icon">{item.icon}</div>
+                    <div className="link-text">{item.name}</div>
+                  </NavLink>
+                )
+              );
+            } else if (auth.role === 'Panelist') {
+              return (
+                item.name === 'Feedback' && (
+                  <NavLink to={item.path} key={index} className="link" activeclassname="active">
+                    <div className="icon">{item.icon}</div>
+                    <div className="link-text">{item.name}</div>
+                  </NavLink>
+                )
+              );
+            } else if (auth.role === 'Ops-Manager') {
+              return (item.name === 'Dashboard' || item.name === 'Feedback') && (
+                <NavLink to={item.path} key={index} className="link" activeclassname="active">
+                  <div className="icon">{item.icon}</div>
+                  <div className="link-text">{item.name}</div>
+                </NavLink>
+
+              );
+            } else {
+              return null;
+            }
+          })}
+        </div>
+      )}
+      <div className='main-container'>
+        <main>
+          <div>
+            {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Panelist' || auth.role === 'Ops-Manager') && (
+              <nav className="navbar">
+                <div className="navbar-right">
+                  <Tooltip title="View & Update Profile" color='cyan'>
+                    <Button type="text" onClick={() => setProfileVisible(true)} style={{ color: '#00B4D2' }}>
+                      Welcome, {auth.fullName} |
+                    </Button>
+                  </Tooltip>
+                </div>
+
+                {auth.role && (
+                  <button className="icon-button" onClick={logout}>
+                    <span className="icon-container">
+                      <MdLogout />
+                    </span>{' '}
+                    <span className="text">Logout</span>
+                  </button>
+                )}
+              </nav>
+            )}
+            {auth && <ProfilePage open={profileVisible} auth={auth} setAuth={setAuth} onClose={() => setProfileVisible(false)} />}
+          </div>
+          <div className='main-content'>
+            {children}
+          </div>
+
+          {auth.role && (
+            <div className="footer">
+              @ 2024 EnFuse Solutions. All rights Reserved
             </div>
 
-            {menuItem.map((item, index) => {
-              if (auth.role === 'Admin') {
-                return (
-                  (item.name === 'EnFusians' || item.name === 'Statistics' || item.name === 'Dashboard') && (
-                    <NavLink to={item.path} key={index} className="link" activeclassname="active">
-                      <div className="icon">{item.icon}</div>
-                      <div className="link-text">{item.name}</div>
-                    </NavLink>
-                  )
-                );
-              } else if (auth.role === 'HR') {
-                return (
-                  (
-                    item.name === 'ATS' ||
-                    item.name === 'Dashboard' ||
-                    item.name === 'Scores' ||
-                    item.name === 'Statistics' ||
-                    item.name === 'Feedback') && (
-                    <NavLink to={item.path} key={index} className="link" activeclassname="active">
-                      <div className="icon">{item.icon}</div>
-                      <div className="link-text">{item.name}</div>
-                    </NavLink>
-                  )
-                );
-              } else if (auth.role === 'Panelist') {
-                return (
-                  item.name === 'Feedback' && (
-                    <NavLink to={item.path} key={index} className="link" activeclassname="active">
-                      <div className="icon">{item.icon}</div>
-                      <div className="link-text">{item.name}</div>
-                    </NavLink>
-                  )
-                );
-              }else if (auth.role === 'Ops-Manager') {
-                return ( item.name === 'Job Dashboard' || item.name === 'Feedback') && (
-                    <NavLink to={item.path} key={index} className="link" activeclassname="active">
-                      <div className="icon">{item.icon}</div>
-                      <div className="link-text">{item.name}</div>
-                    </NavLink>
-                  
-                );
-              } else {
-                return null;
-              }
-            })}
-          </div>
-        )}
-        <div className='main-container'>
-        <main>
-          {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Panelist' || auth.role === 'Ops-Manager') && (
-            <nav className="navbar">
-              <div className="navbar-right">
-                <Tooltip title="View & Update Profile" color='cyan'>
-                  <Button type="text" onClick={() => setProfileVisible(true)} style={{ color: '#00B4D2' }}>
-                    Welcome, {auth.fullName} |
-                  </Button>
-                </Tooltip>
-              </div>
-
-              {auth.role && (
-                <button className="icon-button" onClick={logout}>
-                  <span className="icon-container">
-                    <MdLogout />
-                  </span>{' '}
-                  <span className="text">Logout</span>
-                </button>
-              )}
-            </nav>
           )}
-          {auth && <ProfilePage open={profileVisible} auth={auth} setAuth={setAuth} onClose={() => setProfileVisible(false)} />}
-
-          {children}
-        
         </main>
-        {auth.role && (
-          <div className="footer">
-            @ 2024 EnFuse Solutions. All rights Reserved
-          </div>
-        )}
-        </div>
       </div>
-     
-   
+    </div>
+
+
   );
 };
 

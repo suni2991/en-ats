@@ -30,7 +30,11 @@ userRouter.post("/register/candidate", async (req, res) => {
       accounts,
       excel,
       dob,
+<<<<<<< HEAD
 
+=======
+      history,
+>>>>>>> 4019d5a646d8d0c0f67a15d81a80cb6be5a0d6be
       role,
       state,
       district,
@@ -44,6 +48,7 @@ userRouter.post("/register/candidate", async (req, res) => {
       panelistName,
       round,
       evaluationDetails,
+      reference,
     } = req.body;
 
     const encryptedPassword = CryptoJS.AES.encrypt(
@@ -90,6 +95,8 @@ userRouter.post("/register/candidate", async (req, res) => {
       panelistName,
       round,
       evaluationDetails,
+      history,
+      reference,
     });
 
     const savedCandidate = await newCandidate.save();
@@ -118,57 +125,46 @@ userRouter.post("/api/login", (req, res) => {
       } else if (decryptedPassword !== req.body.password) {
         res.json({ message: "Incorrect password" });
       } else {
-        const userWithToken = {
-          ...user.toObject(), // Convert Mongoose document to plain JavaScript object
-          token: process.env.JWT_TOKEN,
-        };
-        res.status(200).json(userWithToken); //return _id and role as a JSON at least..account Type is a must...in here I return the whole user object
+        res.status(200).json(user);
       }
     })
     .catch((err) => res.status(400).json({ message: "Could not login user" }));
 });
 
-userRouter.get("/candidates", async (req, res) => {
-  const docs = await Candidate.find({ role: "Applicant Candidate" });
-  res.json(docs);
+
+
+userRouter.get('/hrs', async (req, res) => {
+  const docs = await Candidate.find({ role: { $in: ["HR", "Panelist", "Ops-Manager"] } });
+  res.json(docs)
+})
+
+
+
+userRouter.get('/candidatesreport', async (req, res) => {
+  try {
+    const { selectedCategory } = req.query;
+    let query = {
+      role: { $in: ["Applicant"] },
+      status: { $ne: 'Onboarded' }
+    };
+
+    if (selectedCategory && selectedCategory !== 'all') {
+      query.selectedCategory = selectedCategory;
+    }
+
+    const docs = await Candidate.find(query);
+    res.json(docs);
+  } catch (error) {
+    console.error('Error fetching candidates:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
-userRouter.get("/hrs", async (req, res) => {
-  const docs = await Candidate.find({
-    role: { $in: ["HR", "Panelist", "Ops-Manager"] },
-  });
-  res.json(docs);
-});
 
-userRouter.get("/candidatesreport", async (req, res) => {
-  const docs = await Candidate.find({
-    role: { $in: ["Applicant", "Candidate"] },
-  });
-  res.json(docs);
-});
 
-userRouter.get("/candidates/:email", async (req, res) => {
-  const docs = await Candidate.find({ email: req.params.email });
-  res.json(docs);
-});
 
-userRouter.get("/candidates/:firstName", async (req, res) => {
-  const docs = await Candidate.find({ firstName: req.params.firstName });
-  res.json(docs);
-});
 
-userRouter.get("/candidates/search/:query", async (req, res) => {
-  const query = req.params.query;
-  const docs = await Candidate.find({
-    $or: [
-      { fullName: { $regex: new RegExp(query, "i") } }, // Case-insensitive regex match for fullName
-      { firstName: { $regex: new RegExp(query, "i") } }, // Case-insensitive regex match for firstName
-    ],
-  });
-  res.json(docs);
-});
-
-userRouter.get("/candidates-status", async (req, res) => {
+userRouter.get('/candidates-status', async (req, res) => {
   try {
     const candidatesByStatus = await Candidate.aggregate([
       {
@@ -198,7 +194,7 @@ userRouter.get("/candidates-status", async (req, res) => {
 
 userRouter.get("/candidate/onboarded/:position", async (req, res) => {
   const position = req.params.position;
-  const status = "Onboarded";
+  const status = 'Onboarded';
 
   try {
     const docs = await Candidate.find({ position, status });
@@ -214,10 +210,10 @@ userRouter.get("/users-by-role", async (req, res) => {
     const usersByRole = await Candidate.aggregate([
       {
         $group: {
-          _id: "$role",
-          count: { $sum: 1 }, // Count the number of users in each role
-        },
-      },
+          _id: '$role',
+          count: { $sum: 1 }
+        }
+      }
     ]);
 
     res.json(usersByRole);
@@ -227,33 +223,17 @@ userRouter.get("/users-by-role", async (req, res) => {
   }
 });
 
-// userRouter.get('/candidate/status/:status', async (req, res) => {
-//   const { status } = req.params;
-//   try {
-//     let docs;
-//     if (status === "Selected" || status === "Onboarded") {
-//       docs = await Candidate.find({ status });
-//     } else {
-//       docs = await Candidate.find();
-//     }
-//     res.json(docs);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error fetching candidates", error });
-//   }
-// });
+
 
 userRouter.get("/candidate/:status", async (req, res) => {
   const status = req.params.status;
   const docs = await Candidate.find({ status });
-  res.json(docs);
-});
+  res.json(docs)
+})
 
-userRouter.get("/candidate/cat-count", async (req, res) => {
-  const docs = await Candidate.find({
-    selectedCategory: "Technical" || "Non-Technical",
-  });
-  res.json(docs);
-});
+
+
+userRouter.get('/candidates/:fullName', async (req, res) => {
 
 userRouter.get("/candidates/:fullName", async (req, res) => {
   try {
@@ -291,45 +271,32 @@ userRouter.get("/candidate/profile/:id", async (req, res) => {
   }
 });
 
-//update records
-// userRouter.put('/candidate/:id', async (req, res) => {
-//   try {
-//     const _id = req.params.id;
-//     const result = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
-//     if (!result) {
-//       res.json({
-//         status: "FAILED",
-//         message: "record is not updated successfully",
 
-//       })
-//     }
-//     else {
-//       res.json({
-//         status: "SUCCESS",
-//         message: "records updated successfully",
-//         data: result
-//       })
-//     }
-//   }
-//   catch (e) {
-//     res.send(e)
-//   }
-// })
-
-userRouter.put("/evaluate/:id", async (req, res) => {
-  const _id = req.params.id; // Correctly extracting the id
-  const { round, status } = req.body;
+userRouter.put('/evaluate/:id', async (req, res) => {
+  const { id } = req.params;
+  const { round, status, history } = req.body;
 
   try {
-    const candidate = await Candidate.findById(_id);
+    const candidate = await Candidate.findById(id);
+
     if (!candidate) {
       return res.status(404).json({ message: "Candidate not found" });
     }
 
-    // Add new round details
     candidate.round.push(round);
 
-    // Update status
+
+    if (history && Array.isArray(history)) {
+      history.forEach(entry => {
+        candidate.history.push({
+          updatedBy: entry.updatedBy,
+          updatedAt: entry.updatedAt,
+          note: entry.note
+        });
+      });
+    }
+
+
     candidate.status = status;
 
     await candidate.save();
@@ -354,7 +321,6 @@ userRouter.put("/feedback/:id", async (req, res) => {
       return res.status(404).json({ message: "Candidate not found" });
     }
 
-    // Update candidate skills, status, and evaluation details
     candidate.skills = req.body.skills;
     candidate.status = req.body.status;
     candidate.evaluationDetails = req.body.evaluationDetails;
@@ -373,80 +339,101 @@ userRouter.put("/feedback/:id", async (req, res) => {
   }
 });
 
-userRouter.put("/evaluate/:id", async (req, res) => {
+
+userRouter.put('/evaluate/:id', async (req, res) => {
   try {
-    const { panelistName, round, meetingDate, skills, status } = req.body;
     const candidateId = req.params.id;
+    const { roundIndex, feedback, feedbackProvided, skills, history } = req.body;
 
-    // Update candidate details in the database
-    await Candidate.findByIdAndUpdate(
-      candidateId,
-      { $set: { round, meetingDate, skills, status, panelistName } },
-      { new: true }
-    );
 
-    res
-      .status(200)
-      .json({ message: "Candidate details updated successfully." });
+    if (roundIndex === undefined || feedback === undefined || feedbackProvided === undefined) {
+      return res.status(400).json({ message: 'roundIndex, feedback, and feedbackProvided are required' });
+    }
+
+    const candidate = await Candidate.findById(candidateId);
+    if (!candidate) {
+      return res.status(404).json({ message: 'Candidate not found' });
+    }
+
+
+    if (roundIndex < 0 || roundIndex >= candidate.round.length) {
+      return res.status(400).json({ message: 'Invalid round index' });
+    }
+
+    candidate.round[roundIndex].feedback = feedback;
+    candidate.round[roundIndex].feedbackProvided = feedbackProvided;
+
+    if (skills && Array.isArray(skills)) {
+      candidate.round[roundIndex].skills = skills;
+    }
+
+
+    if (history && Array.isArray(history)) {
+      candidate.history = candidate.history.concat(history);
+    }
+
+    await candidate.save();
+    res.status(200).json(candidate);
   } catch (error) {
-    console.error("Error updating candidate details:", error);
-    res.status(500).json({ message: "Failed to update candidate details." });
+    console.error('Error updating feedback:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-//no of applicants for this position
 
-userRouter.get("/candidates/position/:position", async (req, res) => {
+//to update interview feedback
+userRouter.put('/update-feedback/:id', async (req, res) => {
   try {
-    const position = req.params.position;
-    const count = await Candidate.countDocuments({ position });
-    res.status(200).json({ count });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+    const candidateId = req.params.id;
+    const { roundIndex, feedback, feedbackProvided, skills, history } = req.body;
 
-userRouter.get("/applicants/position/:position", async (req, res) => {
-  try {
-    const position = req.params.position;
-    const candidates = await Candidate.find({ position });
-    res.json(candidates);
+    if (roundIndex === undefined || feedback === undefined || feedbackProvided === undefined) {
+      return res.status(400).json({ message: 'RoundIndex, feedback, and feedbackProvided are required' });
+    }
+
+    const candidate = await Candidate.findById(candidateId);
+    if (!candidate) {
+      return res.status(404).json({ message: 'Candidate not found' });
+    }
+
+    if (roundIndex < 0 || roundIndex >= candidate.round.length) {
+      return res.status(400).json({ message: 'Invalid round index' });
+    }
+
+    candidate.round[roundIndex].feedback = feedback;
+    candidate.round[roundIndex].feedbackProvided = feedbackProvided;
+
+    if (skills && Array.isArray(skills)) {
+      candidate.round[roundIndex].skills = skills;
+    }
+
+    await candidate.save();
+    res.status(200).json(candidate);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching candidates", error });
+    console.error('Error updating feedback:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-//count for Job Dashboard
-userRouter.get("/candidates/counts", async (req, res) => {
-  try {
-    const counts = await Candidate.aggregate([
-      { $group: { _id: "$position", count: { $sum: 1 } } },
-      { $project: { _id: 0, position: "$_id", count: 1 } },
-    ]);
 
-    res.status(200).json(counts);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+
+
 
 userRouter.get("/panelists/enfusian", async (req, res) => {
   try {
-    const panelist = await Candidate.find({ role: "Panelist" }, "fullName"); // Fetch fullName and email of HRs
-    res.json(panelist);
+
+    const panelists = await Candidate.find({ role: { $in: ['Panelist', 'Ops-Manager'] } }, 'fullName');
+    res.json(panelists);
   } catch (error) {
-    console.error("Error fetching Panelists:", error);
-    f;
-    res.status(500).json({ message: "Error fetching Panelists" });
+    console.error('Error fetching panelists:', error);
+    res.status(500).json({ message: 'Error fetching panelists' });
   }
 });
 
-userRouter.get("/hrs/name", async (req, res) => {
+
+userRouter.get('/hrs/name', async (req, res) => {
   try {
-    const hrs = await Candidate.find({ role: "HR" }, "fullName email"); // Fetch fullName and email of HRs
-    res.json(hrs);
+    const hrs = await Candidate.find({ role: 'HR' }, 'fullName email');
   } catch (error) {
     console.error("Error fetching HRs:", error);
     res.status(500).json({ message: "Error fetching HRs" });
@@ -457,11 +444,8 @@ userRouter.get("/panelist/:panelistName", async (req, res) => {
   const { panelistName } = req.params;
 
   try {
-    // Find candidates where panelistName matches and role is "Candidate"
-    const candidates = await Candidate.find({
-      panelistName,
-      role: "Applicant",
-    });
+
+    const candidates = await Candidate.find({ 'round.panelistName': panelistName, role: 'Applicant' });
 
     if (candidates.length === 0) {
       return res
@@ -498,84 +482,54 @@ userRouter.delete("/candidate/:id", async (req, res) => {
   }
 });
 
-userRouter.get("/status-analysis", async (req, res) => {
-  try {
-    // Aggregate data to count candidates based on application status
-    const statusData = await Candidate.aggregate([
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
-        },
-      },
-    ]);
 
-    res.json(statusData);
+userRouter.get('/applicants/position/:position', async (req, res) => {
+  try {
+    const { position } = req.params;
+
+
+    const candidates = await Candidate.find({ position });
+
+
+    res.json(candidates);
   } catch (error) {
-    console.error("Error fetching status analysis data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching candidates:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-userRouter.get("/skills-analysis", async (req, res) => {
+userRouter.put('/candidates/:id', async (req, res) => {
+  const { id } = req.params;
+  const { email, status, joiningDate, role, historyUpdate } = req.body;
+
   try {
-    // Aggregate data to calculate average scores for each skill
-    const skillsData = await Candidate.aggregate([
-      {
-        $group: {
-          _id: null,
-          avgJava: { $avg: "$java" },
-          avgAccounts: { $avg: "$accounts" },
-          avgExcel: { $avg: "$excel" },
-          avgOthers: {
-            $avg: {
-              $subtract: [100, { $avg: ["$java", "$accounts", "$excel"] }],
-            },
-          },
-        },
-      },
-    ]);
 
-    // Format data to match frontend expectations
-    const formattedData = [
-      { skill: "Java", averageScore: Math.round(skillsData[0].avgJava) },
-      {
-        skill: "Accounts",
-        averageScore: Math.round(skillsData[0].avgAccounts),
-      },
-      { skill: "Excel", averageScore: Math.round(skillsData[0].avgExcel) },
-      { skill: "Others", averageScore: Math.round(skillsData[0].avgOthers) },
-    ];
+    const updates = { email, status };
+    if (joiningDate) {
+      updates.joiningDate = joiningDate;
+    }
+    if (role) {
+      updates.role = role;
+    }
 
-    res.json(formattedData);
+    const candidate = await Candidate.findByIdAndUpdate(id, updates, { new: true });
+
+    if (!candidate) {
+      return res.status(404).json({ error: 'Candidate not found' });
+    }
+
+    if (historyUpdate) {
+      candidate.history.push(historyUpdate);
+    }
+
+    await candidate.save();
+
+    res.json({ status: 'SUCCESS' });
   } catch (error) {
-    console.error("Error fetching skills analysis data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error updating candidate:', error);
+    res.status(500).json({ error: 'Failed to update candidate' });
   }
 });
 
-// Endpoint to fetch candidate scores
-userRouter.get("/candidate-scores", async (req, res) => {
-  try {
-    const candidateScores = await Candidate.find(
-      {},
-      "fullName psychometric java vocabulary quantitative"
-    );
-
-    res.json(candidateScores);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
-  }
-});
-
-userRouter.get("/selected-candidates", async (req, res) => {
-  try {
-    const selectedCandidates = await Candidate.find({ status: "Selected" });
-    res.json(selectedCandidates);
-  } catch (error) {
-    res.status(500).send("Server Error");
-  }
-});
 
 module.exports = userRouter;

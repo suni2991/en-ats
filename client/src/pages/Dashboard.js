@@ -1,73 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { Tooltip, Button, Input, Modal, Table, Typography } from "antd";
-import { FiGrid } from "react-icons/fi";
-import { FaTableList } from "react-icons/fa6";
-import JobDashboard from "../components/JobDashboard";
-import Viewjob from "../components/Viewjob";
-import Postjob from "../components/Postjob";
-import JobPositionPieChart from "../components/JobPosition";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Button, Input, Modal, Table, Tooltip } from 'antd';
+import { FiGrid } from 'react-icons/fi';
+import { FaTableList } from 'react-icons/fa6';
+import axios from 'axios';
+import useAuth from '../hooks/useAuth';
+import JobDashboard from '../components/JobDashboard';
+import Viewjob from '../components/Viewjob';
+import Postjob from '../components/Postjob';
+import JobPositionPieChart from '../components/JobPosition';
 
-const { Text } = Typography;
-const token = process.env.REACT_APP_JWT_TOKEN;
+
 
 const Dashboard = () => {
-  const [view, setView] = useState("tile");
+  const { auth } = useAuth();
+  const [view, setView] = useState('tile');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [pendingJobs, setPendingJobs] = useState([]);
   const [jobs, setJobs] = useState([]);
-  const [role, setRole] = useState(""); // Add state for role
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5040/viewjobs", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        console.log('Parameters for fetching jobs:', { mgrRole: auth.role, fullName: auth.fullName });
+        const response = await axios.get('http://localhost:5040/viewjobs', {
+          params: { mgrRole: auth.role, fullName: auth.fullName }
         });
+        console.log('Fetched jobs:', response.data);
         setJobs(response.data.reverse());
       } catch (error) {
-        console.error("Error fetching jobs:", error);
+        console.error('Error fetching jobs:', error);
+        
       }
     };
-    fetchJobs();
-  }, []);
+
+    if (auth.role && auth.fullName) {
+      fetchJobs();
+    }
+  }, [auth.role, auth.fullName]);
 
   useEffect(() => {
     
     const fetchPendingJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5040/pendingjobs", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await axios.get('http://localhost:5040/pendingjobs', {
+          params: { mgrRole: auth.role, fullName: auth.fullName }
         });
         setPendingJobs(response.data.reverse());
       } catch (error) {
-        console.error("Error fetching pending jobs:", error);
+        console.error('Error fetching pending jobs:', error);
+       
       }
     };
-    fetchPendingJobs();
-  }, []);
 
-  useEffect(() => {
-    // Fetch the user's role from an API or other source
-    const fetchUserRole = async () => {
-      try {
-        const response = await axios.get("http://localhost:5040/userrole", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setRole(response.data.role);
-      } catch (error) {
-        console.error("Error fetching user role:", error);
-      }
-    };
-    fetchUserRole();
-  }, []);
+    fetchPendingJobs();
+  }, [auth.role, auth.fullName]);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -85,11 +72,10 @@ const Dashboard = () => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredJobs = jobs.filter(
-    (job) =>
-      job.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.jobLocation.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredJobs = jobs.filter(job =>
+    job.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.jobLocation.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const columns = [
@@ -131,7 +117,7 @@ const Dashboard = () => {
           </Button>
         </Tooltip>
 
-        {view === "tile" && (
+        {view === 'tile' && (
           <Input
             placeholder="Search jobs"
             value={searchQuery}
@@ -162,26 +148,25 @@ const Dashboard = () => {
       </div>
       <br />
       <div>
-        {view === "tile" ? <JobDashboard jobs={filteredJobs} /> : <Viewjob />}
+        {view === 'tile' ? (
+          <JobDashboard jobs={filteredJobs} />
+        ) : (
+          <Viewjob auth={auth}/>
+        )}
       </div>
 
-      {role !== "Ops-Manager" && (
-        <div className="stat-repo">
+      {auth.role !== 'Ops-Manager' && (
+        <div className='stat-repo'>
           <JobPositionPieChart />
         </div>
       )}
 
-      <div
-        className="list-applicants"
-        style={{ width: "91%", marginLeft: "25px", height: "auto" }}
-      >
+      <div className='list-applicants' style={{ width: '93.5%', marginLeft: '25px', height: 'auto' }}>
         <Table
           dataSource={pendingJobs}
           columns={columns}
-          rowKey={(record) => record._id}
-          title={() => (
-            <h1 style={{ marginBottom: "10px" }}>Jobs Sent for Approval</h1>
-          )}
+          rowKey={record => record._id}
+          title={() => <h1 style={{ marginBottom: '10px' }}>Jobs Sent for Approval</h1>}
         />
       </div>
 

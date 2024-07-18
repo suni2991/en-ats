@@ -12,8 +12,8 @@ import {
 } from "recharts";
 import * as XLSX from "xlsx";
 import { MdOutlineDownload } from "react-icons/md";
-import { Select, Button } from "antd";
-import CircularProgressCard from "./CircularProgressCard";
+import { Select, Button } from 'antd';
+
 
 const { Option } = Select;
 const token = process.env.REACT_APP_JWT_TOKEN;
@@ -63,7 +63,7 @@ const JobPositionPieChart = () => {
           );
           setVacanciesData(response.data.positions);
 
-          // Fetch onboarded counts for each position
+          
           const onboardedCounts = {};
           await Promise.all(
             response.data.positions.map(async (pos) => {
@@ -201,20 +201,8 @@ const JobPositionPieChart = () => {
   ];
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
-      <div
-        style={{
-          paddingLeft: "5px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "#FFFF",
-          height: "48px",
-          width: "74vw",
-        }}
-      >
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth:'100%' }}>
+      <div style={{ paddingLeft: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FFFF', height: '48px', width: '76vw' }}>
         <Select
           placeholder="Select Department"
           style={{ width: 240 }}

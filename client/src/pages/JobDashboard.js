@@ -46,22 +46,7 @@ const JobDashboard = () => {
     fetchPendingJobs();
   }, []);
 
-  useEffect(() => {
-    // Fetch the user's role from an API or other source
-    const fetchUserRole = async () => {
-      try {
-        const response = await axios.get("http://localhost:5040/userrole", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setRole(response.data.role);
-      } catch (error) {
-        console.error("Error fetching user role:", error);
-      }
-    };
-    fetchUserRole();
-  }, []);
+ 
 
   const showModal = () => {
     setIsModalVisible(true);

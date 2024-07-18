@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import '../styles/Regform.css';
 import HrDropdown from './HrDropdown';
 import { Button, message, Select } from 'antd';
 
+
 const { Option } = Select;
 
 const Postjob = () => {
+    const { role } = useParams();
+    const [mgrRole, setMgrRole] = useState('');
+
+    useEffect(() => {
+        setMgrRole(role);
+        setFormData((prevData) => ({
+            ...prevData,
+            mgrRole: role,
+        }));
+    }, [role]);
     const [formData, setFormData] = useState({
         position: '',
         department: '',
@@ -17,7 +29,8 @@ const Postjob = () => {
         secondarySkills: [],
         experience: '',
         postedBy: '',
-        status:'Approval Pending'
+        status: 'Approval Pending',
+        mgrRole: role,
     });
 
     const [selectedHrName, setSelectedHrName] = useState('');
@@ -49,14 +62,13 @@ const Postjob = () => {
 
 
     const isNumeric = (value) => /^[0-9]*$/.test(value);
-
     const validateField = (name, value) => {
         if (name === 'experience' || name === 'vacancies') {
             if (!isNumeric(value)) {
                 message.error(`${name} should contain only numbers`);
                 return false;
             }
-        } else if (name !== 'department' && name !== 'postedBy') {
+        } else if (name !== 'department' && name !== 'postedBy' && name !== 'position' && name !== 'responsibilities' && name !== 'description') {
             if (!isAlphabetic(value)) {
                 message.error(`${name} should contain only alphabets, spaces, commas, +, or -`);
                 return false;
@@ -66,18 +78,20 @@ const Postjob = () => {
     };
 
     const handlePaste = (e) => {
-        // Get pasted data
+        const { name } = e.target;
         const clipboardData = e.clipboardData || window.clipboardData;
         const pastedText = clipboardData.getData('Text');
-    
-        // Update the state with the pasted text
-        setFormData({
-            ...formData,
-            [e.target.name]: pastedText,
-        });
+
+
+        if (name === 'responsibilities' || name === 'description') {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: pastedText,
+            }));
+        }
     };
-    
-    
+
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -98,8 +112,8 @@ const Postjob = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        // Check for required fields
+
+
         const requiredFields = ['position', 'department', 'jobLocation', 'vacancies', 'primarySkills', 'experience'];
         for (let field of requiredFields) {
             if (!formData[field] || formData[field].length === 0) {
@@ -110,18 +124,18 @@ const Postjob = () => {
 
         try {
             const response = await axios.post('http://localhost:5040/createjob', formData);
-            console.log('Job post submitted:', response.data);
+
             message.success('New Job created successfully and sent for Directors Approval');
             const jobId = response.data._id;
             const emailData = {
                 position: formData.position,
                 department: formData.department,
                 postedBy: formData.postedBy,
-                jobId : jobId
+                jobId: jobId
             };
-      
+
             const emailResponse = await axios.post('http://localhost:5040/job/approval', emailData);
-            console.log(emailResponse.data);
+
 
             setFormData({
                 position: '',
@@ -133,12 +147,13 @@ const Postjob = () => {
                 secondarySkills: [],
                 experience: '',
                 postedBy: '',
+                responsibilities: ''
             });
             setSelectedHrName('');
             setSelectedHrEmail('');
         } catch (error) {
             message.error('Something went wrong!');
-            console.error('Error submitting job post:', error);
+
         }
     };
 
@@ -236,7 +251,7 @@ const Postjob = () => {
                                 style={{ width: '25vw' }}
                                 placeholder="Enter skill & press Enter Key"
                                 value={formData.secondarySkills}
-                                
+
                                 onChange={(value) => handleSelectChange('secondarySkills', value)}
                             >
                                 {formData.secondarySkills.map((skill, index) => (
@@ -252,26 +267,26 @@ const Postjob = () => {
                     </div>
                 </div>
                 <div id='desc'>
-                <div>
-                <label htmlFor="rolesNResponsibilities">Roles & Responsibilities:</label><br />
-                <textarea
-                    name="responsibilities"
-                    id="responsibilities"
-                    value={formData.responsibilities}
-                    onChange={handleChange}
-                    onPaste={handlePaste}
-                    style={{ width: '90%', height: '60px', padding: '5px', marginLeft:'35px', border: '1px solid #00B4D2' }}
-                />
-            </div>
+                    <div>
+                        <label htmlFor="rolesNResponsibilities">Roles & Responsibilities:</label><br />
+                        <textarea
+                            name="responsibilities"
+                            id="responsibilities"
+                            value={formData.responsibilities}
+                            onChange={handleChange}
+
+                            style={{ width: '90%', height: '60px', padding: '5px', marginLeft: '35px', border: '1px solid #00B4D2' }}
+                        />
+                    </div>
                     <div>
                         <label htmlFor="description">Job Description:</label><br />
                         <textarea
                             name="description"
                             id="description"
                             value={formData.description}
-                            onPaste={handlePaste}
+
                             onChange={handleChange}
-                            style={{ width: '90%', height: '110px', padding: '5px', marginLeft:'35px', border: '1px solid #00B4D2' }}
+                            style={{ width: '90%', height: '110px', padding: '5px', marginLeft: '35px', border: '1px solid #00B4D2' }}
                         />
                     </div>
                 </div>

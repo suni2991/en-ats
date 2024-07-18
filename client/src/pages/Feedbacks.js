@@ -17,6 +17,7 @@ const Feedback = () => {
   const [joiningDate, setJoiningDate] = useState(null);
   const [status, setStatus] = useState('');
   const [candidateData, setCandidateData] = useState([]);
+  const [historyUpdate, setHistoryUpdate] = useState(null);
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -107,17 +108,33 @@ const Feedback = () => {
         const updates = {};
         if (joiningDate) {
           updates.joiningDate = joiningDate.toISOString();
+          console.log('Joining Date:', updates.joiningDate);
         }
         if (status) {
           updates.status = status;
+          console.log('Status:', updates.status);
+
+          // Prepare history update
+          const historyUpdateData = {
+            updatedAt: new Date(),
+            updatedBy: auth.fullName,
+            note: `Applicant ${status}`
+          };
+          setHistoryUpdate(historyUpdateData);
+          console.log('History Update:', historyUpdateData);
+
           if (status === 'Onboarded') {
             updates.role = 'Enfusian';
             updates.dateCreated = new Date().toISOString(); // Set dateCreated to current date
+            console.log('Role set to Enfusian and dateCreated set:', updates.dateCreated);
           } else {
             updates.role = 'Applicant';
           }
         }
-        await axios.put(`http://localhost:5040/feedback/${selectedCandidate._id}`, updates);
+        console.log('Updates being sent:', updates);
+
+        await axios.put(`http://localhost:5040/candidates/${selectedCandidate._id}`, { ...updates, historyUpdate });
+        console.log('Update successful');
         closeJoiningDateModal();
       } catch (error) {
         console.error('Failed to update', error);
@@ -126,7 +143,7 @@ const Feedback = () => {
   };
 
   return (
-    <div className='vh-page' style={{textTransform: 'capitalize' }}>
+    <div className='vh-page' style={{ textTransform: 'capitalize' }}>
       <Fetchtable
         url={`http://localhost:5040/panelist/${auth.fullName}`}
         data={candidateData}

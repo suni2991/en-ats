@@ -66,9 +66,22 @@ const Applicant = () => {
       message.error('Use @enfuse-solutions.com only');
       return;
     }
-  
+
     try {
-      const response = await axios.put(`http://localhost:5040/candidates/${candidateId}`, { email, status: 'Selected' });
+     
+      const historyUpdate = {
+        updatedBy: 'Admin',
+        updatedAt: new Date(),
+        note: 'Onboarded Applicant allotted Enfuse email successfully'
+      };
+
+    
+      const response = await axios.put(`http://localhost:5040/candidates/${candidateId}`, {
+        email,
+        status: 'Onboarded',
+        historyUpdate
+      });
+
       if (response.data.status === 'SUCCESS') {
         message.success('Email allotted successfully');
         fetchCandidates();
@@ -81,7 +94,7 @@ const Applicant = () => {
       message.error('Failed to allot email');
     }
   };
-  
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'HR':
@@ -148,7 +161,7 @@ const Applicant = () => {
 
   return (
     <div className='vh-page'>
-    <Statistics />
+      <Statistics />
       <div className='list-applicants'>
         <div className='title-container'>
           <Title level={5} className='fixed-title'>
@@ -168,6 +181,7 @@ const Applicant = () => {
                   <Button type="text" danger onClick={() => deleteCandidate(candidate._id)}>
                     <MdOutlineDeleteOutline size={20} />
                   </Button>
+                 
                   
                 ]}
               >
@@ -175,7 +189,7 @@ const Applicant = () => {
                   title={
                     <span style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span>{candidate.fullName}</span>
-                      <span style={{textAlign:'center'}}>{candidate.position}</span>
+                      <span style={{ textAlign: 'center' }}>{candidate.position}</span>
                       <span style={{ color: getStatusColor(candidate.status), textAlign: 'center', alignItems: 'center' }}>{candidate.status}</span>
                     </span>
                   }
@@ -201,6 +215,9 @@ const Applicant = () => {
           renderItem={candidate => (
             <List.Item
               actions={[
+                <Button type="text" color='cyan' onClick={() => handleViewCandidate(candidate._id)}>
+                  <TbEyeCheck size={20} color='#00B4D2' />
+                </Button>,
                 !candidate.email?.toLowerCase().includes('@enfuse-solutions.com') && (
                   <Button type="text" style={{ backgroundColor: '#00B4D2', color: '#FFF' }} onClick={() => handleAllotEmail(candidate._id)}>
                     Allot Email
@@ -239,4 +256,4 @@ const Applicant = () => {
   );
 };
 
-export default Applicant;
+export default Applicant

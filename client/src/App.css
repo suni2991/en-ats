@@ -236,22 +236,8 @@ h1{
   text-decoration: underline; /* Underline on hover */
 }
 
-/* Light mode */
-.main-container {
-  /* height: 100vh !important; */
-  /* border-top-left-radius: 15px 25px; */
-  color: #333;
-  /* background: white; */
-  background: #eceff1;
-}
 
-/* Dark mode */
-.main-container.dark-mode {
-  /* background: radial-gradient(circle, #15f7f7 10%, rgba(8,8,68) 75%, rgba(2,0,36,1) 96%); */
-  background-image: url("./Assests/BG.jpg");
-  background-size: cover;
-  color: #1e0340;
-}
+
 .search-filter button{
   margin-top: 5px;
   height: 27px;
@@ -457,9 +443,9 @@ button .submit-button:disabled{
   background-color: #ffff;
   margin-left: 20px;
   margin-top: 50px;
-  width: 96% !important;
+  max-width: 100%;
   height: 48px;
-  /* padding-top: 5px; */
+  padding: 5px;
   box-shadow: '0px 2px 4px rgb(38, 39, 130)';
   
 }
@@ -574,7 +560,7 @@ c
 }
 
 .stat-repo {
-  width: 71vw !important;
+  width: 100% !important;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -681,7 +667,7 @@ c
 }
 
 .pie-chart{
-  width: 74vw;
+  width: 100%;
   position: relative;
   background: #fff;
   display: flex;
@@ -747,7 +733,7 @@ h2{
 
 h2::after{
   content:'';
-  /* background: linear-gradient(to right, rgb(223, 30, 143), #00B4D2, #060448); */
+  background: linear-gradient(to right, rgb(223, 30, 143), #00B4D2, #060448);
   height: 4px;
   width:100%;
   position:absolute;
@@ -807,7 +793,7 @@ h2::after{
 /* Panelist.css */
 /* Panelist.css */
 .modalContent {
-  max-height: 80vh; /* Ensures modal content is never taller than 80% of the viewport height */
+  height: 100%; /* Ensures modal content is never taller than 80% of the viewport height */
   
   padding: 10px; 
   width: 100%;/* Adds some padding around the content */
@@ -852,7 +838,7 @@ h2::after{
 /* 
 //Statistic page  20/6/2024 */
 .vh-page{
-  margin: 40px 15px 2px 160px !important;
+  margin: 50px 15px 2px 190px !important;
   background: #eceff1;
  
   padding: 15px 10px;
@@ -893,6 +879,7 @@ h2::after{
   height: 91vh;
   padding: 8px;
   margin-left: 10px;
+  margin-bottom: 20px;
 /*   
   overflow-y: auto; */
   box-shadow: 0px 2px 4px rgb(38, 39, 130);
@@ -974,30 +961,40 @@ h2::after{
 }
 
 .bg{
+  position: absolute;
   display: flex;
-  min-height: 100vh;
   justify-content: center;
   align-items: center;
-  background-image: url('./Assests/BG.jpg');
+  background-image: url('./Assests/ADMIN_BG.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100vh;
+}
+
+.job-details h2{
+  color:#fff;
+  font-size: 25px;
 }
 .job-details{
   margin: 50px auto;
   width: 70%;
   height: max-content;
- padding: 5px;
-  /* From https://css.glass */
-background: #FFF;
+ padding: 10px;
+background: rgba(255, 255, 255, 0.63);
 border-radius: 16px;
-box-shadow: 0 4px 30px rgb(255, 255, 255);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 backdrop-filter: blur(5px);
 -webkit-backdrop-filter: blur(5px);
-border: 5px solid linear-gradient(to right, #0e1286d6 0%, #b010a3 100%) ;
+border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .job-details p {
   font-size: 14px;
+  margin-top: 5px;
   margin-bottom: 8px;
-  color: #162142;
+  color: #170659;
 }
 
 .job-details strong {
@@ -1010,8 +1007,8 @@ border: 5px solid linear-gradient(to right, #0e1286d6 0%, #b010a3 100%) ;
 }
 
 .job-details button {
-  background-color: #FFF; /* Green button */
-  color: #00B4D2;
+  background-color: #170659; /* Green button */
+  color: #fff;
   border: none;
   padding: 10px 20px;
   margin: 0 10px;

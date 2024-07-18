@@ -37,24 +37,11 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData, extraConte
 
       fetchData();
     } else {
-      setData(filteredData);
+      setData(filteredData.reverse());
     }
   }, [url, filteredData]);
 
-  const handleView = (row) => {
-    if (onViewClick) {
-      onViewClick(row);
-    }
-  };
 
-  const handleViewButtonClick = () => {
-    if (selectedRow) {
-      console.log('Selected row:', selectedRow);
-      handleView(selectedRow);
-    } else {
-      console.log('No row selected.');
-    }
-  };
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
@@ -85,7 +72,6 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData, extraConte
   const handleExportToExcel = (dataToExport) => {
     const filteredData = filterDataForExport(dataToExport);
 
-    // Modify the column headers to be capitalized
     const capitalizedHeaders = Object.keys(filteredData[0] || {}).reduce((acc, key) => {
       acc[capitalizeWords(key.replace(/_/g, ' '))] = key;
       return acc;
@@ -115,10 +101,10 @@ const Fetchtable = ({ url, columns, title, onViewClick, filteredData, extraConte
           placeholder="Search by FullName/ Job Title or Location"
           value={searchQuery}
           onChange={handleSearch}
-          style={{ float: 'left', width: '50%', padding:'6px', margin:'2px' }}
+          style={{ float: 'left', width: '50%', padding: '6px', margin: '2px' }}
         />
         <Button 
-          style={{ background: '#A60808', margin: '0px',color: '#FFF', float: 'right' }} 
+          style={{ background: '#A60808', margin: '0px', color: '#FFF', float: 'right' }} 
           onClick={() => handleExportToExcel(filteredResults.length ? filteredResults : data)}
         >
           <MdOutlineDownload /> Download Excel

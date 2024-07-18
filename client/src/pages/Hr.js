@@ -3,6 +3,7 @@ import { Tooltip, Button, Input, Modal } from 'antd';
 import { FiGrid } from "react-icons/fi";
 import { FaTableList } from "react-icons/fa6";
 import axios from 'axios';
+import useAuth from '../hooks/useAuth';
 import CandidateCard from '../components/CandidateCard';
 import CandidateTable from '../components/CandidateTable';
 import Registration from '../components/Registration';
@@ -12,6 +13,7 @@ const Hr = () => {
   const [view, setView] = useState('tile');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const {auth} = useAuth();
   const [candidates, setCandidates] = useState([]);
 
   const showModal = () => {
@@ -52,12 +54,14 @@ const Hr = () => {
         <Tooltip title="Add Applicant" color='cyan'>
           <Button onClick={showModal} type='text' className='add-button'>Add New Candidate</Button>
         </Tooltip>
-        <Input
-          placeholder="Search Candidates"
-          value={searchQuery}
-          onChange={handleSearch}
-          className='ant-searchIn'
-        />
+        {view === 'tile' && (
+          <Input
+            placeholder="Search Candidates"
+            value={searchQuery}
+            onChange={handleSearch}
+            className='ant-searchIn'
+          />
+        )}
         <div className='toggle-button'>
           <Button onClick={toggleView} type='text' icon={<FiGrid />} className={view === 'tile' ? 'active-button' : ''}>
             Tile View
@@ -72,7 +76,7 @@ const Hr = () => {
         {view === 'tile' ? (
           <CandidateCard candidates={filteredCandidates} />
         ) : (
-          <CandidateTable />
+          <CandidateTable auth={auth}/>
         )}
       </div>
       <div>

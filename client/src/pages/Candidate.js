@@ -53,13 +53,7 @@ const Hire = () => {
     setIsChecked(!isChecked);
   };
 
-  /**
-   * Description: This peace of code will fatch the details od the candidate and replace their score undefind/0 to value.
-   * Created Date: 28/03/2023
-   * Modified Date: 28/03/2023
-   * Created By: Vikas Bose
-   * Modified By: 
-   */
+
 
   
   const handleSubmit = () => {
@@ -73,13 +67,20 @@ const Hire = () => {
       auth.excel,
       auth.accounts
     ].filter(score => score >= 0).length;
+    const historyNote = 'Assessment Completed'; 
+  const historyUpdate = {
+    updatedBy: auth.fullName, 
+    updatedAt: new Date(),
+    note: historyNote
+  };
   
     if (auth && completedTestsCount >= 4) {
       setIsChecked(false);
-      const userDataWithTimestamp = { ...useData, dateCreated: new Date(), status: "Assessment Done" }; // Add the dateCreated property
+      const userDataWithTimestamp = { ...useData, dateCreated: new Date() }; 
       axios.put(`http://localhost:5040/candidate/${auth._id}`, {
         ...auth,
         ...userDataWithTimestamp,
+        ...historyUpdate,
       });
       navigate('/thankyou');
     } else {
@@ -96,29 +97,6 @@ const Hire = () => {
   
 
 
-// const handleSubmit = () => {
-//   console.log(isClicked.Psychometric, isClicked.general, isClicked.grammer, isClicked.jva)
-  
-//   if ( auth && auth.psychometric >= 0 && auth.quantitative >= 0 && auth.vocabulary >= 0 && auth.java >= 0 && auth.excel >= 0 && auth.accounts >= 0) {
-//     setIsChecked(false);
-//     const userDataWithTimestamp = { ...useData, dateCreated: new Date() }; // Add the dateCreated property
-//     axios.put(`http://localhost:5040/candidate/${auth._id}`, {
-//       ...auth,
-//       ...userDataWithTimestamp,
-//     })
-//       navigate('/thankyou')
- 
-//   } else {
-//     navigate('/candidate/candidate');
-//     Swal.fire({
-//       title: 'Error!',
-//       text: 'Please complete all the tests',
-//       icon: 'error',
-//       confirmButtonText: 'OK',
-//       confirmButtonColor: '#00B4D2'
-//     });
-//   }
-// };
 
 const handleCloseModal = () => {
   setShowModal(false);
@@ -169,7 +147,7 @@ useEffect(() => {
       auth.excel >= 0 ||
       auth.dateCreated !== null
     ) {
-      setShowModal(false); // Hide the modal
+      setShowModal(false); 
     }
 
     const completedTestsCount = [

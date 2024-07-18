@@ -3,7 +3,7 @@ import React, {useState, useEffect} from 'react';
 import Sidebar from './components/Sidebar';
 import RequireAuth from './components/RequiredAuth';
 import { AuthProvider } from './context/AuthProvider';
-import Credentials from './pages/Credentials.js';
+
 import HR from './pages/Hr.js';
 import Candidate from './pages/Candidate'; 
 import Home from './pages/Home.js';
@@ -19,10 +19,9 @@ import Reports from './pages/Reports.js';
 import './App.css'
 import Thankyou from './pages/Thankyou';
 import { FadeLoader } from "react-spinners";
-import TypingTest from './components/assessment/TypingTest.js';
-import Jobs from './pages/Jobs.js'
+
 import Statistics from './pages/Statistics.js';
-import Monitor from './pages/Monitor.js';
+
 import Admin from './pages/Admin.js';
 import Postjob from './components/Postjob.js';
 import Createhr from './components/Createhr.js';
@@ -33,7 +32,7 @@ import Panelist from './components/Panelist.js';
 import JobDashboard from './components/JobDashboard.js';
 import Dashboard from './pages/Dashboard.js';
 import Applicant from './pages/Applicant.js';
-import Approve from './pages/Approve.js';
+
 import ApproveJobDetails from './pages/Approve.js';
 
 
@@ -68,14 +67,14 @@ const App = () => {
             <Route path="/assessment/java" element={<JavaTest />} />
             <Route path="/assessment/accounts" element={<Accounts />} />
             <Route path="/assessment/excel" element={<Excel />} />
-            <Route path="/assessment/typing" element={<TypingTest />} />
-            <Route path='/jobs' element={<Jobs />} />
+            
+            
             <Route path='/hr' element={<HR />}/>
            
             <Route path='/thankyou' element={<Thankyou />} />
             <Route path='/statistics' element={<Statistics />} />
             <Route path='/dashboard' element={<Dashboard />} />
-            <Route path='/credentials' element={<Credentials />} />
+         
             <Route path='/postjob' element={<Postjob />} />
             <Route path='/create-hr' element={<Createhr />} />
             <Route path='/feedbacks' element={<Feedback/>} />

@@ -6,7 +6,8 @@ import Fetchtable from '../components/Fetchtable';
 import AssignInterview from '../components/AssignInterview';
 import { Tooltip } from 'antd';
 
-const CandidateTable = () => {
+
+const CandidateTable = ({auth}) => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -17,14 +18,13 @@ const CandidateTable = () => {
   };
 
   const handleView = (row) => {
-    console.log("Viewing candidate:", row); // Debugging log
+    
     setSelectedCandidate(row);
     setShowDrawer(false);
     setProfileOpen(true);
   };
   
   const handleAssign = (row) => {
-    console.log("Assigning candidate:", row); // Debugging log
     setSelectedCandidate(row);
     setShowDrawer(true);
     setProfileOpen(false);
@@ -128,6 +128,7 @@ const CandidateTable = () => {
       <AssignInterview 
         open={showDrawer} 
         onClose={handleDrawerClose} 
+        auth={auth}
         candidateId={selectedCandidate ? selectedCandidate._id : ''}
       />
       {profileOpen && 

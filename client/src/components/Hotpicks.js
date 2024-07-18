@@ -11,9 +11,9 @@ const Hotpicks = () => {
   useEffect(() => {
     const fetchSelectedCandidates = async () => {
       try {
-        const response = await axios.get('http://localhost:5040/candidate/Selected');
+        const response = await axios.get('http://localhost:5040/candidate/Onboarded');
         const selectedCandidates = response.data.reverse()
-          .filter(candidate => candidate.status === 'Selected')
+          .filter(candidate => candidate.status === 'Onboarded')
           .sort((a, b) => new Date(b.statusUpdateDate) - new Date(a.statusUpdateDate))
           .slice(0, 5);
         setSelectedCandidates(selectedCandidates);

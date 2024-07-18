@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../styles/Regform.css';
 import { Tooltip, message, Button } from 'antd';
 
-const Createhr = ({closeModal}) => {
+const Createhr = ({ closeModal }) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -34,7 +34,7 @@ const Createhr = ({closeModal}) => {
     const password = Math.random().toString(36).slice(-8);
     const createdAt = new Date();
     const fullName = `${formData.firstName} ${formData.lastName}`;
-    
+
     if (!formData.email.endsWith('@enfuse-solutions.com')) {
       message.error('Email must end with "@enfuse-solutions.com"');
       return;
@@ -53,9 +53,18 @@ const Createhr = ({closeModal}) => {
 
       if (response.status === 201) {
         const data = response.data;
-        console.log(data);
 
-       
+        const emailData = {
+          role: data.role,
+          confirmPassword: data.confirmPassword,
+          email: data.email,
+          fullName: data.fullName,
+        };
+
+        const emailResponse = await axios.post('http://localhost:5040/user/register', emailData);
+
+
+
 
         message.success("User Created Successfully");
         setFormData({
@@ -68,7 +77,7 @@ const Createhr = ({closeModal}) => {
           empCount: 0,
         });
         closeModal();
-        
+
       }
     } catch (error) {
       console.error('Error creating user:', error);
@@ -78,8 +87,8 @@ const Createhr = ({closeModal}) => {
 
   return (
     <div>
-      
-      <form>
+
+      <form onSubmit={handleSubmit}>
         <div className='formContainer'>
           <div className='block'>
             <div>
@@ -152,14 +161,14 @@ const Createhr = ({closeModal}) => {
                 <option value="Admin">Admin</option>
                 <option value="Panelist">Panelist</option>
                 <option value="Ops-Manager">Ops-Manager</option>
-                
+
               </select>
             </div>
           </div>
         </div>
         <div id='btnWrapper'>
           <Tooltip title="Submit" color='red'>
-            <Button type="submit" className='add-button' style={{backgroundColor:'#A50707'}} onClick={handleSubmit}>Create User</Button>
+            <Button type="submit" className='add-button' style={{ backgroundColor: '#A50707' }} onClick={handleSubmit}>Create User</Button>
           </Tooltip>
         </div>
       </form>
