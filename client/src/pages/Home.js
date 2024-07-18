@@ -82,7 +82,7 @@ function Home() {
                 <img src={logo} alt="Enfuse Logo" />
                 <form onSubmit={onLogin}>
                   <div>
-                    <label>Email</label><br />
+                    <label>Email</label>
                     <input
                       type='text'
                       placeholder='Email'
@@ -91,7 +91,7 @@ function Home() {
                     />
                   </div>
                   <div>
-                    <label>Password</label><br />
+                    <label>Password</label>
                     <input
                       type='password'
                       placeholder='Password'

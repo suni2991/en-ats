@@ -163,7 +163,7 @@ const Postjob = () => {
                 <div className='formContainer'>
                     <div className='block'>
                         <div>
-                            <label htmlFor="position">Job Title:<span className='require'>*</span></label><br />
+                            <label htmlFor="position">Job Title:<span className='require'>*</span></label>
                             <input
                                 type="text"
                                 name="position"
@@ -171,11 +171,10 @@ const Postjob = () => {
                                 value={formData.position}
                                 onChange={handleChange}
                                 required
-                                placeholder='Job Title'
                             />
                         </div>
                         <div>
-                            <label htmlFor="vacancies">Vacancies:<span className='require'>*</span></label><br />
+                            <label htmlFor="vacancies">Vacancies:<span className='require'>*</span></label>
                             <input
                                 type="text"
                                 name="vacancies"
@@ -186,7 +185,7 @@ const Postjob = () => {
                             />
                         </div>
                         <div>
-                            <label htmlFor="primarySkills">Primary Skills:<span className='require'>*</span></label><br />
+                            <label htmlFor="primarySkills">Primary Skills:<span className='require'>*</span></label>
                             <Select
                                 mode="tags"
                                 style={{ width: '25vw' }}
@@ -202,8 +201,8 @@ const Postjob = () => {
                                 ))}
                             </Select>
                         </div>
-                        <div>
-                            <label htmlFor="department">Department:<span className='require'>*</span></label><br />
+                        <div style={{ marginTop: '25px', marginBottom: '20px' }}>
+                            <label htmlFor="department">Department:<span className='require'>*</span></label>
                             <select
                                 name="department"
                                 id="department"
@@ -222,7 +221,7 @@ const Postjob = () => {
                     </div>
                     <div className='block'>
                         <div>
-                            <label htmlFor="jobLocation">Location:<span className='require'>*</span></label><br />
+                            <label htmlFor="jobLocation">Location:<span className='require'>*</span></label>
                             <input
                                 type="text"
                                 name="jobLocation"
@@ -234,7 +233,7 @@ const Postjob = () => {
                             />
                         </div>
                         <div>
-                            <label htmlFor="experience">Experience:<span className='require'>*</span></label><br />
+                            <label htmlFor="experience">Experience:<span className='require'>*</span></label>
                             <input
                                 type="text"
                                 name="experience"
@@ -245,7 +244,7 @@ const Postjob = () => {
                             />
                         </div>
                         <div>
-                            <label htmlFor="secondarySkills">Secondary Skills:</label><br />
+                            <label htmlFor="secondarySkills">Secondary Skills:</label>
                             <Select
                                 mode="tags"
                                 style={{ width: '25vw' }}
@@ -261,32 +260,33 @@ const Postjob = () => {
                                 ))}
                             </Select>
                         </div>
-                        <div style={{ width: '25vw', padding: '15px' }}>
+                        <div style={{ marginTop: '25px' }}>
+                            <label></label>
                             <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} style={{ width: '100%' }} />
                         </div>
                     </div>
                 </div>
                 <div id='desc'>
+                <div>
+                <label htmlFor="rolesNResponsibilities">Roles & Responsibilities:</label>
+                <textarea
+                    name="responsibilities"
+                    id="responsibilities"
+                    value={formData.responsibilities}
+                    onChange={handleChange}
+                    onPaste={handlePaste}
+                    style={{ width: '92%', height: '60px', padding: '10px 5px', margin: '0 0 20px 20px', border: '1px solid #00B4D2' }}
+                />
+            </div>
                     <div>
-                        <label htmlFor="rolesNResponsibilities">Roles & Responsibilities:</label><br />
-                        <textarea
-                            name="responsibilities"
-                            id="responsibilities"
-                            value={formData.responsibilities}
-                            onChange={handleChange}
-
-                            style={{ width: '90%', height: '60px', padding: '5px', marginLeft: '35px', border: '1px solid #00B4D2' }}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="description">Job Description:</label><br />
+                        <label htmlFor="description">Job Description:</label>
                         <textarea
                             name="description"
                             id="description"
                             value={formData.description}
 
                             onChange={handleChange}
-                            style={{ width: '90%', height: '110px', padding: '5px', marginLeft: '35px', border: '1px solid #00B4D2' }}
+                            style={{ width: '90%', height: '110px', padding: '5px', marginLeft:'35px', border: '1px solid #00B4D2' }}
                         />
                     </div>
                 </div>

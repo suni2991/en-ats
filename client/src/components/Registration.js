@@ -368,13 +368,13 @@ function Registration({ closeModal }) {
 
           <div className='block' >
             <div>
-              <label>First Name<span className='require'>*</span></label><br />
+              <label>First Name<span className='require'>*</span></label>
               <input type="text" name="firstName" value={formData.firstName} required onChange={handleChange} placeholder="Enter Fullname"></input></div>
-            <div><label>Email<span className='require'>*</span></label><br />
+            <div><label>Email<span className='require'>*</span></label>
               <input type="text" name="email" value={formData.email} required onChange={handleChange} placeholder="Enter valid Mail Id "></input></div>
-            <div><label>Total Experience<span className='require'>*</span></label><br />
+            <div><label>Total Experience<span className='require'>*</span></label>
               <input type="text" name="totalExperience" value={formData.totalExperience} onChange={handleChange} placeholder="in years"></input></div>
-            <div><label>Notice Period<span className='require'>*</span></label><br />
+            <div><label>Notice Period<span className='require'>*</span></label>
               <select name="noticePeriod" style={{ width: '100%' }} value={formData.noticePeriod} onChange={handleChange}>
                 <option value="">Choose One</option>
                 <option value="Immediate">Immediate </option>
@@ -383,7 +383,7 @@ function Registration({ closeModal }) {
               </select>
             </div>
             <div>
-              <label>City<span className='require'>*</span></label><br />
+              <label>City<span className='require'>*</span></label>
               <input
                 type="text"
                 name="city"
@@ -393,7 +393,7 @@ function Registration({ closeModal }) {
                 onChange={handleChange}
               />
             </div>
-            <div><label>State<span className='require'>*</span></label><br />
+            <div><label>State<span className='require'>*</span></label>
               <input type="text" name="state" value={formData.state} maxLength={10} onChange={handleChange} required placeholder="Enter your State"></input><ul className=
                 'no-bullets'>
                 {stateSuggestions.map((state, index) => (
@@ -403,86 +403,86 @@ function Registration({ closeModal }) {
             </div>
 
             <div>
-              <label>Resume<span className='require'>*</span></label><br />
-              <input type="file" name="resume" path={formData.resume} onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
+              <label>Resume<span className='require'>*</span></label>
+              <input type="file" name="resume" path={formData.resume}  onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
             </div>
             <div>
-              <label>Reference</label><br />
-              <input type="text" name="reference" value={formData.reference} required onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
-
-            <div>
-              <DatePicker
-                name="lwd"
-                required
-                value={formData.lwd ? moment(formData.lwd) : null}
-                onChange={handleDateChange}
-                placeholder="Choose Last Working Day"
-                style={{ width: '320px', border: '1px solid #00B4D2', padding: '0px' }}
-              />
-            </div>
-
+          <label>Reference</label><br />
+          <input type="text" name="reference" value={formData.reference} required onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
+           
+          <div>
+                  <DatePicker
+                    name="lwd"
+                    required
+                    value={formData.lwd ? moment(formData.lwd) : null}
+                    onChange={handleDateChange}
+                    placeholder="Choose Last Working Day"
+                    style={{ width: '320px', border: '1px solid #00B4D2', padding: '0px' }}
+                  />
+                </div>
+          
           </div>
 
+         
+            <div className='block' style={{ float: 'right' }}>
+              <div>
+                <label>Last Name<span className='require'>*</span></label><br />
+                <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange}></input>
+                </div>
 
-          <div className='block' style={{ float: 'right' }}>
-            <div>
-              <label>Last Name<span className='require'>*</span></label><br />
-              <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange}></input>
-            </div>
+              <div><label>Contact Number<span className='require'>*</span></label><br />
+                <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No."></input>
+                </div>
+                <div><label>Relevant Experience<span className='require'>*</span></label><br />
+                  <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="in years"></input>
+                </div>
+                <div><label>Qualification<span className='require'>*</span></label><br />
+                  <select name="qualification" value={formData.qualification} style={{ width: '100%' }} onChange={handleChange} placeholder="Enter Highest qualification">
+                    <option value="">Choose One</option>
+                    <option value="Btech">Btech</option>
+                    <option value="PhD">PhD</option>
+                    <option value="PG">PG</option>
+                    <option value="UG">UG</option>
+                  </select>
+                </div>
+                <div>
+                  <label>District</label><br />
+                  <input
+                    type="text"
+                    name="district"
+                    value={formData.district}
+                    maxLength={20}
+                    placeholder="Enter district"
+                    onChange={handleChange}
+                  />
+                </div>
 
-            <div><label>Contact Number<span className='require'>*</span></label><br />
-              <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No."></input>
-            </div>
-            <div><label>Relevant Experience<span className='require'>*</span></label><br />
-              <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="in years"></input>
-            </div>
-            <div><label>Qualification<span className='require'>*</span></label><br />
-              <select name="qualification" value={formData.qualification} style={{ width: '100%' }} onChange={handleChange} placeholder="Enter Highest qualification">
-                <option value="">Choose One</option>
-                <option value="Btech">Btech</option>
-                <option value="PhD">PhD</option>
-                <option value="PG">PG</option>
-                <option value="UG">UG</option>
-              </select>
-            </div>
-            <div>
-              <label>District</label><br />
-              <input
-                type="text"
-                name="district"
-                value={formData.district}
-                maxLength={20}
-                placeholder="Enter district"
-                onChange={handleChange}
-              />
-            </div>
-
-            <div><label>Applied Position<span className='require'>*</span></label><br />
-              <select name="position" style={{ width: '100%', marginBottom: '15px' }} value={formData.position} onChange={handleChange}>
-                <option value="">Choose One</option>
-                {positions.map((position) => (
-                  <option key={position._id} value={position.position}>{position.position}</option>
-                ))}
-              </select>
-            </div>
-            <div><label>Category<span className='require'>*</span></label><br />
-              <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
-                <option value="">Choose One</option>
+                <div><label>Applied Position<span className='require'>*</span></label><br />
+                  <select name="position" style={{ width: '100%', marginBottom:'15px' }} value={formData.position} onChange={handleChange}>
+                    <option value="">Choose One</option>
+                    {positions.map((position) => (
+                      <option key={position._id} value={position.position}>{position.position}</option>
+                    ))}
+                  </select>
+                </div>
+                <div><label>Category<span className='require'>*</span></label><br />
+                <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
+                  <option value="">Choose One</option>
                 <option value="Techincal">Technical</option>
-                <option value="Non-Technical">Non-Technical</option>
-
-              </select>
+                  <option value="Non-Technical">Non-Technical</option>
+  
+                </select>
+              </div>
+              <div style={{marginTop:'38px'}}>
+              <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
             </div>
-            <div style={{ marginTop: '38px' }}>
-              <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} required />
-            </div>
-
-
-            <div id='btnWrapper'>
-              <Button className='add-button' style={{ backgroundColor: '#A50707', float: 'end', marginTop: '15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
-            </div>
+                
+                
+                <div id='btnWrapper'>
+          <Button className='add-button' style={{ backgroundColor: '#A50707', float:'end', marginTop:'15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
+        </div> 
+             </div>    
           </div>
-        </div>
       </form>
       <center><p>* All fields are required</p></center>
     </div>
