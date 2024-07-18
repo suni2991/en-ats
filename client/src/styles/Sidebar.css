@@ -14,15 +14,16 @@
   background: #eceff1;
  
 }
-main{
-    width:100vw;
-    min-height:100%;
-   position:relative;
-    background: #eceff1;
-    box-shadow: 3px white;
-   display: flex;
+
+main {
+  /* width:100vw;
+  min-height:100%; */
+  position:relative;
+  background: #eceff1;
+  box-shadow: 3px white;
+  display: flex;
   flex-direction: column;
-    
+
 }
 main img{
  width: 50%;
@@ -58,7 +59,8 @@ main img{
   /* background-image: linear-gradient( #15f7f7, rgb(38, 39, 130)); */
   color:rgb(38, 39, 130);
   height: 100vh;
-  width: 30vw;
+  /* width: 30vw; */
+  box-sizing: border-box;
   font-size: 14px;
   position: fixed;
   /* box-shadow: 0px 0px 6px rgb(38, 39, 130); */
@@ -71,6 +73,15 @@ main img{
   padding-left: 10px;
   /* margin: 2px 0px 0px 0px; */
   
+}
+
+/* Reducng Sidebar width for main-container*/
+.main-container {
+  border-radius: 0;
+  width: -webkit-calc(100% - 180px);
+  width:    -moz-calc(100% - 180px);
+  width:         calc(100% - 180px);
+  margin-left: 180px;
 }
 
 .main-content {
@@ -147,13 +158,13 @@ main img{
 .icon-button{
   background-color: transparent;
   border: none;
-  margin: 0px 5px 5px 5px;
+  margin: 6px 10px 5px 5px;
   color: red;
 }
 .icon-container {
   /* background-image: linear-gradient( #00B4D2, rgb(38, 39, 130)); */
   width: 16px;
-
+  margin-top: 3px;
   height: 16px;
   /* margin-left: 10px; */
   border: none; 
@@ -193,11 +204,13 @@ main img{
   /* padding: 1px 20px; */
   background-color: #ffffff;
   position: fixed;
-  /* box-shadow: 0px 0px 2px blue ; */
+  box-shadow: 0px 0px 1px #00B4D2 ;
   height: 50px;
-  width: 87% !important;
-  margin-left: 150px;
-  padding-right: 20px;
+  width: -webkit-calc(100% - 180px);
+  width:    -moz-calc(100% - 180px);
+  width:         calc(100% - 180px);
+   /* margin-left: 150px; */
+  /* padding-right: 20px; */
 }
 
 .navbar-left {
@@ -223,16 +236,16 @@ main img{
 }
 
 
-
 .footer {
   position:relative;
   bottom:0;
-  padding: 25px;
+  padding: 17px;
   background: #1a2763;
   color: #fff;
   text-align: center;
-  height: 20px !important; /* Adjust as needed */
-  width: 94%;
+  height: 50px !important; /* Adjust as needed */
+  width: 100%;
+  box-sizing: border-box;
   /* width: -webkit-calc(100% - 189px);
   width:    -moz-calc(100% - 189px);
   width:         calc(100% - 189px); */
