@@ -8,14 +8,23 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const authenticate = async (req, res, next) => {
   // const token = req.header('Authorization').replace('Bearer ', '');
-  const bearer = req.header("Authorization").split(" ");
-  // Get token from array
-  const bearerToken = bearer[1];
-  if (!bearerToken) return res.status(401).send("Access denied");
+  const authorizationHeader = req.header("Authorization");
+
+  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Access denied" });
+  }
+
+  const bearerToken = authorizationHeader.split(" ")[1];
+
+  if (!bearerToken) {
+    return res.status(401).json({ message: "Access denied" });
+  }
   try {
     const decoded = jwt.verify(bearerToken, JWT_SECRET);
-
     req.user = await CandidateModel.findOne({ _id: decoded.userId });
+    if (!req.user) {
+      return res.status(404).send("User not found");
+    }
     next();
   } catch (error) {
     res.status(400).json({ message: "Invalid token", error: error.message });
