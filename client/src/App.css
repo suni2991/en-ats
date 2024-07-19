@@ -198,20 +198,16 @@ h1{
 }
 
 .table-container {
-  margin: 2px 15px 2px 200px !important;
+  padding: 30px 30px;
   background: #eceff1;
- height: 10% !important;
-  padding: 15px 10px;
- 
-  width: 80%;
-  
+  height: 10% !important;
+  width: 100%;
+  box-sizing: border-box; 
 }
 
 .dashboard-container {
-  /* margin: 2px 15px 2px 20px !important; */
   background: #eceff1;
   padding: 30px 30px;
-  /* height: 10% !important; */
   width: 100%;
   box-sizing: border-box; 
 }
@@ -648,20 +644,20 @@ c
 }
 
 .hotpicks{
-  height:48vh;
-  width: 97%;
-  background-color: #FFF;
-  align-content: space-between ;
-  color: white;
-  margin-left: 20px;
-  text-align: left;
-  float: left;
   display: flex;
   flex-direction: column;
-  padding: 5px;
+  height: auto;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 20px 0;
+  padding: 10px 0;
+  background-color: #FFF;
+  align-content: space-between;
+  color: white;
+  text-align: left;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  position: relative;
 }
-
-
 
 /* Add this to your CSS file, e.g., Hotpicks.css */
 .card-hover {

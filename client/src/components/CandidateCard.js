@@ -22,7 +22,7 @@ const CandidateCard = ({ candidates }) => {
   };
 
   return (
-    <div style={{ padding: '30px 20px' }}>
+    <div>
       <Row gutter={[16, 16]}>
         {currentCandidates.map((candidate) => (
           <Col key={candidate._id} xs={20} sm={12} md={8} lg={6}>
@@ -57,7 +57,15 @@ const CandidateCard = ({ candidates }) => {
         pageSize={pageSize}
         total={candidates.length}
         onChange={(page) => setCurrentPage(page)}
-        style={{ textAlign: 'right', marginTop: '20px' }}
+        style={{
+          textAlign: "right",
+          marginTop: "20px",
+          paddingTop: '10px', 
+          background: "#fff",
+          maxWidth: "100%",
+          height: "50px",
+          boxShadow: '0px 1px 2px rgb(38, 39, 130)',
+        }}
       />
       <CandidateProfileDrawer
         open={drawerVisible}
