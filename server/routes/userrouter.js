@@ -128,13 +128,11 @@ userRouter.post("/api/login", (req, res) => {
       } else {
         let token = "";
         if (user.roleId) {
-          console.log("IF");
           token = jwt.sign(
             { userId: user._id, role: user.role, roleId: user.roleId },
             JWT_SECRET
           );
         } else {
-          console.log("ELSE");
           token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET);
         }
         const userWithToken = {
