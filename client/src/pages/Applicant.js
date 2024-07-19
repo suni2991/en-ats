@@ -162,7 +162,7 @@ const Applicant = () => {
   return (
     <div className='vh-page'>
       <Statistics />
-      <div className='list-applicants'>
+      <div className='list-applicants' style={{ width: '61%', height: 'auto' }}>
         <div className='title-container'>
           <Title level={5} className='fixed-title'>
             Total Applicants ({candidates.length})

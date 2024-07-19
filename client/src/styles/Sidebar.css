@@ -211,7 +211,7 @@ main img{
   justify-content:flex-end;
   align-items: center;
   color:#00B4D2;
-  z-index: 1;
+  z-index: 999;
   /* padding: 1px 20px; */
   background-color: #ffffff;
   position: fixed;
