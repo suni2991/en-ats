@@ -1,7 +1,12 @@
 const userRouter = require("express").Router();
 const CryptoJS = require("crypto-js");
-
+const jwt = require("jsonwebtoken");
 const Candidate = require("../model/CandidateModel");
+const {
+  authenticate,
+  checkPermission,
+} = require("../middleware/PermissionMiddleware");
+const JWT_SECRET = process.env.JWT_SECRET;
 
 //Create User - or register, a simple post request to save user in db
 userRouter.post("/register/candidate", async (req, res) => {
@@ -121,46 +126,64 @@ userRouter.post("/api/login", (req, res) => {
       } else if (decryptedPassword !== req.body.password) {
         res.json({ message: "Incorrect password" });
       } else {
-        res.status(200).json(user);
+        let token = "";
+        if (user.roleId) {
+          console.log("IF");
+          token = jwt.sign(
+            { userId: user._id, role: user.role, roleId: user.roleId },
+            JWT_SECRET
+          );
+        } else {
+          console.log("ELSE");
+          token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET);
+        }
+        const userWithToken = {
+          ...user.toObject(), // Convert Mongoose document to plain JavaScript object
+          token: token,
+        };
+        res.status(200).json(userWithToken);
       }
     })
-    .catch((err) => res.status(400).json({ message: "Could not login user" }));
+    .catch((err) =>
+      res
+        .status(400)
+        .json({ message: "Could not login user", error: err.message })
+    );
 });
 
+userRouter.get(
+  "/hrs",
+  authenticate,
+  checkPermission("view_hrs"),
+  async (req, res) => {
+    const docs = await Candidate.find({
+      role: { $in: ["HR", "Panelist", "Ops-Manager"] },
+    });
+    res.json(docs);
+  }
+);
 
-
-userRouter.get('/hrs', async (req, res) => {
-  const docs = await Candidate.find({ role: { $in: ["HR", "Panelist", "Ops-Manager"] } });
-  res.json(docs)
-})
-
-
-
-userRouter.get('/candidatesreport', async (req, res) => {
+userRouter.get("/candidatesreport", async (req, res) => {
   try {
     const { selectedCategory } = req.query;
     let query = {
       role: { $in: ["Applicant"] },
-      status: { $ne: 'Onboarded' }
+      status: { $ne: "Onboarded" },
     };
 
-    if (selectedCategory && selectedCategory !== 'all') {
+    if (selectedCategory && selectedCategory !== "all") {
       query.selectedCategory = selectedCategory;
     }
 
     const docs = await Candidate.find(query);
     res.json(docs);
   } catch (error) {
-    console.error('Error fetching candidates:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error fetching candidates:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-
-
-
-
-userRouter.get('/candidates-status', async (req, res) => {
+userRouter.get("/candidates-status", async (req, res) => {
   try {
     const candidatesByStatus = await Candidate.aggregate([
       {
@@ -190,7 +213,7 @@ userRouter.get('/candidates-status', async (req, res) => {
 
 userRouter.get("/candidate/onboarded/:position", async (req, res) => {
   const position = req.params.position;
-  const status = 'Onboarded';
+  const status = "Onboarded";
 
   try {
     const docs = await Candidate.find({ position, status });
@@ -206,10 +229,10 @@ userRouter.get("/users-by-role", async (req, res) => {
     const usersByRole = await Candidate.aggregate([
       {
         $group: {
-          _id: '$role',
-          count: { $sum: 1 }
-        }
-      }
+          _id: "$role",
+          count: { $sum: 1 },
+        },
+      },
     ]);
 
     res.json(usersByRole);
@@ -219,17 +242,11 @@ userRouter.get("/users-by-role", async (req, res) => {
   }
 });
 
-
-
 userRouter.get("/candidate/:status", async (req, res) => {
   const status = req.params.status;
   const docs = await Candidate.find({ status });
-  res.json(docs)
-})
-
-
-
-
+  res.json(docs);
+});
 
 userRouter.get("/candidates/:fullName", async (req, res) => {
   try {
@@ -267,8 +284,7 @@ userRouter.get("/candidate/profile/:id", async (req, res) => {
   }
 });
 
-
-userRouter.put('/evaluate/:id', async (req, res) => {
+userRouter.put("/evaluate/:id", async (req, res) => {
   const { id } = req.params;
   const { round, status, history } = req.body;
 
@@ -281,13 +297,12 @@ userRouter.put('/evaluate/:id', async (req, res) => {
 
     candidate.round.push(round);
 
-
     if (history && Array.isArray(history)) {
-      history.forEach(entry => {
+      history.forEach((entry) => {
         candidate.history.push({
           updatedBy: entry.updatedBy,
           updatedAt: entry.updatedAt,
-          note: entry.note
+          note: entry.note,
         });
       });
     }
@@ -306,22 +321,29 @@ userRouter.put('/evaluate/:id', async (req, res) => {
   }
 });
 
-userRouter.put('/update-feedback/:id', async (req, res) => {
+userRouter.put("/update-feedback/:id", async (req, res) => {
   try {
     const candidateId = req.params.id;
-    const { roundIndex, feedback, feedbackProvided, skills, history } = req.body;
+    const { roundIndex, feedback, feedbackProvided, skills, history } =
+      req.body;
 
-    if (roundIndex === undefined || feedback === undefined || feedbackProvided === undefined) {
-      return res.status(400).json({ message: 'RoundIndex, feedback, and feedbackProvided are required' });
+    if (
+      roundIndex === undefined ||
+      feedback === undefined ||
+      feedbackProvided === undefined
+    ) {
+      return res.status(400).json({
+        message: "RoundIndex, feedback, and feedbackProvided are required",
+      });
     }
 
     const candidate = await Candidate.findById(candidateId);
     if (!candidate) {
-      return res.status(404).json({ message: 'Candidate not found' });
+      return res.status(404).json({ message: "Candidate not found" });
     }
 
     if (roundIndex < 0 || roundIndex >= candidate.round.length) {
-      return res.status(400).json({ message: 'Invalid round index' });
+      return res.status(400).json({ message: "Invalid round index" });
     }
 
     candidate.round[roundIndex].feedback = feedback;
@@ -334,30 +356,27 @@ userRouter.put('/update-feedback/:id', async (req, res) => {
     await candidate.save();
     res.status(200).json(candidate);
   } catch (error) {
-    console.error('Error updating feedback:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error updating feedback:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
-
-
 
 userRouter.get("/panelists/enfusian", async (req, res) => {
   try {
-
-    const panelists = await Candidate.find({ role: { $in: ['Panelist', 'Ops-Manager'] } }, 'fullName');
+    const panelists = await Candidate.find(
+      { role: { $in: ["Panelist", "Ops-Manager"] } },
+      "fullName"
+    );
     res.json(panelists);
   } catch (error) {
-    console.error('Error fetching panelists:', error);
-    res.status(500).json({ message: 'Error fetching panelists' });
+    console.error("Error fetching panelists:", error);
+    res.status(500).json({ message: "Error fetching panelists" });
   }
 });
 
-
-userRouter.get('/hrs/name', async (req, res) => {
+userRouter.get("/hrs/name", async (req, res) => {
   try {
-    const hrs = await Candidate.find({ role: 'HR' }, 'fullName email');
+    const hrs = await Candidate.find({ role: "HR" }, "fullName email");
   } catch (error) {
     console.error("Error fetching HRs:", error);
     res.status(500).json({ message: "Error fetching HRs" });
@@ -368,8 +387,10 @@ userRouter.get("/panelist/:panelistName", async (req, res) => {
   const { panelistName } = req.params;
 
   try {
-
-    const candidates = await Candidate.find({ 'round.panelistName': panelistName, role: 'Applicant' });
+    const candidates = await Candidate.find({
+      "round.panelistName": panelistName,
+      role: "Applicant",
+    });
 
     if (candidates.length === 0) {
       return res
@@ -406,28 +427,24 @@ userRouter.delete("/candidate/:id", async (req, res) => {
   }
 });
 
-
-userRouter.get('/applicants/position/:position', async (req, res) => {
+userRouter.get("/applicants/position/:position", async (req, res) => {
   try {
     const { position } = req.params;
 
-
     const candidates = await Candidate.find({ position });
-
 
     res.json(candidates);
   } catch (error) {
-    console.error('Error fetching candidates:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching candidates:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-userRouter.put('/candidates/:id', async (req, res) => {
+userRouter.put("/candidates/:id", async (req, res) => {
   const { id } = req.params;
   const { email, status, joiningDate, role, historyUpdate } = req.body;
 
   try {
-
     const updates = { email, status };
     if (joiningDate) {
       updates.joiningDate = joiningDate;
@@ -436,10 +453,12 @@ userRouter.put('/candidates/:id', async (req, res) => {
       updates.role = role;
     }
 
-    const candidate = await Candidate.findByIdAndUpdate(id, updates, { new: true });
+    const candidate = await Candidate.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
 
     if (!candidate) {
-      return res.status(404).json({ error: 'Candidate not found' });
+      return res.status(404).json({ error: "Candidate not found" });
     }
 
     if (historyUpdate) {
@@ -448,12 +467,11 @@ userRouter.put('/candidates/:id', async (req, res) => {
 
     await candidate.save();
 
-    res.json({ status: 'SUCCESS' });
+    res.json({ status: "SUCCESS" });
   } catch (error) {
-    console.error('Error updating candidate:', error);
-    res.status(500).json({ error: 'Failed to update candidate' });
+    console.error("Error updating candidate:", error);
+    res.status(500).json({ error: "Failed to update candidate" });
   }
 });
-
 
 module.exports = userRouter;
