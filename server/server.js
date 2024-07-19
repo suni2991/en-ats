@@ -1,5 +1,6 @@
 //
 require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -11,7 +12,6 @@ const userRouter = require("./routes/userrouter.js");
 
 const path = require("path");
 const multer = require("multer");
-const CheckTokenMiddleware = require("./middleware/CheckTokenMiddleware.js");
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
