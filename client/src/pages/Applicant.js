@@ -23,7 +23,7 @@ const Applicant = () => {
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [emailModalVisible, setEmailModalVisible] = useState(false);
 
-  const [token] = useAuth();
+  const {token} = useAuth();
   useEffect(() => {
     fetchCandidates();
     fetchOnboardedCandidates();

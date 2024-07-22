@@ -9,7 +9,7 @@ const { Option } = Select;
 const Reports = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [data, setData] = useState([]);
-  const [token] = useAuth();
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
