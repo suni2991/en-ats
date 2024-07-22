@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 
 import { Button, Rate, Input, Tabs } from 'antd';
+import useAuth from '../hooks/useAuth';
 
 const { TabPane } = Tabs;
 
@@ -20,6 +21,7 @@ const Panelist = ({ candidateData, auth }) => {
     role: 'Applicant', 
   });
   const [isFeedbackGiven, setIsFeedbackGiven] = useState(false);
+  const {token} = useAuth();
 
   useEffect(() => {
     if (candidateData) {
@@ -107,7 +109,13 @@ const Panelist = ({ candidateData, auth }) => {
 
     try {
       
-      const response = await axios.put(`http://localhost:5040/update-feedback/${candidateData._id}`, requestBody);
+      const response = await axios.put(`http://localhost:5040/update-feedback/${candidateData._id}`, requestBody,
+        {
+          headers:{
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
       if (response.status === 200) {
 
