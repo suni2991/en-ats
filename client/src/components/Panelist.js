@@ -148,7 +148,13 @@ const Panelist = ({ candidateData, auth }) => {
           historyUpdate: historyUpdate
         };
 
-        await axios.put(`http://localhost:5040/candidates/${candidateData._id}`, statusUpdate);
+        await axios.put(`http://localhost:5040/candidates/${candidateData._id}`, statusUpdate,
+          {
+            headers:
+            {
+              Authorization: `Bearer ${token}`
+            }
+          });
 
         
         Swal.fire({

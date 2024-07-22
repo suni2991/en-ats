@@ -96,6 +96,11 @@ const Applicant = () => {
           email,
           status: "Onboarded",
           historyUpdate,
+        },
+        {
+          headers:{
+            Authorization: `Bearer ${token}`
+          }
         }
       );
 
