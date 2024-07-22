@@ -10,7 +10,7 @@ import Panelist from '../components/Panelist';
 const { Option } = Select;
 
 const Feedback = () => {
-  const { auth } = useAuth();
+  const { auth, token } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [isJoiningDateModalVisible, setIsJoiningDateModalVisible] = useState(false);
@@ -18,11 +18,16 @@ const Feedback = () => {
   const [status, setStatus] = useState('');
   const [candidateData, setCandidateData] = useState([]);
   const [historyUpdate, setHistoryUpdate] = useState(null);
-
+  
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        const panelistResponse = await axios.get(`http://localhost:5040/panelist/${auth.fullName}`);
+        const panelistResponse = await axios.get(`http://localhost:5040/panelist/${auth.fullName}`,
+          {
+            headers:{
+              Authorization: `Bearer ${token}`
+            }
+          });
         setCandidateData(panelistResponse.data);
       } catch (error) {
         console.error('Error fetching candidates:', error);
@@ -30,7 +35,7 @@ const Feedback = () => {
     };
 
     fetchCandidates();
-  }, [auth.fullName]);
+  }, [auth.fullName, token]);
 
   const userColumns = [
     { name: 'Name', selector: (row) => row.fullName, sortable: true },
