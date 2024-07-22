@@ -349,6 +349,7 @@ function Registration({ closeModal }) {
         body: JSON.stringify(formDataWithFullName),
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();
@@ -362,7 +363,12 @@ function Registration({ closeModal }) {
 
       const emailResponse = await axios.post(
         "http://localhost:5040/user/register",
-        emailData
+        emailData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       if (response.status === 201) {
