@@ -62,7 +62,7 @@ const Viewjob = ({ auth }) => {
     };
 
     fetchJobs();
-  }, [auth.role, auth.fullName]);
+  }, [auth.role, auth.fullName, token]);
 
   const userColumns = [
     { name: 'Role', selector: (row) => row.position, sortable: true },
@@ -123,7 +123,12 @@ const Viewjob = ({ auth }) => {
   const handleRowButtonClick = async (jobId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5040/job-posts/${jobId}`);
+      const response = await axios.get(`http://localhost:5040/job-posts/${jobId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
       const job = response.data;
       setSelectedJob(job);
       setEditFields({
