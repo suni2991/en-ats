@@ -519,7 +519,6 @@ userRouter.put(
       historyUpdate,
       mgrName,
       city,
-      district,
       totalExperience,
     } = req.body;
 
@@ -529,7 +528,6 @@ userRouter.put(
         status,
         mgrName,
         city,
-        district,
         totalExperience,
       };
       if (joiningDate) {
