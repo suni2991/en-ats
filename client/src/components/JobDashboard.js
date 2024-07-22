@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Col, Row, Badge, Pagination, Modal, Table, Tag } from "antd";
 import CircularProgressCard from "./CircularProgressCard";
+import useAuth from "../hooks/useAuth";
 
 const colors = {
   Active: "green",
@@ -18,7 +19,6 @@ const statusColors = {
   Processing: "purple",
 };
 
-const token = process.env.REACT_APP_JWT_TOKEN;
 const JobDashboard = ({ jobs }) => {
   const [candidateCounts, setCandidateCounts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,11 +26,16 @@ const JobDashboard = ({ jobs }) => {
   const [applicants, setApplicants] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const pageSize = 16;
-
+  const { token } = useAuth();
+  console.log("token ", token);
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/positions`);
+        const response = await axios.get(`http://localhost:5040/positions`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const countsObject = response.data.reduce((acc, job) => {
           acc[job.position] = job.registeredCandidates;
           return acc;
@@ -47,7 +52,9 @@ const JobDashboard = ({ jobs }) => {
 
   const showApplicants = async (position) => {
     try {
-      const response = await axios.get(`http://localhost:5040/applicants/position/${position}`);
+      const response = await axios.get(
+        `http://localhost:5040/applicants/position/${position}`
+      );
       setApplicants(response.data);
       setSelectedJob(position);
       setIsModalVisible(true);
