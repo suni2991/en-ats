@@ -143,7 +143,12 @@ const JobPositionPieChart = () => {
 
       const vacancyStatusPromises = positionsData.map(async (position) => {
         const response = await axios.get(
-          `http://localhost:5040/vacancy-status/${position.position}`
+          `http://localhost:5040/vacancy-status/${position.position}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         return { position: position.position, status: response.data };
       });
