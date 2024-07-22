@@ -48,7 +48,7 @@ const JobDashboard = ({ jobs }) => {
     };
 
     fetchCandidateCounts();
-  }, [jobs]);
+  }, [jobs, token]);
 
   const showApplicants = async (position) => {
     try {
