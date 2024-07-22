@@ -62,7 +62,12 @@ const Applicant = () => {
 
   const deleteCandidate = async (id) => {
     try {
-      await axios.delete(`http://localhost:5040/candidate/${id}`);
+      await axios.delete(`http://localhost:5040/candidate/${id}`,
+        {
+          headers:{
+            Authorization: `Bearer ${token}`
+          }
+        });
       message.success("Candidate deleted successfully");
       fetchCandidates();
       fetchOnboardedCandidates();

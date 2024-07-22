@@ -4,10 +4,12 @@ import { Tooltip, Button, Modal, Popconfirm, message } from "antd";
 import Createhr from "../components/Createhr";
 import axios from "axios";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import useAuth from "../hooks/useAuth";
 
 const Admin = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { token } = useAuth();
 
   const userColumns = [
     {
@@ -99,7 +101,11 @@ const Admin = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5040/candidate/${id}`);
+      await axios.delete(`http://localhost:5040/candidate/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       message.success("Candidate deleted successfully");
 
       setRefreshKey((prevKey) => prevKey + 1);
