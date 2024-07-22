@@ -6,11 +6,13 @@ import axios from 'axios';
 import moment from 'moment';
 import { CiEdit } from "react-icons/ci";
 import { AiOutlineCheckCircle, AiOutlineDelete } from "react-icons/ai";
+import useAuth from '../hooks/useAuth';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 const Viewjob = ({ auth }) => {
+  const {token} = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [filteredJobs, setFilteredJobs] = useState([]);
@@ -46,7 +48,10 @@ const Viewjob = ({ auth }) => {
     const fetchJobs = async () => {
       try {
         const response = await axios.get('http://localhost:5040/viewjobs', {
-          params: { mgrRole: auth.role, fullName: auth.fullName }
+          params: { mgrRole: auth.role, fullName: auth.fullName },
+          headers:{
+            Authorization: `Bearer ${token}`
+          }
         });
         setJobs(response.data);
         setFilteredJobs(response.data);

@@ -6,11 +6,12 @@ import Viewjob from "../components/Viewjob";
 import Postjob from "../components/Postjob";
 import JobPositionPieChart from "../components/JobPosition";
 import axios from "axios";
+import useAuth from "../hooks/useAuth";
 
 const { Text } = Typography;
-const token = process.env.REACT_APP_JWT_TOKEN;
 
 const JobDashboard = () => {
+  const { token } = useAuth();
   const [view, setView] = useState("tile");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,7 +22,11 @@ const JobDashboard = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5040/viewjobs");
+        const response = await axios.get("http://localhost:5040/viewjobs", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setJobs(response.data.reverse());
       } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -45,8 +50,6 @@ const JobDashboard = () => {
     };
     fetchPendingJobs();
   }, []);
-
- 
 
   const showModal = () => {
     setIsModalVisible(true);
