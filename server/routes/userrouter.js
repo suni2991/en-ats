@@ -9,109 +9,117 @@ const {
 const JWT_SECRET = process.env.JWT_SECRET;
 
 //Create User - or register, a simple post request to save user in db
-userRouter.post("/register/candidate", async (req, res) => {
-  try {
-    const {
-      firstName,
-      lastName,
-      fullName,
-      qualification,
-      totalExperience,
-      relevantExperience,
-      noticePeriod,
-      contact,
-      email,
-      position,
-      currentLocation,
-      image,
-      department,
-      resume,
-      status,
-      empCount,
-      psychometric,
-      quantitative,
-      vocabulary,
-      java,
-      accounts,
-      excel,
-      dob,
-      history,
-      role,
-      state,
-      district,
-      taluka,
-      selectedCategory,
-      mgrName,
-      mgrEmail,
-      skills,
-      lwd,
-      availability,
-      panelistName,
-      round,
-      evaluationDetails,
-      reference,
-    } = req.body;
+userRouter.post(
+  "/register/candidate",
+  authenticate,
+  checkPermission("create_applicant"),
+  async (req, res) => {
+    try {
+      const {
+        firstName,
+        lastName,
+        fullName,
+        qualification,
+        totalExperience,
+        relevantExperience,
+        noticePeriod,
+        contact,
+        email,
+        position,
+        currentLocation,
+        image,
+        department,
+        resume,
+        status,
+        empCount,
+        psychometric,
+        quantitative,
+        vocabulary,
+        java,
+        accounts,
+        excel,
+        dob,
+        history,
+        role,
+        state,
+        district,
+        taluka,
+        selectedCategory,
+        mgrName,
+        mgrEmail,
+        skills,
+        lwd,
+        availability,
+        panelistName,
+        round,
+        evaluationDetails,
+        reference,
+      } = req.body;
 
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      req.body.password,
-      process.env.PASSWORD_SECRET_KEY
-    ).toString();
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        req.body.password,
+        process.env.PASSWORD_SECRET_KEY
+      ).toString();
 
-    const newCandidate = new Candidate({
-      firstName,
-      lastName,
-      fullName,
-      qualification,
-      totalExperience,
-      relevantExperience,
-      noticePeriod,
-      contact,
-      email,
-      position,
-      currentLocation,
-      image,
-      resume,
-      status,
-      department,
-      empCount,
-      psychometric,
-      quantitative,
-      vocabulary,
-      java,
-      accounts,
-      excel,
-      dob,
-      password: encryptedPassword, // Set the encrypted password
-      confirmPassword: req.body.confirmPassword,
-      role,
-      state,
-      district,
-      taluka,
-      selectedCategory,
-      mgrName,
-      mgrEmail,
-      skills,
-      lwd,
-      availability,
-      panelistName,
-      round,
-      evaluationDetails,
-      history,
-      reference,
-    });
+      const newCandidate = new Candidate({
+        firstName,
+        lastName,
+        fullName,
+        qualification,
+        totalExperience,
+        relevantExperience,
+        noticePeriod,
+        contact,
+        email,
+        position,
+        currentLocation,
+        image,
+        resume,
+        status,
+        department,
+        empCount,
+        psychometric,
+        quantitative,
+        vocabulary,
+        java,
+        accounts,
+        excel,
+        dob,
+        password: encryptedPassword, // Set the encrypted password
+        confirmPassword: req.body.confirmPassword,
+        role,
+        state,
+        district,
+        taluka,
+        selectedCategory,
+        mgrName,
+        mgrEmail,
+        skills,
+        lwd,
+        availability,
+        panelistName,
+        round,
+        evaluationDetails,
+        history,
+        reference,
+      });
 
-    const savedCandidate = await newCandidate.save();
-    res.status(201).json(savedCandidate);
-  } catch (error) {
-    if (error.code === 11000) {
-      res.status(409).json({ message: "Email already in use" });
-    } else {
-      res
-        .status(400)
-        .json({ message: "Could not create candidate", error: error.message });
+      const savedCandidate = await newCandidate.save();
+      res.status(201).json(savedCandidate);
+    } catch (error) {
+      if (error.code === 11000) {
+        res.status(409).json({ message: "Email already in use" });
+      } else {
+        res
+          .status(400)
+          .json({
+            message: "Could not create candidate",
+            error: error.message,
+          });
+      }
     }
   }
-});
+);
 
 //Login User
 userRouter.post("/api/login", (req, res) => {
