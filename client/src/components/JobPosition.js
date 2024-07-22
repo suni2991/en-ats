@@ -13,9 +13,9 @@ import {
 import * as XLSX from "xlsx";
 import { MdOutlineDownload } from "react-icons/md";
 import { Select, Button } from "antd";
+import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
-const token = process.env.REACT_APP_JWT_TOKEN;
 
 const JobPositionPieChart = () => {
   const [vacanciesData, setVacanciesData] = useState([]);
@@ -24,6 +24,7 @@ const JobPositionPieChart = () => {
   const [jobLocation, setJobLocation] = useState(null);
   const [positionData, setPositionData] = useState([]);
   const [onboardedCounts, setOnboardedCounts] = useState({});
+  const { token } = useAuth();
 
   const deptList = [
     "Data and Digital-DND",
@@ -53,7 +54,12 @@ const JobPositionPieChart = () => {
       try {
         if (selectedDepartment) {
           const response = await axios.get(
-            `http://localhost:5040/positions-with-vacancies/${selectedDepartment}`
+            `http://localhost:5040/positions-with-vacancies/${selectedDepartment}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
           setVacanciesData(response.data.positions);
 
@@ -61,7 +67,12 @@ const JobPositionPieChart = () => {
           await Promise.all(
             response.data.positions.map(async (pos) => {
               const res = await axios.get(
-                `http://localhost:5040/vacancy-status/${pos.position}`
+                `http://localhost:5040/vacancy-status/${pos.position}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
               );
               const onboardedCount = res.data
                 .filter((item) => item._id === "Onboarded")
@@ -84,7 +95,12 @@ const JobPositionPieChart = () => {
       try {
         if (clickedPosition) {
           const response = await axios.get(
-            `http://localhost:5040/vacancy-status/${clickedPosition}`
+            `http://localhost:5040/vacancy-status/${clickedPosition}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
           const formattedData = response.data.reduce((acc, item) => {
             acc[item._id] = item.count;
