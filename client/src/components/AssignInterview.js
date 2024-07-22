@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Drawer, Form, Button, Select, message, DatePicker, Checkbox, Input } from 'antd';
 import PanelistDropdown from './PanelistDropdown';
+import useAuth from '../hooks/useAuth';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -23,6 +24,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
   const [jobData, setJobData] = useState([]);
   const [childrenDrawer, setChildrenDrawer] = useState(false);
   const [isHRRound, setIsHRRound] = useState(false);
+  const {token} = useAuth();
 
   const fetchJobData = async () => {
     try {
@@ -72,7 +74,12 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/candidate/profile/${candidateId}`);
+        const response = await axios.get(`http://localhost:5040/candidate/profile/${candidateId}`,
+          {
+            headers:{
+              Authorization: `Bearer ${token}`
+            }
+          });
         const data = response.data;
         if (data.status === 'SUCCESS') {
           const { fullName, position, status } = data.data;
