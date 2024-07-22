@@ -110,12 +110,10 @@ userRouter.post(
       if (error.code === 11000) {
         res.status(409).json({ message: "Email already in use" });
       } else {
-        res
-          .status(400)
-          .json({
-            message: "Could not create candidate",
-            error: error.message,
-          });
+        res.status(400).json({
+          message: "Could not create candidate",
+          error: error.message,
+        });
       }
     }
   }
@@ -513,10 +511,27 @@ userRouter.put(
   checkPermission("update_candidate_by_id"),
   async (req, res) => {
     const { id } = req.params;
-    const { email, status, joiningDate, role, historyUpdate } = req.body;
+    const {
+      email,
+      status,
+      joiningDate,
+      role,
+      historyUpdate,
+      mgrName,
+      city,
+      district,
+      totalExperience,
+    } = req.body;
 
     try {
-      const updates = { email, status };
+      const updates = {
+        email,
+        status,
+        mgrName,
+        city,
+        district,
+        totalExperience,
+      };
       if (joiningDate) {
         updates.joiningDate = joiningDate;
       }

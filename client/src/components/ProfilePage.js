@@ -50,11 +50,12 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
     try {
       const formattedData = {
         ...values,
+        email: auth.email,
         dob: values.dob ? values.dob.toISOString() : null,
       };
 
       await axios.put(
-        `http://localhost:5040/candidate/${auth._id}`,
+        `http://localhost:5040/candidates/${auth._id}`,
         formattedData,
         {
           headers: {
@@ -65,11 +66,17 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
 
       setEditMode(false);
       const updatedResponse = await axios.get(
-        `http://localhost:5040/candidate/${auth._id}`
+        `http://localhost:5040/candidate/profile/${auth._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setEditedData(updatedResponse.data);
       message.success("Your updates will be applied shortly after review.");
     } catch (error) {
+      console.log("error ", error);
       message.error("Error updating profile");
     }
   };
@@ -115,7 +122,7 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
                 onChange={handleDateChange}
                 format="DD-MM-YYYY"
                 placeholder="Select Date"
-                defaultValue={editMode ? null : moment(auth.dob)}
+                defaultValue={editMode ? auth : moment(auth.dob)}
               />
             </StyledFormItem>
 
