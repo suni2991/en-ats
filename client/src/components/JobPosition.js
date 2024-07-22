@@ -132,7 +132,12 @@ const JobPositionPieChart = () => {
   const handleDownloadReport = async () => {
     try {
       const responsePositions = await axios.get(
-        `http://localhost:5040/positions-with-vacancies/${selectedDepartment}`
+        `http://localhost:5040/positions-with-vacancies/${selectedDepartment}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const positionsData = responsePositions.data.positions;
 
