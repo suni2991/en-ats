@@ -33,7 +33,7 @@ const JobDashboard = () => {
       }
     };
     fetchJobs();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const fetchPendingJobs = async () => {
@@ -49,7 +49,7 @@ const JobDashboard = () => {
       }
     };
     fetchPendingJobs();
-  }, []);
+  }, [token]);
 
   const showModal = () => {
     setIsModalVisible(true);

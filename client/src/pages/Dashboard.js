@@ -58,7 +58,7 @@ const Dashboard = () => {
     };
 
     fetchPendingJobs();
-  }, [auth.role, auth.fullName]);
+  }, [auth.role, auth.fullName, token]);
 
   const showModal = () => {
     setIsModalVisible(true);
