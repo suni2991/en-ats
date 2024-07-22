@@ -27,7 +27,6 @@ const JobDashboard = ({ jobs }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const pageSize = 16;
   const { token } = useAuth();
-  console.log("token ", token);
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
@@ -53,7 +52,12 @@ const JobDashboard = ({ jobs }) => {
   const showApplicants = async (position) => {
     try {
       const response = await axios.get(
-        `http://localhost:5040/applicants/position/${position}`
+        `http://localhost:5040/applicants/position/${position}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
       setApplicants(response.data);
       setSelectedJob(position);
