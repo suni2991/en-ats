@@ -100,7 +100,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
     if (open && candidateId) {
       fetchData();
     }
-  }, [open, candidateId]);
+  }, [open, candidateId, token]);
 
   const handlePanelistSelect = (value) => {
     setFormData((prevData) => ({
@@ -123,7 +123,13 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
         note: historyNote,
       };
       const requestBody = { round, status, history: [historyUpdate] }; 
-      const response = await axios.put(`http://localhost:5040/evaluate/${candidateId}`, requestBody);
+      const response = await axios.put(`http://localhost:5040/evaluate/${candidateId}`, requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.status === 200) {
         message.success('Interview assigned successfully');
         onClose();
@@ -132,7 +138,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
       }
     } catch (error) {
       console.error('Error updating interview details:', error);
-      message.error(error.message || 'Failed to assign intervicew. Please try again later.');
+      message.error(error.message || 'Failed to assign interview. Please try again later.');
     }
   };
   
