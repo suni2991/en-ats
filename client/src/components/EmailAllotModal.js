@@ -21,7 +21,7 @@ const EmailAllotModal = ({ visible, onClose, onAllotEmail, candidateId }) => {
   return (
     <Modal
       title="Allot Email"
-      visible={visible}
+      open={visible}
       onOk={handleOk}
       onCancel={onClose}
       confirmLoading={loading}

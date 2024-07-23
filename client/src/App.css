@@ -198,21 +198,18 @@ h1{
 }
 
 .table-container {
-  margin: 2px 15px 2px 200px !important;
+  padding: 30px 30px;
   background: #eceff1;
- height: 10% !important;
-  padding: 15px 10px;
- 
-  width: 80%;
-  
+  height: auto;
+  width: 100%;
+  box-sizing: border-box; 
 }
 
 .dashboard-container {
-  margin: 2px 15px 2px 200px !important;
   background: #eceff1;
-  padding: 15px 10px;
- height: 10% !important;
-  width: 80%; 
+  padding: 30px 30px;
+  width: 100%;
+  box-sizing: border-box; 
 }
 
 /* Hide the scrollbar */
@@ -314,10 +311,10 @@ h1{
     margin-top: 10px;
   }
   
-  .main-container {
+  /* .main-container {
     border-radius: 0;
   }
-  
+   */
  
 }
 
@@ -441,12 +438,12 @@ button .submit-button:disabled{
   display: flex;
   justify-content:space-between;
   background-color: #ffff;
-  margin-left: 20px;
+  /* margin-left: 20px; */
   margin-top: 50px;
   max-width: 100%;
   height: 40px;
   padding: 5px;
-  box-shadow: '0px 2px 4px rgb(38, 39, 130)';
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
   
 }
 
@@ -564,9 +561,17 @@ c
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  margin-left: 2px;
- 
+  box-sizing: border-box;
+  margin: 10px 0;
+}
+
+.stat-repo-dashboard {
+  width: 100% !important;
+  display: block;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 10px 0;
 }
   
  
@@ -639,20 +644,20 @@ c
 }
 
 .hotpicks{
-  height:48vh;
-  width: 97%;
-  background-color: #FFF;
-  align-content: space-between ;
-  color: white;
-  margin-left: 20px;
-  text-align: left;
-  float: left;
   display: flex;
   flex-direction: column;
-  padding: 5px;
+  height: auto;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 20px 0;
+  padding: 10px 0;
+  background-color: #FFF;
+  align-content: space-between;
+  color: white;
+  text-align: left;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  position: relative;
 }
-
-
 
 /* Add this to your CSS file, e.g., Hotpicks.css */
 .card-hover {
@@ -695,12 +700,6 @@ chart-details {
   box-shadow: 0px 2px 4px rgb(38, 39, 130)
 }
 
-
-.user-roles-container {
-  display: flex;
-  flex-direction: column;
-  
-}
 
 .role-boxes {
   display: flex;
@@ -757,18 +756,18 @@ h2::after{
 
 .fetch-table{
   width: 100%;
-  
-  margin: 0px 0px 5px 20px;
-  box-shadow: 0px 2px 4px rgb(38, 39, 130);
-  padding: 4px;
-  background-color: #FFF;
+  margin: 10px 0px;
+  padding: 10px;
+  box-sizing: border-box;
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
+  background-color: #FFFFFF;
 }
 
 .stat-container{
   display: flex;
   flex-direction: row;
   width: 100%;
-  margin: 20px 0px 17px 10px;
+  margin: 20px 0px 20px 0px;
   align-items: flex-start;
 }
 
@@ -776,7 +775,7 @@ h2::after{
   background-color: #fff;
   margin-right: 30px;
   width: 35%;
-  height: 27vw !important;
+  height: 30vw !important;
   padding: 10px;
   box-shadow: 0px 2px 4px rgb(38, 39, 130)
 }
@@ -784,9 +783,10 @@ h2::after{
 .stat-repo2{
   background-color: #fff;
   width: 59%;
-  height: 27vw !important;
+  height: 30vw !important;
   padding: 10px;
   box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  overflow: auto;
 }
 
 .search-cont{
@@ -856,17 +856,12 @@ h2::after{
 /* 
 //Statistic page  20/6/2024 */
 .vh-page{
-  margin: 50px 15px 2px 190px !important;
   background: #eceff1;
- 
-  padding: 15px 10px;
- height: 100%;
- 
- 
- /* height: 10% !important; */
- 
- 
-  width: 80%;
+  padding: 30px 30px;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  margin: 40px 0px;
 }
 
 .fetch-page{
@@ -892,12 +887,11 @@ h2::after{
 .list-applicants{
 
   background: #fff;
-  width: 60%;
+  width: 100%;
   float: left;
-  height: 91vh;
-  padding: 8px;
-  margin-left: 10px;
-  margin-bottom: 20px;
+  height: auto;
+  box-sizing: border-box;
+  margin: 10px 0;
 /*   
   overflow-y: auto; */
   box-shadow: 0px 2px 4px rgb(38, 39, 130);
@@ -920,13 +914,18 @@ h2::after{
   background: #fff;
   width: 33.5%;
   float: right;
-  height: 91vh;
+  height: auto;
   padding: 8px;
-  
-  overflow-y: auto;
+  margin: 10px 0 0 0;
+  overflow: auto;
   box-shadow: 0px 2px 4px rgb(38, 39, 130);
   position:relative;
 }
+
+.list-container {
+  padding: 10px 20px;
+}
+
 .ant-typography{
   position: sticky; /* Make the Title sticky */
   
@@ -935,6 +934,10 @@ h2::after{
   padding: 10px; /* Add padding to the Title */
   font-weight: bold; /* Optionally set font weight to bold */
   color: #FFF;
+}
+
+.ant-pagination {
+  padding: 5px 0;
 }
 
 .form-btn{

@@ -115,7 +115,7 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
             ]}>
               <Input />
             </StyledFormItem>
-            <StyledFormItem label="City" name="currentLocation" rules={[{ pattern: /^[a-zA-Z,@-]*$/, message: "Invalid characters" }]}>
+            <StyledFormItem label="City" name="city" rules={[{ pattern: /^[a-zA-Z,@-]*$/, message: "Invalid characters" }]}>
               <Input />
             </StyledFormItem>
             <StyledFormItem label="District" name="district" rules={[{ pattern: /^[a-zA-Z,@-]*$/, message: "Invalid characters" }]}>
