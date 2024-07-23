@@ -6,6 +6,7 @@ const {
   authenticate,
   checkPermission,
 } = require("../middleware/PermissionMiddleware");
+const RoleModel = require("../model/RoleModel");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 //Create User - or register, a simple post request to save user in db
@@ -61,6 +62,23 @@ userRouter.post(
         process.env.PASSWORD_SECRET_KEY
       ).toString();
 
+      let roleId = "";
+      if (req.body.role) {
+        try {
+          const roleData = await RoleModel.findOne(
+            { name: req.body.role },
+            { name: 0, permissions: 0 }
+          );
+          if (roleData) {
+            roleId = roleData._id;
+          } else {
+            console.log("Role not found");
+          }
+        } catch (error) {
+          console.error("Error fetching role data:", error);
+        }
+      }
+      
       const newCandidate = new Candidate({
         firstName,
         lastName,
@@ -88,6 +106,7 @@ userRouter.post(
         password: encryptedPassword, // Set the encrypted password
         confirmPassword: req.body.confirmPassword,
         role,
+        roleId,
         state,
         district,
         taluka,
