@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Col, Row, Badge, Pagination, Modal, Table, Tag } from "antd";
 import CircularProgressCard from "./CircularProgressCard";
+import useAuth from "../hooks/useAuth";
 
 const colors = {
   Active: "green",
@@ -25,11 +26,15 @@ const JobDashboard = ({ jobs }) => {
   const [applicants, setApplicants] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const pageSize = 16;
-
+  const { token } = useAuth();
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/positions`);
+        const response = await axios.get(`http://localhost:5040/positions`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const countsObject = response.data.reduce((acc, job) => {
           acc[job.position] = job.registeredCandidates;
           return acc;
@@ -42,12 +47,17 @@ const JobDashboard = ({ jobs }) => {
     };
 
     fetchCandidateCounts();
-  }, [jobs]);
+  }, [jobs, token]);
 
   const showApplicants = async (position) => {
     try {
       const response = await axios.get(
-        `http://localhost:5040/applicants/position/${position}`
+        `http://localhost:5040/applicants/position/${position}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
       setApplicants(response.data);
       setSelectedJob(position);
