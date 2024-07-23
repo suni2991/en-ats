@@ -137,12 +137,12 @@ const Dashboard = () => {
       </div>
 
       {auth.role !== 'Ops-Manager' && (
-        <div className='stat-repo'>
+        <div className='stat-repo-dashboard'>
           <JobPositionPieChart />
         </div>
       )}
 
-      <div className='list-applicants' style={{ width: '93.5%', marginLeft: '25px', height: 'auto' }}>
+      <div className='list-applicants'>
         <Table
           dataSource={pendingJobs}
           columns={columns}

@@ -193,8 +193,10 @@ const JobPositionPieChart = () => {
           justifyContent: "space-between",
           alignItems: "center",
           background: "#FFFF",
-          height: "48px",
-          width: "76vw",
+          height: "50px",
+          width: "100%",
+          boxSizing: "border-box",
+          boxShadow: "0px 1px 2px rgb(38, 39, 130)",
         }}
       >
         <Select

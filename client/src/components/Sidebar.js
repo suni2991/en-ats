@@ -158,17 +158,17 @@ const Sidebar = ({ children }) => {
                 <div className="navbar-right">
                   <Tooltip title="View & Update Profile" color='cyan'>
                     <Button type="text" onClick={() => setProfileVisible(true)} style={{ color: '#00B4D2' }}>
-                      Welcome, {auth.fullName} |
+                      Welcome, {auth.fullName} 
                     </Button>
                   </Tooltip>
                 </div>
 
                 {auth.role && (
-                  <button className="icon-button" onClick={logout}>
-                    <span className="icon-container">
+                  <button className="logout-button" onClick={logout}>
+                    <span className="logout-container">
                       <MdLogout />
                     </span>{' '}
-                    <span className="text">Logout</span>
+                    <span className="">Logout</span>
                   </button>
                 )}
               </nav>
