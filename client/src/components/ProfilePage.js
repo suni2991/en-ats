@@ -197,13 +197,10 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
         ) : (
           <div className="profile-info">
             <div className="profile-header">
-              <img
-                src={userlogo}
-                alt="User Logo"
-                className="user-logo"
-                width={70}
-              />
-              <h2>{auth.fullName}</h2>
+
+            <h2>{auth.fullName}</h2>
+              <img src={userlogo} alt="User Logo" className="user-logo" width={70} />
+
             </div>
             <center>
               <p>{auth.email}</p>
@@ -232,50 +229,18 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
               </Button>
             </div>
             <br />
-            <div style={{ width: "100%" }}>
-              <hr />
-            </div>
-            <p>
-              <span>First Name: </span>
-              {auth.firstName}
-            </p>
-            <p>
-              <span>Last Name: </span>
-              {auth.lastName}
-            </p>
-            <p>
-              <span>DoB: </span>
-              {auth.dob
-                ? new Date(auth.dob).toLocaleDateString("en-US", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })
-                : ""}
-            </p>
-            <p>
-              <span>Qualification: </span> {auth.qualification}
-            </p>
-            <p>
-              <span>Experience: </span>
-              {auth.totalExperience}
-            </p>
-            <p>
-              <span>Contact: </span>
-              {auth.contact}
-            </p>
-            <p>
-              <span>City: </span>
-              {auth.currentLocation}
-            </p>
-            <p>
-              <span>District: </span>
-              {auth.district}
-            </p>
-            <p>
-              <span>Manager Name: </span>
-              {auth.mgrName}
-            </p>
+
+            <div style={{ width: '100%', marginBottom: '10px' }}><hr /></div>
+            <p><span>First Name: </span>{auth.firstName}</p>
+            <p><span>Last Name: </span>{auth.lastName}</p>
+            <p><span>DoB: </span>{auth.dob ? new Date(auth.dob).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : ''}</p>
+            <p><span>Qualification: </span> {auth.qualification}</p>
+            <p><span>Experience: </span>{auth.totalExperience}</p>
+            <p><span>Contact: </span>{auth.contact}</p>
+            <p><span>City: </span>{auth.currentLocation}</p>
+            <p><span>District: </span>{auth.district}</p>
+            <p><span>Manager Name: </span>{auth.mgrName}</p>
+
           </div>
         )}
       </Drawer>

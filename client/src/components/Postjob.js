@@ -163,6 +163,7 @@ const Postjob = () => {
             Authorization: `Bearer ${token}`,
           },
         }
+
       );
 
       setFormData({
@@ -363,6 +364,7 @@ const Postjob = () => {
       </form>
     </div>
   );
+
 };
 
 export default Postjob;

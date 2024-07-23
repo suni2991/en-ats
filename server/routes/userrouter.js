@@ -435,6 +435,7 @@ userRouter.get(
       res.status(500).json({ message: "Error fetching panelists" });
     }
   }
+
 );
 
 userRouter.get(
@@ -449,6 +450,7 @@ userRouter.get(
       console.error("Error fetching HRs:", error);
       res.status(500).json({ message: "Error fetching HRs" });
     }
+
   }
 );
 

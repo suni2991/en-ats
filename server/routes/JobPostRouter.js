@@ -83,6 +83,7 @@ jobRouter.get(
       res.status(500).json({ error: "Error fetching jobs" });
     }
   }
+
 );
 
 jobRouter.get(
@@ -109,6 +110,7 @@ jobRouter.get(
     } catch (error) {
       console.error("Error fetching job posts:", error);
       res.status(500).json({ error: "Error fetching job posts" });
+
     }
   }
 );

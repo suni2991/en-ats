@@ -39,14 +39,16 @@ const CircularProgressCard = ({ job }) => {
     <Card
       bordered={false}
       style={{
-        backgroundColor: "#FFFF",
-        height: "150px",
-        width: "200px",
-        textAlign: "center",
-        marginBottom: "30px",
-        justifyContent: "center",
-        alignItems: "center",
-        cursor: "pointer",
+
+        backgroundColor: '#FFFF',
+        height: '140px',
+        width: 'auto',
+        textAlign: 'center',
+        marginBottom: '30px',
+        justifyContent: 'center',
+        alignItems: 'center',
+        cursor: 'pointer'
+
       }}
     >
       <div>
@@ -57,7 +59,7 @@ const CircularProgressCard = ({ job }) => {
           strokeColor={gradientStrokeColor}
           size={80}
         />
-        <p>Fulfilled Till now</p>
+        <p style={{ paddingTop: '10px'}} >Fulfilled Till now</p>
       </div>
     </Card>
   );

@@ -249,7 +249,7 @@ const JobPositionPieChart = () => {
       <br />
       <div className="pie-chart">
         {filteredVacanciesData && filteredVacanciesData.length > 0 ? (
-          <PieChart width={400} height={400}>
+          <PieChart width={400} height={400} cursor="pointer">
             <Pie
               dataKey="value"
               data={filteredVacanciesData}
@@ -259,6 +259,7 @@ const JobPositionPieChart = () => {
               fill="#8884d8"
               label
               onClick={handleClick}
+              style={{outline: 'none'}}
             >
               {filteredVacanciesData.map((entry, index) => (
                 <Cell
