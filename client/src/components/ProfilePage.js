@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import useAuth from "../hooks/useAuth";
 
+const URL = process.env.REACT_APP_API_URL;
 const StyledFormItem = styled(Form.Item)`
   .ant-form-item-label > label {
     color: #00b4d2 !important;
@@ -55,7 +56,7 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
       };
 
       await axios.put(
-        `http://localhost:5040/candidates/${auth._id}`,
+        `${URL}/candidates/${auth._id}`,
         formattedData,
         {
           headers: {
@@ -66,7 +67,7 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
 
       setEditMode(false);
       const updatedResponse = await axios.get(
-        `http://localhost:5040/candidate/profile/${auth._id}`,
+        `${URL}/candidate/profile/${auth._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

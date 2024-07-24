@@ -6,6 +6,7 @@ import axios from "axios";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import useAuth from "../hooks/useAuth";
 
+const URL = process.env.REACT_APP_API_URL;
 const Admin = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -101,7 +102,7 @@ const Admin = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5040/candidate/${id}`, {
+      await axios.delete(`${URL}/candidate/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -119,7 +120,7 @@ const Admin = () => {
     <div className="vh-page">
       <div>
         <Fetchtable
-          url={`http://localhost:5040/hrs`}
+          url={`${URL}/hrs`}
           columns={userColumns}
           key={refreshKey}
           extraContent={

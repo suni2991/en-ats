@@ -19,6 +19,7 @@ const statusColors = {
   Processing: "purple",
 };
 
+const URL = process.env.REACT_APP_API_URL;
 const JobDashboard = ({ jobs }) => {
   const [candidateCounts, setCandidateCounts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,7 +31,7 @@ const JobDashboard = ({ jobs }) => {
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/positions`, {
+        const response = await axios.get(`${URL}/positions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -52,7 +53,7 @@ const JobDashboard = ({ jobs }) => {
   const showApplicants = async (position) => {
     try {
       const response = await axios.get(
-        `http://localhost:5040/applicants/position/${position}`,
+        `${URL}/applicants/position/${position}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

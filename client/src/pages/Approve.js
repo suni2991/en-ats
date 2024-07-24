@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { message } from "antd";
 import useAuth from "../hooks/useAuth";
 
+const URL = process.env.REACT_APP_API_URL;
 const ApproveJobDetails = () => {
   const { id } = useParams();
   const [job, setJob] = useState(null);
@@ -14,7 +15,7 @@ const ApproveJobDetails = () => {
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/job/${id}`);
+        const response = await axios.get(`${URL}/job/${id}`);
         setJob(response.data);
         setLoading(false);
       } catch (error) {
@@ -40,7 +41,7 @@ const ApproveJobDetails = () => {
           },
         ],
       };
-      await axios.put(`http://localhost:5040/job-posts/${id}`, updatedJob, {
+      await axios.put(`${URL}/job-posts/${id}`, updatedJob, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

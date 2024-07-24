@@ -14,11 +14,12 @@ import useAuth from "../hooks/useAuth";
 const ApplicationStatus = () => {
   const [candidatesData, setCandidatesData] = useState([]);
   const { token } = useAuth();
+  const URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/candidates-status", {
+        const response = await axios.get(`${URL}/candidates-status`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -6,10 +6,10 @@ async function main() {
   await mongoose.connection.db
     .collection("candidates")
     .createIndex({ email: 1 }, { unique: true });
-
+  
   console.log("db connected");
 }
-
+ console.log(process.env.URL);
 main().catch((err) => {
   console.error("Error connecting to MongoDB:", err);
 });

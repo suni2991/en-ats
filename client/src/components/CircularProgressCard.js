@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Progress } from "antd";
 import useAuth from "../hooks/useAuth";
-
+const URL = process.env.REACT_APP_API_URL;
 const CircularProgressCard = ({ job }) => {
   const [onboardedCount, setOnboardedCount] = useState(0);
   const { token } = useAuth();
@@ -10,7 +10,7 @@ const CircularProgressCard = ({ job }) => {
     const fetchOnboardedCount = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5040/candidate/onboarded/${job.position}`,
+          `${URL}/candidate/onboarded/${job.position}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

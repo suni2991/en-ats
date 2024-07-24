@@ -23,6 +23,7 @@ import useAuth from "../hooks/useAuth";
 const { Option } = Select;
 const { TextArea } = Input;
 
+const URL = process.env.REACT_APP_API_URL;
 const Viewjob = ({ auth }) => {
   const { token } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -59,7 +60,7 @@ const Viewjob = ({ auth }) => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5040/viewjobs", {
+        const response = await axios.get(`${URL}/viewjobs`, {
           params: { mgrRole: auth.role, fullName: auth.fullName },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -157,7 +158,7 @@ const Viewjob = ({ auth }) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5040/job-posts/${jobId}`,
+        `${URL}/job-posts/${jobId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -193,7 +194,7 @@ const Viewjob = ({ auth }) => {
   const handleConfirmDelete = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:5040/job-posts/${jobToDelete}`,
+        `${URL}/job-posts/${jobToDelete}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -238,7 +239,7 @@ const Viewjob = ({ auth }) => {
         updatedAt: new Date(), // Set updatedAt to the current date
       };
       await axios.put(
-        `http://localhost:5040/job-posts/${selectedJob._id}`,
+        `${URL}/job-posts/${selectedJob._id}`,
         updatedJob,
         {
           headers: {
@@ -287,7 +288,7 @@ const Viewjob = ({ auth }) => {
   return (
     <div>
       <Fetchtable
-        url="http://localhost:5040/viewjobs"
+        url={`${URL}/viewjobs`}
         columns={userColumns}
         filteredData={filteredJobs}
       />

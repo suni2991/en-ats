@@ -4,6 +4,7 @@ import "../styles/Regform.css";
 import { Tooltip, message, Button } from "antd";
 import useAuth from "../hooks/useAuth";
 
+const URL = process.env.REACT_APP_API_URL;
 const Createhr = ({ closeModal }) => {
   const { token } = useAuth();
   const [formData, setFormData] = useState({
@@ -46,7 +47,7 @@ const Createhr = ({ closeModal }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5040/register/candidate",
+`${URL}/register/candidate`,
         {
           ...formData,
           password: password,
@@ -67,10 +68,10 @@ const Createhr = ({ closeModal }) => {
         };
 
         const emailResponse = await axios.post(
-          "http://localhost:5040/user/register",
+          `${URL}/user/register`,
           emailData,
           {
-            headers: {
+              headers: {
               Authorization: `Bearer ${token}`,
             },
           }

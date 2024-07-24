@@ -4,19 +4,20 @@ import { Drawer, Collapse, Button } from "antd";
 import useAuth from "../hooks/useAuth";
 
 const { Panel } = Collapse;
+const URL = process.env.REACT_APP_API_URL;
 
 const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
   const [candidateData, setCandidateData] = useState({});
   const [loading, setLoading] = useState(true);
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const { token } = useAuth();
-  console.log("asas", token);
+  // console.log("asas", token);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5040/candidate/profile/${candidateId}`,
+          `${URL}/candidate/profile/${candidateId}`,
           {
             method: "GET",
             headers: {

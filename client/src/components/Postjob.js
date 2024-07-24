@@ -7,7 +7,7 @@ import { Button, message, Select } from "antd";
 import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
-
+const URL = process.env.REACT_APP_API_URL;
 const Postjob = () => {
   const { role } = useParams();
   const [mgrRole, setMgrRole] = useState("");
@@ -135,7 +135,7 @@ const Postjob = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5040/createjob",
+        `${URL}/createjob`,
         formData,
         {
           headers: {
@@ -156,7 +156,7 @@ const Postjob = () => {
       };
 
       const emailResponse = await axios.post(
-        "http://localhost:5040/job/approval",
+        `${URL}/job/approval`,
         emailData,
         {
           headers: {

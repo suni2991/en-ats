@@ -4,7 +4,7 @@ import { Select } from 'antd';
 import useAuth from '../hooks/useAuth';
 
 const { Option } = Select;
-
+const URL = process.env.REACT_APP_API_URL;
 const HrDropdown = ({ onSelect, onSelectHr }) => {
   const [hrs, setHrs] = useState([]);
   const [selectedPanelist, setSelectedPanelist] = useState(null);
@@ -26,7 +26,7 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
   useEffect(() => {
     const fetchPanelists = async () => {
       try {
-        const response = await axios.get('http://localhost:5040/hrs/name',
+        const response = await axios.get(`${URL}/hrs/name`,
           {
             headers:{
               Authorization: `Bearer ${token}`

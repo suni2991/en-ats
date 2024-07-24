@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { List, Avatar, Spin, Alert } from 'antd';
 import axios from 'axios';
-
+const URL = process.env.REACT_APP_API_URL;
 const OnboardedCandidates = () => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,7 +10,7 @@ const OnboardedCandidates = () => {
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        const response = await axios.get('http://localhost:5040/candidate/Onboarded');
+        const response = await axios.get(`${URL}/candidate/Onboarded`);
         const onboardedCandidates = response.data.filter(candidate => candidate.status === 'Onboarded');
        
         const sortedCandidates = onboardedCandidates.sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated));

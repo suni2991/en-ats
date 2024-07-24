@@ -16,7 +16,7 @@ import { Select, Button } from "antd";
 import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
-
+const URL = process.env.REACT_APP_API_URL;
 const JobPositionPieChart = () => {
   const [vacanciesData, setVacanciesData] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("Adobe_Team");
@@ -54,7 +54,7 @@ const JobPositionPieChart = () => {
       try {
         if (selectedDepartment) {
           const response = await axios.get(
-            `http://localhost:5040/positions-with-vacancies/${selectedDepartment}`,
+            `${URL}/positions-with-vacancies/${selectedDepartment}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ const JobPositionPieChart = () => {
           await Promise.all(
             response.data.positions.map(async (pos) => {
               const res = await axios.get(
-                `http://localhost:5040/vacancy-status/${pos.position}`,
+                `${URL}/vacancy-status/${pos.position}`,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ const JobPositionPieChart = () => {
       try {
         if (clickedPosition) {
           const response = await axios.get(
-            `http://localhost:5040/vacancy-status/${clickedPosition}`,
+            `${URL}/vacancy-status/${clickedPosition}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -132,7 +132,7 @@ const JobPositionPieChart = () => {
   const handleDownloadReport = async () => {
     try {
       const responsePositions = await axios.get(
-        `http://localhost:5040/positions-with-vacancies/${selectedDepartment}`,
+        `${URL}/positions-with-vacancies/${selectedDepartment}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -143,7 +143,7 @@ const JobPositionPieChart = () => {
 
       const vacancyStatusPromises = positionsData.map(async (position) => {
         const response = await axios.get(
-          `http://localhost:5040/vacancy-status/${position.position}`,
+          `${URL}/vacancy-status/${position.position}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

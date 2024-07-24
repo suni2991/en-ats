@@ -9,6 +9,8 @@ import Viewjob from "../components/Viewjob";
 import Postjob from "../components/Postjob";
 import JobPositionPieChart from "../components/JobPosition";
 
+
+const URL = process.env.REACT_APP_API_URL;
 const Dashboard = () => {
   const { auth } = useAuth();
   const [view, setView] = useState("tile");
@@ -20,17 +22,17 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        console.log("Parameters for fetching jobs:", {
-          mgrRole: auth.role,
-          fullName: auth.fullName,
-        });
-        const response = await axios.get("http://localhost:5040/viewjobs", {
+        // console.log("Parameters for fetching jobs:", {
+        //   mgrRole: auth.role,
+        //   fullName: auth.fullName,
+        // });
+        const response = await axios.get(`${URL}/viewjobs`, {
           params: { mgrRole: auth.role, fullName: auth.fullName },
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("Fetched jobs:", response.data);
+       
         setJobs(response.data.reverse());
       } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -45,7 +47,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchPendingJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5040/pendingjobs", {
+        const response = await axios.get(`${URL}/pendingjobs`, {
           params: { mgrRole: auth.role, fullName: auth.fullName },
           headers: {
             Authorization: `Bearer ${token}`,

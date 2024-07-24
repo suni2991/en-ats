@@ -9,6 +9,7 @@ import Panelist from "../components/Panelist";
 
 const { Option } = Select;
 
+const URL = process.env.REACT_APP_API_URL;
 const Feedback = () => {
   const { auth, token } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -24,7 +25,7 @@ const Feedback = () => {
     const fetchCandidates = async () => {
       try {
         const panelistResponse = await axios.get(
-          `http://localhost:5040/panelist/${auth.fullName}`,
+          `${URL}/panelist/${auth.fullName}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -72,7 +73,7 @@ const Feedback = () => {
 
   const renderResumeLink = (row) => {
     if (row.resume) {
-      const downloadLink = `http://localhost:5040${row.resume}`;
+      const downloadLink = `${URL}${row.resume}`;
       return (
         <a
           href={downloadLink}
@@ -124,12 +125,11 @@ const Feedback = () => {
         const updates = {};
         if (joiningDate) {
           updates.joiningDate = joiningDate.toISOString();
-          console.log("Joining Date:", updates.joiningDate);
+        
         }
         if (status) {
           updates.status = status;
-          console.log("Status:", updates.status);
-
+        
           // Prepare history update
           const historyUpdateData = {
             updatedAt: new Date(),
@@ -137,23 +137,22 @@ const Feedback = () => {
             note: `Applicant ${status}`,
           };
           setHistoryUpdate(historyUpdateData);
-          console.log("History Update:", historyUpdateData);
-
+         
           if (status === "Onboarded") {
             updates.role = "Enfusian";
             updates.dateCreated = new Date().toISOString(); // Set dateCreated to current date
-            console.log(
-              "Role set to Enfusian and dateCreated set:",
-              updates.dateCreated
-            );
+            // console.log(
+            //   "Role set to Enfusian and dateCreated set:",
+            //   updates.dateCreated
+            // );
           } else {
             updates.role = "Applicant";
           }
         }
-        console.log("Updates being sent:", updates);
+        // console.log("Updates being sent:", updates);
 
         await axios.put(
-          `http://localhost:5040/candidates/${selectedCandidate._id}`,
+          `${URL}/candidates/${selectedCandidate._id}`,
           { ...updates, historyUpdate },
           {
             headers: {
@@ -172,7 +171,7 @@ const Feedback = () => {
   return (
     <div className="vh-page" style={{ textTransform: "capitalize" }}>
       <Fetchtable
-        url={`http://localhost:5040/panelist/${auth.fullName}`}
+        url={`${URL}/panelist/${auth.fullName}`}
         data={candidateData}
         columns={userColumns}
       />

@@ -34,7 +34,7 @@ const candidateSchema = new mongoose.Schema({
   relevantExperience: { type: Number },
   noticePeriod: { type: String },
   contact: { type: Number },
-  email: { type: String, unique: true, required: true },
+  email: { type: String, unique: true },
   position: { type: String },
   currentLocation: { type: String },
   image: { type: String, default: "" },

@@ -7,7 +7,7 @@ import LogoutTimer from './LogoutTimer';
 import useAuth from '../../hooks/useAuth.js';
 import Swal from 'sweetalert2';
 
-
+const URL = process.env.REACT_APP_API_URL;
 
 const Psychometric = () => {
   const { auth } = useAuth();
@@ -56,7 +56,7 @@ const Psychometric = () => {
       wrongAnswers: result.wrongAnswers,
     };
 
-    fetch(`http://localhost:5040/candidate/${Id}`, {
+    fetch(`${URL}/candidate/${Id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedResult),

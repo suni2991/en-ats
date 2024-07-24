@@ -4,7 +4,7 @@ import { Select } from "antd";
 import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
-
+const URL = process.env.REACT_APP_API_URL;
 const PanelistDropdown = ({ onSelect }) => {
   const [panelists, setPanelists] = useState([]);
   const { token } = useAuth();
@@ -12,7 +12,7 @@ const PanelistDropdown = ({ onSelect }) => {
     const fetchPanelists = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5040/panelists/enfusian",
+          `${URL}/panelists/enfusian`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

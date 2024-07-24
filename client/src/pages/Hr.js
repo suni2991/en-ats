@@ -9,6 +9,8 @@ import CandidateTable from "../components/CandidateTable";
 import Registration from "../components/Registration";
 import Hotpicks from "../components/Hotpicks";
 
+
+const URL = process.env.REACT_APP_API_URL;
 const Hr = () => {
   const [view, setView] = useState("tile");
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -36,7 +38,7 @@ const Hr = () => {
     const fetchJobs = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5040/candidatesreport",
+          `${URL}/candidatesreport`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

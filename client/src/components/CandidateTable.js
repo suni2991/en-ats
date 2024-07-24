@@ -6,7 +6,7 @@ import Fetchtable from '../components/Fetchtable';
 import AssignInterview from '../components/AssignInterview';
 import { Tooltip } from 'antd';
 
-
+const URL = process.env.REACT_APP_API_URL;
 const CandidateTable = ({auth}) => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -32,7 +32,7 @@ const CandidateTable = ({auth}) => {
 
   const renderResumeLink = (row) => {
     if (row.resume) {
-      const downloadLink = `http://localhost:5040${row.resume}`;
+      const downloadLink = `${URL}${row.resume}`;
       return (
         <a href={downloadLink} target="_blank" rel="noopener noreferrer" className='resume-link'>
           {row.firstName} CV
@@ -121,7 +121,7 @@ const CandidateTable = ({auth}) => {
   return (
     <div>
       <Fetchtable 
-        url="http://localhost:5040/candidatesreport"
+        url={`${URL}/candidatesreport`}
         columns={userColumns} 
         setSelectedCandidate={setSelectedCandidate}
       />

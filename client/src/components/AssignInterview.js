@@ -6,7 +6,7 @@ import useAuth from '../hooks/useAuth';
 
 const { Option } = Select;
 const { TextArea } = Input;
-
+const URL = process.env.REACT_APP_API_URL;
 const AssignInterview = ({ open, onClose, candidateId, auth }) => {
   const defaultSkills = ['Communication', 'Teamwork', 'Problem Solving']; // Default static skills
   const [candidateData, setCandidateData] = useState({});
@@ -28,7 +28,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
 
   const fetchJobData = async () => {
     try {
-      const response = await axios.get('http://localhost:5040/viewjobs');
+      const response = await axios.get(`${URL}/viewjobs`);
       setJobData(response.data);
     } catch (error) {
       console.error('Error fetching job data:', error);
@@ -74,7 +74,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/candidate/profile/${candidateId}`,
+        const response = await axios.get(`${URL}/candidate/profile/${candidateId}`,
           {
             headers:{
               Authorization: `Bearer ${token}`
@@ -123,7 +123,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
         note: historyNote,
       };
       const requestBody = { round, status, history: [historyUpdate] }; 
-      const response = await axios.put(`http://localhost:5040/evaluate/${candidateId}`, requestBody,
+      const response = await axios.put(`${URL}/evaluate/${candidateId}`, requestBody,
         {
           headers: {
             Authorization: `Bearer ${token}`,

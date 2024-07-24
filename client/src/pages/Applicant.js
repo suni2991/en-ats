@@ -10,6 +10,7 @@ import useAuth from "../hooks/useAuth";
 
 const { Title } = Typography;
 
+const URL = process.env.REACT_APP_API_URL;
 const Applicant = () => {
   const [candidates, setCandidates] = useState([]);
   const [onboardedCandidates, setOnboardedCandidates] = useState([]);
@@ -32,7 +33,7 @@ const Applicant = () => {
   const fetchCandidates = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5040/candidatesreport",
+        `${URL}/candidatesreport`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,7 +52,7 @@ const Applicant = () => {
   const fetchOnboardedCandidates = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5040/candidate/Onboarded"
+        `${URL}/candidate/Onboarded`
       );
       setOnboardedCandidates(response.data.reverse());
     } catch (error) {
@@ -62,7 +63,7 @@ const Applicant = () => {
 
   const deleteCandidate = async (id) => {
     try {
-      await axios.delete(`http://localhost:5040/candidate/${id}`,
+      await axios.delete(`${URL}/candidate/${id}`,
         {
           headers:{
             Authorization: `Bearer ${token}`
@@ -91,7 +92,7 @@ const Applicant = () => {
       };
 
       const response = await axios.put(
-        `http://localhost:5040/candidates/${candidateId}`,
+        `${URL}/candidates/${candidateId}`,
         {
           email,
           status: "Onboarded",

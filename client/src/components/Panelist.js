@@ -6,7 +6,7 @@ import { Button, Rate, Input, Tabs } from 'antd';
 import useAuth from '../hooks/useAuth';
 
 const { TabPane } = Tabs;
-
+const URL = process.env.REACT_APP_API_URL;
 const Panelist = ({ candidateData, auth }) => {
 
   const [rounds, setRounds] = useState([]);
@@ -109,7 +109,7 @@ const Panelist = ({ candidateData, auth }) => {
 
     try {
       
-      const response = await axios.put(`http://localhost:5040/update-feedback/${candidateData._id}`, requestBody,
+      const response = await axios.put(`${URL}/update-feedback/${candidateData._id}`, requestBody,
         {
           headers:{
             Authorization: `Bearer ${token}`
@@ -148,7 +148,7 @@ const Panelist = ({ candidateData, auth }) => {
           historyUpdate: historyUpdate
         };
 
-        await axios.put(`http://localhost:5040/candidates/${candidateData._id}`, statusUpdate,
+        await axios.put(`${URL}/candidates/${candidateData._id}`, statusUpdate,
           {
             headers:
             {

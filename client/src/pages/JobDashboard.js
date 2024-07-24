@@ -9,7 +9,7 @@ import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
 const { Text } = Typography;
-
+const URL = process.env.REACT_APP_API_URL;
 const JobDashboard = () => {
   const { token } = useAuth();
   const [view, setView] = useState("tile");
@@ -22,7 +22,7 @@ const JobDashboard = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5040/viewjobs", {
+        const response = await axios.get(`${URL}/viewjobs`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -38,7 +38,7 @@ const JobDashboard = () => {
   useEffect(() => {
     const fetchPendingJobs = async () => {
       try {
-        const response = await axios.get("http://localhost:5040/pendingjobs", {
+        const response = await axios.get(`${URL}/pendingjobs`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

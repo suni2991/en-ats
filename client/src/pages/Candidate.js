@@ -6,6 +6,7 @@ import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
 import logos from "../Assests/enfuse-logo.png";
 
+const URL = process.env.REACT_APP_API_URL;
 const Hire = () => {
   const { auth, token } = useAuth();
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ const Hire = () => {
       setIsChecked(false);
       const userDataWithTimestamp = { ...useData, dateCreated: new Date() };
       axios.put(
-        `http://localhost:5040/candidate/${auth._id}`,
+        `${URL}/candidate/${auth._id}`,
         {
           ...auth,
           ...userDataWithTimestamp,
@@ -141,7 +142,7 @@ const Hire = () => {
   let id = auth._id;
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(`http://localhost:5040/candidate/${id}`);
+      const result = await axios.get(`${URL}/candidate/${id}`);
       const useData = result.data.data;
       const dateCreated = new Date();
       setUserData({ ...useData, dateCreated });

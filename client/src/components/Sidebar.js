@@ -14,6 +14,7 @@ import { VscFeedback } from "react-icons/vsc";
 
 import Swal from "sweetalert2";
 
+const URL = process.env.REACT_APP_API_URL;
 const Sidebar = ({ children }) => {
   const navigate = useNavigate();
   const [isOpen] = useState(true);
@@ -99,7 +100,7 @@ const Sidebar = ({ children }) => {
                 }}
                 src={
                   auth.image !== ""
-                    ? `http://localhost:5040${auth.image}`
+                    ? `${URL}${auth.image}`
                     : require("../Assests/User.png")
                 }
                 alt="logo"

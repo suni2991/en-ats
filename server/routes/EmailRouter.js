@@ -29,13 +29,13 @@ emailRouter.post(
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "sunithach2991@gmail.com",
-          pass: "qffsjpwaexiqcsco",
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PASSWORD,
         },
       });
 
       const mailOptions = {
-        from: "sunithach2991@gmail.com",
+        from: process.env.EMAIL,
         to: email,
         subject: "Enfuse Welcomes You",
         html: compiledTemplate.render({
@@ -84,14 +84,14 @@ emailRouter.post(
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "sunithach2991@gmail.com",
-          pass: "qffsjpwaexiqcsco",
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PASSWORD,
         },
       });
 
       const mailOptions = {
-        from: "sunithach2991@gmail.com",
-        to: "sunithach2991@gmail.com",
+        from: process.env.EMAIL,
+        to: process.env.EMAIL,
         subject: "Approval Request for New Job Position",
         html: compiledTemplate2.render({
           position,

@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import "../styles/Applicant.css";
 import Swal from "sweetalert2";
 import axios from "axios";
-import HrDropdown from "./HrDropdown";
-import { Button, DatePicker, message } from "antd";
-import "../styles/Regform.css";
 import moment from "moment";
+import { DatePicker, message, Button } from "antd";
+import HrDropdown from "./HrDropdown";
+import "../styles/Regform.css";
+
 import useAuth from "../hooks/useAuth";
 
+const URL = process.env.REACT_APP_API_URL;
 function Registration({ closeModal }) {
   const { token } = useAuth();
   const [positions, setPositions] = useState([]);
@@ -189,7 +191,7 @@ function Registration({ closeModal }) {
 
   const fetchJobPositions = async () => {
     try {
-      const response = await axios.get("http://localhost:5040/viewjobs", {
+      const response = await axios.get(`${URL}/viewjobs`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -213,7 +215,7 @@ function Registration({ closeModal }) {
       const uploadEndpoint = e.target.name;
 
       const response = await fetch(
-        "http://localhost:5040/upload/" + uploadEndpoint,
+        `${URL}/upload/` + uploadEndpoint,
         {
           method: "POST",
           body: uploadFormData,
@@ -344,7 +346,7 @@ function Registration({ closeModal }) {
     };
     const isValid = validateForm();
     if (isValid) {
-      const response = await fetch("http://localhost:5040/register/candidate", {
+      const response = await fetch(`${URL}/register/candidate`, {
         method: "POST",
         body: JSON.stringify(formDataWithFullName),
         headers: {
@@ -362,7 +364,7 @@ function Registration({ closeModal }) {
       };
 
       const emailResponse = await axios.post(
-        "http://localhost:5040/user/register",
+        `${URL}/user/register`,
         emailData,
         {
           headers: {

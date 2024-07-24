@@ -5,7 +5,7 @@ import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
-
+const URL = process.env.REACT_APP_API_URL;
 const Reports = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [data, setData] = useState([]);
@@ -14,7 +14,7 @@ const Reports = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let url = "http://localhost:5040/candidatesreport";
+        let url = `${URL}/candidatesreport`;
         if (selectedCategory !== "all") {
           url += `?selectedCategory=${selectedCategory}`;
         }
@@ -116,7 +116,7 @@ const Reports = () => {
   return (
     <div className="vh-page">
       <Fetchtable
-        url={`http://localhost:5040/candidatesreport`}
+        url={`${URL}/candidatesreport`}
         columns={userColumns}
         filteredData={data}
         extraContent={
