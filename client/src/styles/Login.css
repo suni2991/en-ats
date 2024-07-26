@@ -68,3 +68,8 @@ form button{
     background-clip: text;
     color: transparent;
 }
+
+.swal2-title {
+    box-sizing: border-box;
+    padding: 1em;
+}
