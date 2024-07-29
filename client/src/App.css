@@ -682,7 +682,7 @@ c
   box-sizing: border-box;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0px 2px 4px rgb(38, 39, 130)
+  box-shadow: 0px 1px 2px rgb(38, 39, 130)
 }
 
 chart-details {
@@ -760,6 +760,15 @@ h2::after{
   width: 100%;
   margin: 10px 0px;
   padding: 10px;
+  box-sizing: border-box;
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
+  background-color: #FFFFFF;
+}
+
+.fetch-cards {
+  width: 100%;
+  margin: 10px 0px;
+  padding: 20px 20px;
   box-sizing: border-box;
   box-shadow: 0px 1px 2px rgb(38, 39, 130);
   background-color: #FFFFFF;
@@ -1048,4 +1057,37 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 
 .btn-divider {
   padding: 0 10px;
+}
+
+/* for Tablet 768 x 1024 */
+@media (min-width: 768px) and (max-width: 1024px){ 
+
+  .topContainer {
+    display: flex;
+    justify-content:space-between;
+    background-color: #ffff;
+    margin-top: 50px;
+    max-width: 100%;
+    height: 40px;
+    padding: 5px;
+    box-shadow: 0px 1px 2px rgb(38, 39, 130);
+  }
+
+  .ant-searchIn {
+    height:30px;
+    width: 150px;
+    border: 1px dotted #00B4D2;
+    margin-left:10px;
+    margin-top:5px;
+  }
+
+  .fetch-cards {
+    width: 100%;
+    margin: 10px 0px;
+    padding: 20px 20px;
+    box-sizing: border-box;
+    box-shadow: 0px 1px 2px rgb(38, 39, 130);
+    background-color: #FFFFFF;
+  }
+
 }

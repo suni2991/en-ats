@@ -64,7 +64,7 @@ const CandidateCard = ({ candidates }) => {
           background: "#fff",
           maxWidth: "100%",
           height: "50px",
-          boxShadow: '0px 1px 2px rgb(38, 39, 130)',
+          // boxShadow: '0px 1px 2px rgb(38, 39, 130)',
         }}
       />
       <CandidateProfileDrawer
