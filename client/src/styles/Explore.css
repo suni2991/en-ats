@@ -1,0 +1,149 @@
+.explore-page {
+    /* background: linear-gradient(to bottom, #fdfdfd, #00B4D2); */
+    background: linear-gradient(to right, #00b4d2, #000834);
+    min-height: 100vh;
+    padding: 10px;
+    color: white;
+    background-size: cover;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .quote {
+    flex: 1;
+  }
+
+  .quote h1{
+    color: #fff;
+    font-size: 5rem;
+  }
+
+h3{
+    color:aliceblue;
+    font-size: 2.2rem;
+    padding: 10px;
+    width: 80%;
+  }
+
+  
+  .logo {
+    flex: 0;
+  }
+  
+  /* .logo img {
+    width: 100px;
+  } */
+  
+  .explore-page .content {
+    margin: 20px auto;
+    width: 90%;
+  }
+e
+.explore-page .card-hover p{
+    color:#fff;
+    margin: 0;
+}
+
+.card-det{
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5px;
+  
+}
+.card-det p{
+  color:white;
+}
+.ant-pagination-item{
+  color:#ffff;
+}
+
+
+.card-head{
+  font-weight: bold; 
+  color: white; 
+  font-size: 18px;
+  text-transform: capitalize;
+  margin-bottom: 10px;
+}
+  
+  .card-hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255,255,255,0));
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.2s;
+    border: 1px solid #fff;
+  }
+  
+  .card-hover:hover {
+    transform: scale(1.05);
+    
+    box-shadow: 0 4px 8px rgba(244, 243, 243, 0.989);
+  }
+  
+  
+  .glass-modal .modal-content {
+    /* background: rgba(255, 255, 255, 0.249);
+    backdrop-filter: blur(10px); */
+    border: none;
+    color: #00b4d2;
+    justify-content: center;
+    justify-items: center;
+    width: 60%;
+    margin: 50px auto;
+    background: white;
+    overflow: auto;
+    justify-content: center;
+    justify-items: center;
+  }
+
+  .glass-modal .modal-body {
+    max-height: 80vh;
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .glass-modal .modal-body::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+  
+/* Explore.css */
+
+.ant-pagination-item,
+.ant-pagination-next,
+.ant-pagination-prev {
+  background-color: white;
+  border: 1px solid white;
+  /* color: #fff !important; */
+}
+
+.ant-pagination-item a,
+.ant-pagination-next a,
+.ant-pagination-prev a {
+  color: white !important;
+}
+
+.ant-pagination-item a:hover,
+.ant-pagination-next a:hover,
+.ant-pagination-prev a:hover,
+.ant-pagination-item-active a {
+  color: #00B4D2 !important;
+}
+
+.ant-pagination-item-active {
+  border-color: white;
+  color:#00B4D2 !important;
+}
+
+.ant-pagination-item:focus-visible,
+.ant-pagination-next:focus-visible,
+.ant-pagination-prev:focus-visible {
+  outline: none;
+  color: #00B4D2 !important;
+}

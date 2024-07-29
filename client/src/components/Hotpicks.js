@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Carousel, Card, Spin, Button, Empty } from 'antd';
 import axios from 'axios';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-
+const URL = process.env.REACT_APP_API_URL;
 const Hotpicks = () => {
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ const Hotpicks = () => {
   useEffect(() => {
     const fetchSelectedCandidates = async () => {
       try {
-        const response = await axios.get('http://localhost:5040/candidate/Onboarded');
+        const response = await axios.get(`${URL}/candidate/Onboarded`);
         const selectedCandidates = response.data.reverse()
           .filter(candidate => candidate.status === 'Onboarded')
           .sort((a, b) => new Date(b.statusUpdateDate) - new Date(a.statusUpdateDate))

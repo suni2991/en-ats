@@ -58,6 +58,12 @@ const jobSchema = new mongoose.Schema({
         type: String,
         default: "HR"
     },
+    fullfilledBy:{
+        type: Date,
+    },
+    jd:{
+        type: String,
+    },
    mgrRole:{
     type: String,
     enum:["HR", "Admin", "Ops-Manager"]

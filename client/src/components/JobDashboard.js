@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Col, Row, Badge, Pagination, Modal, Table, Tag } from "antd";
 import CircularProgressCard from "./CircularProgressCard";
+import useAuth from "../hooks/useAuth";
+import moment from "moment";
 
 const colors = {
   Active: "green",
@@ -18,6 +20,7 @@ const statusColors = {
   Processing: "purple",
 };
 
+const URL = process.env.REACT_APP_API_URL;
 const JobDashboard = ({ jobs }) => {
   const [candidateCounts, setCandidateCounts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,11 +28,16 @@ const JobDashboard = ({ jobs }) => {
   const [applicants, setApplicants] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const pageSize = 16;
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
-        const response = await axios.get(`http://localhost:5040/positions`);
+        const response = await axios.get(`${URL}/positions`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const countsObject = response.data.reduce((acc, job) => {
           acc[job.position] = job.registeredCandidates;
           return acc;
@@ -42,12 +50,17 @@ const JobDashboard = ({ jobs }) => {
     };
 
     fetchCandidateCounts();
-  }, [jobs]);
+  }, [jobs, token]);
 
   const showApplicants = async (position) => {
     try {
       const response = await axios.get(
-        `http://localhost:5040/applicants/position/${position}`
+        `${URL}/applicants/position/${position}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setApplicants(response.data);
       setSelectedJob(position);
@@ -99,93 +112,96 @@ const JobDashboard = ({ jobs }) => {
   return (
     <div>
       <Row gutter={[16, 16]}>
-        {currentJobs.map((job) => (
-          <Col key={job._id} xs={20} sm={12} md={8} lg={6}>
-            <Badge
-              count={
-                candidateCounts[job.position] !== undefined
-                  ? candidateCounts[job.position]
-                  : 0
-              }
-              style={{ backgroundColor: "#1DAB4D" }}
-              showZero
-            >
-              <div className="card-container">
-                <div className="card-flip">
-                  <Card
-                    className="card-front"
-                    bordered={false}
-                    style={{
-                      margin: "0 auto",
-                      backgroundColor: "#FFFF",
-                      height: "180px",
-                      width: "230px",
-                      textAlign: "left",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => showApplicants(job.position)}
-                  >
-                    <div className="card-title" style={{ cursor: "pointer" }}>
-                      <span
-                        style={{
-                          fontWeight: "bold",
-                          textDecoration: "underline",
-                          color: "#00B4D2",
-                          textOverflow: 'ellipsis', 
-                          whiteSpace: 'nowrap', 
-                          overflow: 'hidden'
-                        }}
-                        onClick={() => showApplicants(job.position)}
-                      >
-                        {job.position}
-                      </span>
-                    </div>
-                    <p>
-                      <strong>Location:</strong> {job.jobLocation}
-                    </p>
-                    <p>
-                      <strong>HR:</strong>
-                      {job.postedBy}
-                    </p>
-                    <p>
-                      <strong>Department:</strong> {job.department}
-                    </p>
-                    <p>
-                      <strong>Vacancies:</strong>
-                      {job.vacancies}
-                    </p>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      <span
-                        style={{
-                          color: colors[job.status],
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {job.status}
-                      </span>
-                    </p>
-                  </Card>
-                  <Card
-                    className="card-back"
-                    onClick={() => showApplicants(job.position)}
-                    bordered={false}
-                    style={{
-                      backgroundColor: "#FFFF",
-                      display: "inline-block",
-                      position: "relative",
-                    }}
-                  >
-                    <CircularProgressCard
-                      job={job}
-                      onboardedCount={candidateCounts[job.position] || 0}
-                    />
-                  </Card>
+
+        {currentJobs.map((job) => {
+          const daysRemaining = moment(job.fullfilledBy).diff(moment(), 'days');
+
+          return (
+            <Col key={job._id} xs={20} sm={12} md={8} lg={6}>
+              <Badge
+                count={
+                  candidateCounts[job.position] !== undefined
+                    ? candidateCounts[job.position]
+                    : 0
+                }
+                style={{ backgroundColor: "#1DAB4D" }}
+                showZero
+              >
+                <div className="card-container">
+                  <div className="card-flip">
+                    <Card
+                      className="card-front"
+                      bordered={false}
+                      style={{
+                        margin: "0 auto",
+                        backgroundColor: "#FFFF",
+                        height: "180px",
+                        width: "230px",
+                        textAlign: "left",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => showApplicants(job.position)}
+                    >
+                      <div className="card-title" style={{ cursor: "pointer" }}>
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            textDecoration: "underline",
+                            color: "#00B4D2",
+                          }}
+                          onClick={() => showApplicants(job.position)}
+                        >
+                          {job.position}
+                        </span>
+                      </div>
+                      <p>
+                        <strong>Location:</strong> {job.jobLocation}
+                      </p>
+                      <p>
+                        <strong>HR:</strong> {job.postedBy}
+                      </p>
+                      <p>
+                        <strong>Dept:</strong> {job.department}
+                      </p>
+                     
+                      <p>
+                        <strong>Status:</strong>{" "}
+                        <span
+                          style={{
+                            color: colors[job.status],
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {job.status} 
+                        </span>
+                      </p>
+                      {job.status === "Active" && (
+                      <p>
+                        <strong>Closed in:</strong> {daysRemaining} days
+                      </p>)}
+                    </Card>
+                    <Card
+                      className="card-back"
+                      onClick={() => showApplicants(job.position)}
+                      bordered={false}
+                      style={{
+                        backgroundColor: "#FFFF",
+                        display: "inline-block",
+                        position: "relative",
+                      }}
+                    >
+                      <CircularProgressCard
+                        job={job}
+                        onboardedCount={candidateCounts[job.position] || 0}
+                      />
+                    </Card>
+                  </div>
+
                 </div>
-              </div>
-            </Badge>
-          </Col>
-        ))}
+              </Badge>
+            </Col>
+          );
+        })}
       </Row>
       <Pagination
         current={currentPage}

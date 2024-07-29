@@ -1,25 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import Fetchtable from '../components/Fetchtable';
-import { Select } from 'antd';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import Fetchtable from "../components/Fetchtable";
+import { Select } from "antd";
+import axios from "axios";
+import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
-
+const URL = process.env.REACT_APP_API_URL;
 const Reports = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [data, setData] = useState([]);
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let url = 'http://localhost:5040/candidatesreport';
-        if (selectedCategory !== 'all') {
+        let url = `${URL}/candidatesreport`;
+        if (selectedCategory !== "all") {
           url += `?selectedCategory=${selectedCategory}`;
         }
-        const response = await axios.get(url);
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -29,7 +35,7 @@ const Reports = () => {
   const userColumns = [
     {
       name: "Date",
-      selector: row => {
+      selector: (row) => {
         if (row.dateCreated) {
           const date = new Date(row.dateCreated);
           const dateString = date.toLocaleDateString();
@@ -39,41 +45,45 @@ const Reports = () => {
         }
       },
       sortable: true,
-      width: "100px"
+      width: "100px",
     },
     {
       name: "Name",
-      
-      selector: row => row.fullName,
+
+      selector: (row) => row.fullName,
       sortable: true,
-      cell: row => <span className="custom-cell" style={{ textTransform: 'capitalize' }}>{row.fullName}</span>
+      cell: (row) => (
+        <span className="custom-cell" style={{ textTransform: "capitalize" }}>
+          {row.fullName}
+        </span>
+      ),
     },
     {
       name: "Email",
       width: "200px",
-      selector: row => row.email,
+      selector: (row) => row.email,
       sortable: true,
-      cell: row => <span className="custom-cell">{row.email}</span>
+      cell: (row) => <span className="custom-cell">{row.email}</span>,
     },
     {
       name: "Quantitative",
       width: "130px",
       center: true,
-      selector: row => row.quantitative !== -1 ? row.quantitative : 0,
+      selector: (row) => (row.quantitative !== -1 ? row.quantitative : 0),
       sortable: true,
     },
     {
       name: "Vocabulary",
       width: "125px",
       center: true,
-      selector: row => row.vocabulary !== -1 ? row.vocabulary : 0,
+      selector: (row) => (row.vocabulary !== -1 ? row.vocabulary : 0),
       sortable: true,
     },
     {
       name: "Psychometric",
       width: "140px",
       center: true,
-      selector: row => row.psychometric !== -1 ? row.psychometric : 0,
+      selector: (row) => (row.psychometric !== -1 ? row.psychometric : 0),
       sortable: true,
       omit: selectedCategory === "Non-Technical",
     },
@@ -81,7 +91,7 @@ const Reports = () => {
       name: "Java",
       width: "110px",
       center: true,
-      selector: row => row.java !== -1 ? row.java : 0,
+      selector: (row) => (row.java !== -1 ? row.java : 0),
       sortable: true,
       omit: selectedCategory === "Non-Technical",
     },
@@ -89,7 +99,7 @@ const Reports = () => {
       name: "Excel",
       width: "120px",
       center: true,
-      selector: row => row.excel !== -1 ? row.excel : 0,
+      selector: (row) => (row.excel !== -1 ? row.excel : 0),
       sortable: true,
       omit: selectedCategory === "Technical",
     },
@@ -97,25 +107,24 @@ const Reports = () => {
       name: "Accounts",
       width: "130px",
       center: true,
-      selector: row => row.accounts !== -1 ? row.accounts : 0,
+      selector: (row) => (row.accounts !== -1 ? row.accounts : 0),
       sortable: true,
       omit: selectedCategory === "Technical",
-    }
+    },
   ];
 
   return (
-    <div className='vh-page'>
+    <div className="vh-page">
       <Fetchtable
-        url={`http://localhost:5040/candidatesreport`}
+        url={`${URL}/candidatesreport`}
         columns={userColumns}
-       
-        filteredData={data} 
+        filteredData={data}
         extraContent={
           <label>
             <Select
               value={selectedCategory}
               onChange={(value) => setSelectedCategory(value)}
-              style={{ minWidth: '150px', margin: '2px' }}
+              style={{ minWidth: "150px", margin: "2px" }}
             >
               <Option value="all">All</Option>
               <Option value="Technical">Technical</Option>
@@ -125,7 +134,7 @@ const Reports = () => {
         }
       />
     </div>
-  )
-}
+  );
+};
 
 export default Reports;

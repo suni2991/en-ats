@@ -1,23 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import Fetchtable from './Fetchtable';
-import { Modal, Button, Spin, Tooltip, List, Select, message, Input, Row, Col, Drawer } from 'antd';
+import React, { useState, useEffect } from "react";
+import Fetchtable from "./Fetchtable";
+import {
+  Modal,
+  Button,
+  Spin,
+  Tooltip,
+  List,
+  Select,
+  message,
+  Input,
+  Row,
+  Col,
+  Drawer,
+} from "antd";
 import { TiEyeOutline } from "react-icons/ti";
-import axios from 'axios';
-import moment from 'moment';
+import axios from "axios";
+import moment from "moment";
 import { CiEdit } from "react-icons/ci";
 import { AiOutlineCheckCircle, AiOutlineDelete } from "react-icons/ai";
+import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
+const URL = process.env.REACT_APP_API_URL;
 const Viewjob = ({ auth }) => {
+  const { token } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [isEditClicked, setIsEditClicked] = useState(false);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const [jobToDelete, setJobToDelete] = useState(null);
@@ -25,72 +40,96 @@ const Viewjob = ({ auth }) => {
   const [historyData, setHistoryData] = useState([]);
 
   const [editFields, setEditFields] = useState({
-    position: '',
-    department: '',
-    jobLocation: '',
-    experience: '',
-    vacancies: '',
-    postedBy: '',
-    status: '',
-    description: '',
-    note: ''
+    position: "",
+    department: "",
+    jobLocation: "",
+    experience: "",
+    vacancies: "",
+    postedBy: "",
+    status: "",
+    description: "",
+    note: "",
   });
 
   const colors = {
-    Active: 'green',
-    Hold: '#00B4D2',
-    Closed: 'red',
+    Active: "green",
+    Hold: "#00B4D2",
+    Closed: "red",
   };
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get('http://localhost:5040/viewjobs', {
-          params: { mgrRole: auth.role, fullName: auth.fullName }
+        const response = await axios.get(`${URL}/viewjobs`, {
+          params: { mgrRole: auth.role, fullName: auth.fullName },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
         setJobs(response.data);
         setFilteredJobs(response.data);
       } catch (error) {
-        console.error('Error fetching jobs:', error);
-
+        console.error("Error fetching jobs:", error);
       }
     };
 
     fetchJobs();
-  }, [auth.role, auth.fullName]);
+  }, [auth.role, auth.fullName, token]);
 
   const userColumns = [
-    { name: 'Role', selector: (row) => row.position, sortable: true },
-    { name: 'Department', selector: (row) => row.department, sortable: true },
-    { name: 'Location', selector: (row) => row.jobLocation, sortable: true, width: '150px' },
-    { name: 'HR Name', selector: (row) => row.postedBy, sortable: true, width: '150px' },
+    { name: "Role", selector: (row) => row.position, sortable: true },
+    { name: "Department", selector: (row) => row.department, sortable: true },
     {
-      name: 'Status',
+      name: "Location",
+      selector: (row) => row.jobLocation,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "HR Name",
+      selector: (row) => row.postedBy,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Status",
       selector: (row) => row.status,
       sortable: true,
-      width: '100px',
+      width: "100px",
       cell: (row) => (
-        <div style={{
-          backgroundColor: getStatusColor(row.status),
-          color: 'white',
-          padding: '5px 10px',
-          borderRadius: '5px',
-          textAlign: 'center',
-          alignItems: 'center',
-        }}>
+        <div
+          style={{
+            backgroundColor: getStatusColor(row.status),
+            color: "white",
+            padding: "5px 10px",
+            borderRadius: "5px",
+            textAlign: "center",
+            alignItems: "center",
+          }}
+        >
           {row.status}
         </div>
       ),
     },
     {
-      name: 'Action',
+      name: "Action",
       cell: (row) => (
         <>
-          <Tooltip title="View Details" color='cyan'>
-            <button className='table-btn' name='View' onClick={() => handleRowButtonClick(row._id)}><TiEyeOutline /></button>
+          <Tooltip title="View Details" color="cyan">
+            <button
+              className="table-btn"
+              name="View"
+              onClick={() => handleRowButtonClick(row._id)}
+            >
+              <TiEyeOutline />
+            </button>
           </Tooltip>
-          <Tooltip title="Delete Job" color='cyan'>
-            <button className='table-btn' name='delete' onClick={() => showConfirmModal(row._id)}>
+          <Tooltip title="Delete Job" color="cyan">
+            <button
+              className="table-btn"
+              name="delete"
+              onClick={() => showConfirmModal(row._id)}
+            >
               <AiOutlineDelete />
             </button>
           </Tooltip>
@@ -104,21 +143,28 @@ const Viewjob = ({ auth }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Active':
-        return 'green';
-      case 'Hold':
-        return '#00B4D2';
-      case 'Closed':
-        return 'red';
+      case "Active":
+        return "green";
+      case "Hold":
+        return "#00B4D2";
+      case "Closed":
+        return "red";
       default:
-        return 'black';
+        return "black";
     }
   };
 
   const handleRowButtonClick = async (jobId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5040/job-posts/${jobId}`);
+      const response = await axios.get(
+        `${URL}/job-posts/${jobId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const job = response.data;
       setSelectedJob(job);
       setEditFields({
@@ -130,11 +176,11 @@ const Viewjob = ({ auth }) => {
         postedBy: job.postedBy,
         status: job.status,
         description: job.description,
-        note: '' // Initialize note as an empty string
+        note: "", // Initialize note as an empty string
       });
       setIsModalVisible(true);
     } catch (error) {
-      console.error('Error fetching job details:', error);
+      console.error("Error fetching job details:", error);
     } finally {
       setLoading(false);
     }
@@ -147,19 +193,26 @@ const Viewjob = ({ auth }) => {
 
   const handleConfirmDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:5040/job-posts/${jobToDelete}`);
+      const response = await axios.delete(
+        `${URL}/job-posts/${jobToDelete}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.status === 200) {
         const updatedJobs = jobs.filter((job) => job._id !== jobToDelete);
         setJobs(updatedJobs);
         setFilteredJobs(updatedJobs);
-        message.success('Job deleted successfully!');
+        message.success("Job deleted successfully!");
       } else {
-
-        message.error('Failed to delete job. Please check server logs for details.');
+        message.error(
+          "Failed to delete job. Please check server logs for details."
+        );
       }
     } catch (error) {
-
-      message.error('An error occurred while deleting the job', error);
+      message.error("An error occurred while deleting the job", error);
     } finally {
       setIsConfirmModalVisible(false);
       setJobToDelete(null);
@@ -175,7 +228,7 @@ const Viewjob = ({ auth }) => {
     setIsModalVisible(false);
     setSelectedJob(null);
     setIsEditClicked(false);
-    setSelectedStatus('');
+    setSelectedStatus("");
   };
 
   const handleSaveChanges = async () => {
@@ -183,18 +236,28 @@ const Viewjob = ({ auth }) => {
     try {
       const updatedJob = {
         ...editFields,
-        updatedAt: new Date() // Set updatedAt to the current date
+        updatedAt: new Date(), // Set updatedAt to the current date
       };
-      await axios.put(`http://localhost:5040/job-posts/${selectedJob._id}`, updatedJob);
+      await axios.put(
+        `${URL}/job-posts/${selectedJob._id}`,
+        updatedJob,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      const updatedJobs = jobs.map((job) => job._id === selectedJob._id ? updatedJob : job);
+      const updatedJobs = jobs.map((job) =>
+        job._id === selectedJob._id ? updatedJob : job
+      );
       setJobs(updatedJobs);
       setFilteredJobs(updatedJobs);
 
       setIsModalVisible(false);
       setIsEditClicked(false);
     } catch (error) {
-      console.error('Error updating job details:', error);
+      console.error("Error updating job details:", error);
     } finally {
       setLoading(false);
     }
@@ -204,13 +267,27 @@ const Viewjob = ({ auth }) => {
     const { name, value } = e.target;
     setEditFields((prevFields) => ({
       ...prevFields,
-      [name]: value
+      [name]: value,
     }));
   };
 
+  const renderResumeLink = (selectedJob) => {
+    if (selectedJob.jd) {
+      const downloadLink = `${URL}${selectedJob.jd}`;
+      return (
+        <a href={downloadLink} target="_blank" rel="noopener noreferrer" style={{ color: "#00B4D2" }}>
+          View JD
+        </a>
+      );
+    } else {
+      return "JD not available";
+    }
+  };
+
+  const daysRemaining = selectedJob ? moment(selectedJob.fullfilledBy).diff(moment(), 'days') : 0;
+
   const handleHistoryClick = (job) => {
     if (job.history) {
-
       const sortedHistory = job.history.reverse();
       setHistoryData(sortedHistory);
     } else {
@@ -226,12 +303,12 @@ const Viewjob = ({ auth }) => {
   return (
     <div>
       <Fetchtable
-        url="http://localhost:5040/viewjobs"
+        url={`${URL}/viewjobs`}
         columns={userColumns}
         filteredData={filteredJobs}
       />
       <Modal
-        title='Details'
+        title={`This position ends in ${daysRemaining} days`}
         open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
@@ -241,25 +318,58 @@ const Viewjob = ({ auth }) => {
           <Spin />
         ) : selectedJob ? (
           <>
-            <div style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontWeight: 'bold', marginRight: 'auto', fontSize: '20px', color: '#00B4D2' }}>
-                Job Title: {isEditClicked ? (
-                  <Input name="position" value={editFields.position} onChange={handleInputChange} />
+            <div
+              style={{ justifyContent: "space-between", alignItems: "center" }}
+            >
+              <h2
+                style={{
+                  fontWeight: "bold",
+                  marginRight: "auto",
+                  fontSize: "20px",
+                  color: "#00B4D2",
+                }}
+              >
+                Job Title:{" "}
+                {isEditClicked ? (
+                  <Input
+                    name="position"
+                    value={editFields.position}
+                    onChange={handleInputChange}
+                  />
                 ) : (
                   selectedJob.position
                 )}
               </h2>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button style={{ marginRight: '10px' }} onClick={() => handleHistoryClick(selectedJob)}>
+           
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ textTransform: 'capitalize', padding:'5px'}}>
+                {renderResumeLink(selectedJob)}
+              </div>
+                <Button
+                  style={{ marginRight: "10px" }}
+                  onClick={() => handleHistoryClick(selectedJob)}
+                >
                   History
                 </Button>
-                <h1 style={{ fontWeight: 'bold', color: colors[selectedJob.status], width: '100px', margin: 0 }}>
+                <h1
+                  style={{
+                    fontWeight: "bold",
+                    color: colors[selectedJob.status],
+                    width: "100px",
+                    margin: 0,
+                  }}
+                >
                   {isEditClicked ? (
                     <Select
-                      style={{ width: '100px' }}
+                      style={{ width: "100px" }}
                       key="status"
                       value={editFields.status}
-                      onChange={(value) => setEditFields((prevFields) => ({ ...prevFields, status: value }))}
+                      onChange={(value) =>
+                        setEditFields((prevFields) => ({
+                          ...prevFields,
+                          status: value,
+                        }))
+                      }
                     >
                       <Option value="Hold">Hold</Option>
                       <Option value="Active">Active</Option>
@@ -269,87 +379,184 @@ const Viewjob = ({ auth }) => {
                     selectedJob.status
                   )}
                 </h1>
-                <Tooltip title="Edit" color='cyan'>
-                  <button className='table-btn' name='edit' onClick={() => setIsEditClicked(true)}>
+                <Tooltip title="Edit" color="cyan">
+                  <button
+                    className="table-btn"
+                    name="edit"
+                    onClick={() => setIsEditClicked(true)}
+                  >
                     <CiEdit />
                   </button>
                 </Tooltip>
                 {isEditClicked && (
-                  <Tooltip title="Save" color='cyan'>
-                    <button className='table-btn' name='save' onClick={handleSaveChanges}>
+                  <Tooltip title="Save" color="cyan">
+                    <button
+                      className="table-btn"
+                      name="save"
+                      onClick={handleSaveChanges}
+                    >
                       <AiOutlineCheckCircle />
                     </button>
                   </Tooltip>
                 )}
               </div>
             </div>
-            <Row gutter={16} style={{ marginTop: '30px' }}>
+            <Row gutter={16} style={{ marginTop: "30px" }}>
               <Col span={24}>
                 <Row gutter={16}>
                   <Col span={8}>
                     <div>
-                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Department:</h3>
-                      <p>{isEditClicked ? (
-                        <Input name="department" value={editFields.department} onChange={handleInputChange} />
-                      ) : (
-                        selectedJob.department
-                      )}</p>
+                      <h3
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          margin: "5px 0",
+                          color:'#000834',
+                        }}
+                      >
+                        Department:
+                      </h3>
+                      <p>
+                        {isEditClicked ? (
+                          <Input
+                            name="department"
+                            value={editFields.department}
+                            onChange={handleInputChange}
+                          />
+                        ) : (
+                          selectedJob.department
+                        )}
+                      </p>
                     </div>
                   </Col>
                   <Col span={8}>
                     <div>
-                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Location:</h3>
-                      <p>{isEditClicked ? (
-                        <Input name="jobLocation" value={editFields.jobLocation} onChange={handleInputChange} />
-                      ) : (
-                        selectedJob.jobLocation
-                      )}</p>
+                      <h3
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          margin: "5px 0",
+                          color:'#000834',
+                        }}
+                      >
+                        Location:
+                      </h3>
+                      <p>
+                        {isEditClicked ? (
+                          <Input
+                            name="jobLocation"
+                            value={editFields.jobLocation}
+                            onChange={handleInputChange}
+                          />
+                        ) : (
+                          selectedJob.jobLocation
+                        )}
+                      </p>
                     </div>
                   </Col>
                   <Col span={8}>
                     <div>
-                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Experience:</h3>
-                      <p>{isEditClicked ? (
-                        <Input name="experience" value={editFields.experience} onChange={handleInputChange} />
-                      ) : (
-                        selectedJob.experience
-                      )}</p>
+                      <h3
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          margin: "5px 0",
+                          color:'#000834',
+                        }}
+                      >
+                        Experience:
+                      </h3>
+                      <p>
+                        {isEditClicked ? (
+                          <Input
+                            name="experience"
+                            value={editFields.experience}
+                            onChange={handleInputChange}
+                          />
+                        ) : (
+                          selectedJob.experience
+                        )}
+                      </p>
                     </div>
                   </Col>
                 </Row>
                 <Row gutter={16}>
                   <Col span={8}>
                     <div>
-                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Vacancies:</h3>
-                      <p>{isEditClicked ? (
-                        <Input name="vacancies" value={editFields.vacancies} onChange={handleInputChange} />
-                      ) : (
-                        selectedJob.vacancies
-                      )}</p>
+                      <h3
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          margin: "5px 0",
+                          color:'#000834',
+                        }}
+                      >
+                        Vacancies:
+                      </h3>
+                      <p>
+                        {isEditClicked ? (
+                          <Input
+                            name="vacancies"
+                            value={editFields.vacancies}
+                            onChange={handleInputChange}
+                          />
+                        ) : (
+                          selectedJob.vacancies
+                        )}
+                      </p>
                     </div>
                   </Col>
                   <Col span={8}>
                     <div>
-                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Posted By:</h3>
-                      <p>{isEditClicked ? (
-                        <Input name="postedBy" value={editFields.postedBy} onChange={handleInputChange} />
-                      ) : (
-                        selectedJob.postedBy
-                      )}</p>
+                      <h3
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          margin: "5px 0",
+                          color:'#000834',
+                        }}
+                      >
+                        Posted By:
+                      </h3>
+                      <p>
+                        {isEditClicked ? (
+                          <Input
+                            name="postedBy"
+                            value={editFields.postedBy}
+                            onChange={handleInputChange}
+                          />
+                        ) : (
+                          selectedJob.postedBy
+                        )}
+                      </p>
                     </div>
                   </Col>
-
                 </Row>
 
                 <Row gutter={16}>
                   <Col span={24}>
                     <div>
-                      <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0' }}>Description:</h3>
-                      <p>{isEditClicked ? (
-                        <TextArea name="description" value={editFields.description} onChange={handleInputChange} />
-                      ) : (
-                        selectedJob.description
-                      )}</p>
+                      <h3
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          margin: "5px 0",
+                          color:'#000834',
+                        }}
+                      >
+                        Description:
+                      </h3>
+                      <p>
+                        {isEditClicked ? (
+                          <TextArea
+                            name="description"
+                            value={editFields.description}
+                            onChange={handleInputChange}
+                          />
+                        ) : (
+                          selectedJob.description
+                        )}
+                      </p>
                     </div>
                   </Col>
                 </Row>
@@ -357,8 +564,22 @@ const Viewjob = ({ auth }) => {
                   <Row gutter={16}>
                     <Col span={24}>
                       <div>
-                        <h3 style={{ fontWeight: 'bold', fontSize: '16px', margin: '5px 0', color: 'red' }}>Reason For This Update:</h3>
-                        <TextArea name="note" value={editFields.note} placeHolder='Please mention reason for update & what is updated' onChange={handleInputChange} />
+                        <h3
+                          style={{
+                            fontWeight: "bold",
+                            fontSize: "16px",
+                            margin: "5px 0",
+                            color: "red",
+                          }}
+                        >
+                          Reason For This Update:
+                        </h3>
+                        <TextArea
+                          name="note"
+                          value={editFields.note}
+                          placeHolder="Please mention reason for update & what is updated"
+                          onChange={handleInputChange}
+                        />
                       </div>
                     </Col>
                   </Row>
@@ -392,7 +613,9 @@ const Viewjob = ({ auth }) => {
             renderItem={(item, index) => (
               <List.Item key={index}>
                 <List.Item.Meta
-                  title={`Date: ${moment(item.date).format('DD MMMM YYYY, HH:mm')}`}
+                  title={`Date: ${moment(item.date).format(
+                    "DD MMMM YYYY, HH:mm"
+                  )}`}
                   description={
                     <>
                       <p>Comments: {item.note}</p>

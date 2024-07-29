@@ -1,4 +1,4 @@
-POST http://localhost:5040/register/candidate
+POST ${URL}/register/candidate
 Content-Type: application/json
 
 {

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Select } from 'antd';
+import useAuth from '../hooks/useAuth';
 
 const { Option } = Select;
-
+const URL = process.env.REACT_APP_API_URL;
 const HrDropdown = ({ onSelect, onSelectHr }) => {
   const [hrs, setHrs] = useState([]);
   const [selectedPanelist, setSelectedPanelist] = useState(null);
   const [mgrName, setMgrName] = useState(null);
   const [mgrEmail, setMgrEmail] = useState(null);
+  const {token} = useAuth();
 
   const handleSelectChange = (fullName) => {
     const selectedHr = hrs.find((hr) => hr.fullName === fullName);
@@ -24,7 +26,12 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
   useEffect(() => {
     const fetchPanelists = async () => {
       try {
-        const response = await axios.get('http://localhost:5040/hrs/name');
+        const response = await axios.get(`${URL}/hrs/name`,
+          {
+            headers:{
+              Authorization: `Bearer ${token}`
+            }
+          });
         const data = response.data;
         if (data.length > 0) {
           setHrs(data);

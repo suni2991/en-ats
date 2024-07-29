@@ -75,14 +75,16 @@ select{
 .block input{
     border: 1px solid #00B4D2;
     padding: 10px 10px;
-    width: 20vw !important;
+    width: 23.5vw !important;
+    background: transparent;
 }
 
 .block select{
     border: 1px solid #00B4D2;
-    width: 21vw !important;
+    width: 25vw !important;
     padding: 10px 10px;
     margin-bottom: 20px;
+    background: transparent;
 }
 
 .ant-select-selection-placeholder, .ant-select-selection-item {

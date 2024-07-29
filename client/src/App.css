@@ -15,7 +15,7 @@
   }
   
   p{
-    color: #848484;
+    color: #9f9f9f;
   }
   .profile-container-img{
     border-radius: 50%;
@@ -562,8 +562,10 @@ c
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
-  margin: 10px 0;
-}
+
+  margin: 10px 0px 10px 20px;
+  }
+
 
 .stat-repo-dashboard {
   width: 100% !important;
