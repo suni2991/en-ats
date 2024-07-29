@@ -220,8 +220,10 @@ const JobPositionPieChart = () => {
           justifyContent: "space-between",
           alignItems: "center",
           background: "#FFFF",
-          height: "48px",
-          width: "76vw",
+          height: "50px",
+          width: "100%",
+          boxSizing: "border-box",
+          boxShadow: "0px 1px 2px rgb(38, 39, 130)",
         }}
       >
         <Select
@@ -282,11 +284,11 @@ const JobPositionPieChart = () => {
             positionData.length > 0 &&
             Object.keys(positionData[0]).length > 0 ? (
               <>
-                <p style={{ float: "right", marginBottom: "10px" }}>
+                <div style={{ float: 'right', marginBottom: '10px', border: '1px solid #cccccc', padding: '5px', background: '#f9f9f9', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>
                   {clickedPosition}
                   {jobLocation && `, ${jobLocation}`}
-                </p>
-                <BarChart width={500} height={300} data={positionData}>
+                </div>
+                <BarChart width={500} height={350} data={positionData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />

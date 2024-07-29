@@ -64,7 +64,7 @@ select{
 #desc label{
     background-color: white;
     padding: 2px;
-    top: 5px;
+    top: -12px;
     left: 30px;
     position: absolute;
     color: #00B4D2;

@@ -186,6 +186,7 @@ const Sidebar = ({ children }) => {
               auth.role === "Ops-Manager") && (
               <nav className="navbar">
                 <div className="navbar-right">
+
                   <Tooltip title="View & Update Profile" color="cyan">
                     <Button
                       type="text"
@@ -193,6 +194,7 @@ const Sidebar = ({ children }) => {
                       style={{ color: "#00B4D2" }}
                     >
                       Welcome, {auth.fullName} |
+
                     </Button>
                   </Tooltip>
                 </div>
@@ -203,6 +205,7 @@ const Sidebar = ({ children }) => {
                       <MdLogout />
                     </span>{" "}
                     <span className="text">Logout</span>
+
                   </button>
                 )}
               </nav>

@@ -387,11 +387,8 @@ function Registration({ closeModal }) {
 
   return (
     <div>
-
-
     <form onSubmit={handleSubmit}>
       <div className='formContainer' style={{ gap: '4rem' }}>
-
         <div className='block' >
           <div>
             <label>First Name<span className='require'>*</span></label>
@@ -500,13 +497,9 @@ function Registration({ closeModal }) {
                 <option value="Non-Technical">Non-Technical</option>
               </select>
             </div>
-
             <div style={{marginTop:'10px'}}>
             <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
-
           </div>
-              
-              
            </div>    
         </div>
         <div id='btnWrapper'>
@@ -517,7 +510,6 @@ function Registration({ closeModal }) {
     <center><p style={{color:'#A50707'}}>* Fields are required</p></center>
   </div>
   )
-
 }
 
 export default Registration;

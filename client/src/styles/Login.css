@@ -35,6 +35,10 @@ input{
     margin: 0px 0px 25px 0px;
 }
 
+/* input::placeholder {
+    color: #555555;
+} */
+
 
 form button{
     width: fit-content;
@@ -63,4 +67,9 @@ form button{
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+}
+
+.swal2-title {
+    box-sizing: border-box;
+    padding: 1em;
 }

@@ -42,7 +42,6 @@ const ApplicationStatus = () => {
 
     <center><h1>Applicant Status</h1></center><br/>
       <BarChart width={340} height={340} margin={{ top: 20, right: 0, left: 40, bottom: 0 }} data={candidatesData}>
-
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="status" />
         <YAxis />

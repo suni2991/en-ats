@@ -141,7 +141,6 @@ const Dashboard = () => {
             className={view === "tile" ? "active-button" : ""}
           >
             Tile View
-
           </Button> 
           <span classname='btn-divider'>&nbsp; | &nbsp;</span>
           <Button onClick={toggleView} type='text' icon={<FaTableList />} className={view === 'table' ? 'active-button' : ''}>
@@ -159,12 +158,13 @@ const Dashboard = () => {
         )}
       </div>
 
-      {auth.role !== "Ops-Manager" && (
-        <div className="stat-repo">
+
+      {auth.role !== 'Ops-Manager' && (
+        <div className='stat-repo-dashboard'>
+
           <JobPositionPieChart />
         </div>
       )}
-
       <div
         className="list-applicants"
         style={{ width: "93.5%", marginLeft: "25px", height: "auto" }}
