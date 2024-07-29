@@ -126,6 +126,22 @@ const storageResume = multer.diskStorage({
   },
 });
 
+const storageJd = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/jd");
+  },
+  filename: function (req, file, cb) {
+    const originalName = file.originalname;
+    const fileExtension = originalName.slice(
+      originalName.lastIndexOf("."),
+      originalName.length
+    );
+    timeValue = Date.now();
+    fileName = `${file.fieldname}-${timeValue}${fileExtension}`;
+    cb(null, fileName);
+  },
+});
+
 const uploadImage = multer({
   storage: storageImage,
   fileFilter: imageFilter,
@@ -136,6 +152,11 @@ const uploadResume = multer({
   fileFilter: fileFilter,
 }).single("resume");
 
+const uploadJd = multer({
+  storage: storageJd,
+  fileFilter: fileFilter,
+}).single("jd");
+
 app.post("/upload/image", uploadImage, (req, res) => {
   res.send({
     uploadedFile: "/assets/images/" + fileName,
@@ -145,6 +166,12 @@ app.post("/upload/image", uploadImage, (req, res) => {
 app.post("/upload/resume", uploadResume, (req, res) => {
   res.send({
     uploadedFile: "/assets/resumes/" + fileName,
+  });
+});
+
+app.post("/upload/jd", uploadJd, (req, res) => {
+  res.send({
+    uploadedFile: "/assets/jd/" + fileName,
   });
 });
 

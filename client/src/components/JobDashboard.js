@@ -3,6 +3,7 @@ import axios from "axios";
 import { Card, Col, Row, Badge, Pagination, Modal, Table, Tag } from "antd";
 import CircularProgressCard from "./CircularProgressCard";
 import useAuth from "../hooks/useAuth";
+import moment from "moment";
 
 const colors = {
   Active: "green",
@@ -28,6 +29,7 @@ const JobDashboard = ({ jobs }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const pageSize = 16;
   const { token } = useAuth();
+
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
@@ -56,8 +58,8 @@ const JobDashboard = ({ jobs }) => {
         `${URL}/applicants/position/${position}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       setApplicants(response.data);
@@ -109,121 +111,125 @@ const JobDashboard = ({ jobs }) => {
 
   return (
     <div style={{ padding: "30px 20px" }}>
-    <Row gutter={[16, 16]}>
-      {currentJobs.map((job) => (
-        <Col key={job._id} xs={20} sm={12} md={8} lg={6}>
-          <Badge
-            count={
-              candidateCounts[job.position] !== undefined
-                ? candidateCounts[job.position]
-                : 0
-            }
-            style={{ backgroundColor: "#1DAB4D" }}
-            showZero
-          >
-            <div className="card-container">
-              <div className="card-flip">
-                <Card
-                  className="card-front"
-                  bordered={false}
-                  style={{
-                    margin: "0 auto",
-                    backgroundColor: "#FFFF",
-                    height: "180px",
-                    width: "230px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => showApplicants(job.position)}
-                >
-                  <div className="card-title" style={{ cursor: "pointer" }}>
-                    <span
+      <Row gutter={[16, 16]}>
+        {currentJobs.map((job) => {
+          const daysRemaining = moment(job.fullfilledBy).diff(moment(), 'days');
+
+          return (
+            <Col key={job._id} xs={20} sm={12} md={8} lg={6}>
+              <Badge
+                count={
+                  candidateCounts[job.position] !== undefined
+                    ? candidateCounts[job.position]
+                    : 0
+                }
+                style={{ backgroundColor: "#1DAB4D" }}
+                showZero
+              >
+                <div className="card-container">
+                  <div className="card-flip">
+                    <Card
+                      className="card-front"
+                      bordered={false}
                       style={{
-                        fontWeight: "bold",
-                        textDecoration: "underline",
-                        color: "#00B4D2",
+                        margin: "0 auto",
+                        backgroundColor: "#FFFF",
+                        height: "180px",
+                        width: "230px",
+                        textAlign: "left",
+                        cursor: "pointer",
                       }}
                       onClick={() => showApplicants(job.position)}
                     >
-                      {job.position}
-                    </span>
-                  </div>
-                  <p>
-                    <strong>Location:</strong> {job.jobLocation}
-                  </p>
-                  <p>
-                    <strong>HR:</strong>
-                    {job.postedBy}
-                  </p>
-                  <p>
-                    <strong>Department:</strong> {job.department}
-                  </p>
-                  <p>
-                    <strong>Vacancies:</strong>
-                    {job.vacancies}
-                  </p>
-                  <p>
-                    <strong>Status:</strong>{" "}
-                    <span
+                      <div className="card-title" style={{ cursor: "pointer" }}>
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            textDecoration: "underline",
+                            color: "#00B4D2",
+                          }}
+                          onClick={() => showApplicants(job.position)}
+                        >
+                          {job.position}
+                        </span>
+                      </div>
+                      <p>
+                        <strong>Location:</strong> {job.jobLocation}
+                      </p>
+                      <p>
+                        <strong>HR:</strong> {job.postedBy}
+                      </p>
+                      <p>
+                        <strong>Dept:</strong> {job.department}
+                      </p>
+                     
+                      <p>
+                        <strong>Status:</strong>{" "}
+                        <span
+                          style={{
+                            color: colors[job.status],
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {job.status} 
+                        </span>
+                      </p>
+                      {job.status === "Active" && (
+                      <p>
+                        <strong>Closed in:</strong> {daysRemaining} days
+                      </p>)}
+                    </Card>
+                    <Card
+                      className="card-back"
+                      onClick={() => showApplicants(job.position)}
+                      bordered={false}
                       style={{
-                        color: colors[job.status],
-                        fontWeight: "bold",
+                        backgroundColor: "#FFFF",
+                        display: "inline-block",
+                        position: "relative",
                       }}
                     >
-                      {job.status}
-                    </span>
-                  </p>
-                </Card>
-                <Card
-                  className="card-back"
-                  onClick={() => showApplicants(job.position)}
-                  bordered={false}
-                  style={{
-                    backgroundColor: "#FFFF",
-                    display: "inline-block",
-                    position: "relative",
-                  }}
-                >
-                  <CircularProgressCard
-                    job={job}
-                    onboardedCount={candidateCounts[job.position] || 0}
-                  />
-                </Card>
-              </div>
-            </div>
-          </Badge>
-        </Col>
-      ))}
-    </Row>
-    <Pagination
-      current={currentPage}
-      pageSize={pageSize}
-      total={jobs.length}
-      onChange={(page) => setCurrentPage(page)}
-      style={{
-        textAlign: "right",
-        marginTop: "20px",
-        background: "#fff",
-        maxWidth: "100%",
-        height: "40px",
-      }}
-    />
-    <Modal
-      title={`Applicants for ${selectedJob}`}
-      open={isModalVisible}
-      onCancel={() => setIsModalVisible(false)}
-      footer={null}
-      width={800}
-    >
-      <Table
-        columns={columns}
-        dataSource={applicants}
-        rowKey="_id"
-        style={{ textTransform: "capitalize" }}
-        pagination={{ pageSize: 8 }}
+                      <CircularProgressCard
+                        job={job}
+                        onboardedCount={candidateCounts[job.position] || 0}
+                      />
+                    </Card>
+                  </div>
+                </div>
+              </Badge>
+            </Col>
+          );
+        })}
+      </Row>
+      <Pagination
+        current={currentPage}
+        pageSize={pageSize}
+        total={jobs.length}
+        onChange={(page) => setCurrentPage(page)}
+        style={{
+          textAlign: "right",
+          marginTop: "20px",
+          background: "#fff",
+          maxWidth: "100%",
+          height: "40px",
+        }}
       />
-    </Modal>
-  </div>
+      <Modal
+        title={`Applicants for ${selectedJob}`}
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        <Table
+          columns={columns}
+          dataSource={applicants}
+          rowKey="_id"
+          style={{ textTransform: "capitalize" }}
+          pagination={{ pageSize: 8 }}
+        />
+      </Modal>
+    </div>
   );
 };
 

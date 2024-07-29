@@ -3,23 +3,18 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "../styles/Regform.css";
 import HrDropdown from "./HrDropdown";
-import { Button, message, Select } from "antd";
+import moment from "moment";
+import { Button, message, Select, DatePicker } from "antd";
 import useAuth from "../hooks/useAuth";
+
 
 const { Option } = Select;
 const URL = process.env.REACT_APP_API_URL;
+
 const Postjob = () => {
   const { role } = useParams();
-  const [mgrRole, setMgrRole] = useState("");
   const { token } = useAuth();
-
-  useEffect(() => {
-    setMgrRole(role);
-    setFormData((prevData) => ({
-      ...prevData,
-      mgrRole: role,
-    }));
-  }, [role]);
+  const [mgrRole, setMgrRole] = useState("");
   const [formData, setFormData] = useState({
     position: "",
     department: "",
@@ -32,19 +27,20 @@ const Postjob = () => {
     postedBy: "",
     status: "Approval Pending",
     mgrRole: role,
+    jd: "",
+    fullfilledBy: "",
   });
 
   const [selectedHrName, setSelectedHrName] = useState("");
   const [selectedHrEmail, setSelectedHrEmail] = useState("");
 
-  const handleSelectHr = (fullName, email) => {
-    setSelectedHrName(fullName);
-    setSelectedHrEmail(email);
+  useEffect(() => {
+    setMgrRole(role);
     setFormData((prevData) => ({
       ...prevData,
-      postedBy: fullName,
+      mgrRole: role,
     }));
-  };
+  }, [role]);
 
   const deptList = [
     "Data and Digital-DND",
@@ -60,8 +56,8 @@ const Postjob = () => {
   ];
 
   const isAlphabetic = (value) => /^[A-Za-z\s,+\-]*$/.test(value);
-
   const isNumeric = (value) => /^[0-9]*$/.test(value);
+
   const validateField = (name, value) => {
     if (name === "experience" || name === "vacancies") {
       if (!isNumeric(value)) {
@@ -98,20 +94,65 @@ const Postjob = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (validateField(name, value)) {
+  const handleChange = async (e) => {
+    e.preventDefault();
+    if (e.target.name === "jd") {
+      const uploadFormData = new FormData();
+      uploadFormData.append(
+        e.target.name,
+        e.target.files[0],
+        e.target.files[0].name
+      );
+      const uploadEndpoint = e.target.name;
+
+      const response = await fetch(
+        `${URL}/upload/` + uploadEndpoint,
+        {
+          method: "POST",
+          body: uploadFormData,
+        }
+      );
+      if (!response.ok) {
+        console.error("File upload failed with status code", response.status);
+      } else {
+        console.log("File uploaded successfully");
+      }
+      const data = await response.json();
       setFormData((prevData) => ({
         ...prevData,
-        [name]: value,
+        [e.target.name]: data["uploadedFile"],
       }));
+    } else {
+      const { name, value } = e.target;
+      if (validateField(name, value)) {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      }
     }
+  };
+
+  const handleDateChange = (date, dateString) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      fullfilledBy: dateString,
+    }));
   };
 
   const handleSelectChange = (name, value) => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handleSelectHr = (fullName, email) => {
+    setSelectedHrName(fullName);
+    setSelectedHrEmail(email);
+    setFormData((prevData) => ({
+      ...prevData,
+      postedBy: fullName,
     }));
   };
 
@@ -155,7 +196,7 @@ const Postjob = () => {
         jobId: jobId,
       };
 
-      const emailResponse = await axios.post(
+      await axios.post(
         `${URL}/job/approval`,
         emailData,
         {
@@ -163,7 +204,6 @@ const Postjob = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-
       );
 
       setFormData({
@@ -177,6 +217,8 @@ const Postjob = () => {
         experience: "",
         postedBy: "",
         responsibilities: "",
+        jd: "",
+        fullfilledBy: "",
       });
       setSelectedHrName("");
       setSelectedHrEmail("");
@@ -259,6 +301,17 @@ const Postjob = () => {
                 ))}
               </select>
             </div>
+            <div>
+            <label htmlFor="fullfilledBy">
+              Fullfilled By:<span className="require">*</span>
+            </label>
+            <br />
+            <DatePicker
+              onChange={handleDateChange}
+              format="YYYY-MM-DD"
+              value={formData.fullfilledBy ? moment(formData.fullfilledBy) : null}
+            />
+          </div>
           </div>
           <div className="block">
             <div>
@@ -316,6 +369,19 @@ const Postjob = () => {
                 style={{ width: "100%" }}
               />
             </div>
+            <div>
+            <label htmlFor="jd">
+              JD:<span className="require">*</span>
+            </label>
+            <br />
+            <input
+              type="file"
+              name="jd"
+              onChange={handleChange}
+              accept=".pdf, .doc"
+              required
+            />
+          </div>
           </div>
         </div>
         <div id="desc">

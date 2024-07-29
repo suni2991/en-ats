@@ -12,6 +12,7 @@ import useAuth from "../hooks/useAuth";
 const URL = process.env.REACT_APP_API_URL;
 function Registration({ closeModal }) {
   const { token } = useAuth();
+  const {auth} = useAuth();
   const [positions, setPositions] = useState([]);
   const [qualifications, setQualifications] = useState([]);
   const [customPosition, setCustomPosition] = useState([]);
@@ -326,7 +327,7 @@ function Registration({ closeModal }) {
 
     const historyNote = "Initial registration of an Applicant";
     const historyUpdate = {
-      updatedBy: formData.mgrName,
+      updatedBy: auth.fullName || "Applicant",
       updatedAt: new Date(),
       note: historyNote,
     };
@@ -351,27 +352,27 @@ function Registration({ closeModal }) {
         body: JSON.stringify(formDataWithFullName),
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer ${token}`,
         },
       });
-      const data = await response.json();
+      // const data = await response.json();
 
-      const emailData = {
-        role: data.role,
-        confirmPassword: data.confirmPassword,
-        email: data.email,
-        fullName: data.fullName,
-      };
+      // const emailData = {
+      //   role: data.role,
+      //   confirmPassword: data.confirmPassword,
+      //   email: data.email,
+      //   fullName: data.fullName,
+      // };
 
-      const emailResponse = await axios.post(
-        `${URL}/user/register`,
-        emailData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // const emailResponse = await axios.post(
+      //   `${URL}/user/register`,
+      //   emailData,
+      //   // {
+      //   //   headers: {
+      //   //     Authorization: `Bearer ${token}`,
+      //   //   },
+      //   // }
+      // );
 
       if (response.status === 201) {
         message.success("Applicant saved successfully");
@@ -513,7 +514,7 @@ function Registration({ closeModal }) {
         </div>
 
     </form>
-    <center><p>* All fields are required</p></center>
+    <center><p style={{color:'#A50707'}}>* Fields are required</p></center>
   </div>
   )
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import userlogo from "../Assests/Applicant.jpg";
-import { Drawer, Collapse, Button } from "antd";
+import { Drawer, Collapse, Button, message } from "antd";
 import useAuth from "../hooks/useAuth";
+import axios from "axios";
 
 const { Panel } = Collapse;
 const URL = process.env.REACT_APP_API_URL;
@@ -56,13 +57,13 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
   const getPanelBackgroundColor = (roundName) => {
     switch (roundName) {
       case "L1":
-        return "#3AAFB9";
+        return "#00a2bd";
       case "L2":
-        return "#64E9EE";
+        return "#00b4d2";
       case "HR":
-        return "#92DCE5";
+        return "#4ccadf";
       default:
-        return "#51C4D3";
+        return "#7fd9e8";
     }
   };
 
@@ -79,13 +80,48 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
     setHistoryDrawerOpen(false);
   };
 
+  const renderResumeLink = (candidate) => {
+    if (candidate.resume) {
+      const downloadLink = `${URL}${candidate.resume}`;
+      return (
+        <a href={downloadLink} target="_blank" rel="noopener noreferrer" className='resume-link'>
+          {candidate.firstName} CV
+        </a>
+      );
+    } else {
+      return "Resume not available";
+    }
+  };
+  
+
+  const handleSendEmail = async () => {
+    const emailData = {
+      role: candidateData.role,
+      confirmPassword: candidateData.confirmPassword,
+      email: candidateData.email,
+      fullName: candidateData.fullName,
+    };
+
+    try {
+      const emailResponse = await axios.post(`${URL}/user/register`, emailData);
+      if (emailResponse.status === 201) {
+        message.success("Email sent successfully!");
+      } else {
+        message.error("Failed to send email.");
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      message.error("Error sending email.");
+    }
+  };
+
   return (
     <>
       <Drawer
         title={
           <div
             style={{
-              backgroundColor: "#001242",
+              backgroundColor: "#004854",
               color: "white",
               padding: "10px",
               textTransform: "capitalize",
@@ -108,6 +144,9 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
             width={100}
           />
           <h1>{candidateData.position}</h1>
+          <div style={{textTransform:'capitalize'}}>
+          {renderResumeLink(candidateData)}
+        </div>
           <br />
         </div>
 
@@ -115,7 +154,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
           <Panel
             header={<span style={panelHeaderStyle}>About</span>}
             key="1"
-            style={{ backgroundColor: "#001242" }}
+            style={{ backgroundColor: "#005a69" }}
           >
             <p>
               <span style={labelStyle}>First Name</span>
@@ -137,7 +176,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
           <Panel
             header={<span style={panelHeaderStyle}>Contact</span>}
             key="2"
-            style={{ backgroundColor: "#093A3E" }}
+            style={{ backgroundColor: "#007d93" }}
           >
             <p>
               <span style={labelStyle}>Email</span>
@@ -211,7 +250,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
             header={<span>Others</span>}
             key="4"
             style={{
-              backgroundColor: "#D8E3E7",
+              backgroundColor: "#ccf0f6",
               color: "#000",
               textTransform: "capitalize",
             }}
@@ -232,7 +271,15 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
             </div>
           </Panel>
         </Collapse>
-        <center>
+       
+        <div className="btn-wrapper" style={{display:'flex', justifyContent:'space-between'}}>
+        <Button
+            type="primary"
+            onClick={handleSendEmail}
+            style={{ marginTop: "20px", background: "#00B4D2" }}
+          >
+            Send Credentials
+          </Button>
           <Button
             type="primary"
             onClick={handleHistoryDrawerOpen}
@@ -240,7 +287,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
           >
             View History
           </Button>
-        </center>
+        </div>
       </Drawer>
 
       <Drawer

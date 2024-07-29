@@ -19,7 +19,7 @@ const Applicant = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [currentOnboardedPage, setCurrentOnboardedPage] = useState(1);
-  const [onboardedPageSize, setOnboardedPageSize] = useState(6);
+  const [onboardedPageSize, setOnboardedPageSize] = useState(5);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [emailModalVisible, setEmailModalVisible] = useState(false);

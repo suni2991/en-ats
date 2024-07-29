@@ -271,6 +271,21 @@ const Viewjob = ({ auth }) => {
     }));
   };
 
+  const renderResumeLink = (selectedJob) => {
+    if (selectedJob.jd) {
+      const downloadLink = `${URL}${selectedJob.jd}`;
+      return (
+        <a href={downloadLink} target="_blank" rel="noopener noreferrer" style={{ color: "#00B4D2" }}>
+          View JD
+        </a>
+      );
+    } else {
+      return "JD not available";
+    }
+  };
+
+  const daysRemaining = selectedJob ? moment(selectedJob.fullfilledBy).diff(moment(), 'days') : 0;
+
   const handleHistoryClick = (job) => {
     if (job.history) {
       const sortedHistory = job.history.reverse();
@@ -293,7 +308,7 @@ const Viewjob = ({ auth }) => {
         filteredData={filteredJobs}
       />
       <Modal
-        title="Details"
+        title={`This position ends in ${daysRemaining} days`}
         open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
@@ -325,7 +340,11 @@ const Viewjob = ({ auth }) => {
                   selectedJob.position
                 )}
               </h2>
+           
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ textTransform: 'capitalize', padding:'5px'}}>
+                {renderResumeLink(selectedJob)}
+              </div>
                 <Button
                   style={{ marginRight: "10px" }}
                   onClick={() => handleHistoryClick(selectedJob)}
@@ -392,6 +411,7 @@ const Viewjob = ({ auth }) => {
                           fontWeight: "bold",
                           fontSize: "16px",
                           margin: "5px 0",
+                          color:'#000834',
                         }}
                       >
                         Department:
@@ -416,6 +436,7 @@ const Viewjob = ({ auth }) => {
                           fontWeight: "bold",
                           fontSize: "16px",
                           margin: "5px 0",
+                          color:'#000834',
                         }}
                       >
                         Location:
@@ -440,6 +461,7 @@ const Viewjob = ({ auth }) => {
                           fontWeight: "bold",
                           fontSize: "16px",
                           margin: "5px 0",
+                          color:'#000834',
                         }}
                       >
                         Experience:
@@ -466,6 +488,7 @@ const Viewjob = ({ auth }) => {
                           fontWeight: "bold",
                           fontSize: "16px",
                           margin: "5px 0",
+                          color:'#000834',
                         }}
                       >
                         Vacancies:
@@ -490,6 +513,7 @@ const Viewjob = ({ auth }) => {
                           fontWeight: "bold",
                           fontSize: "16px",
                           margin: "5px 0",
+                          color:'#000834',
                         }}
                       >
                         Posted By:
@@ -517,6 +541,7 @@ const Viewjob = ({ auth }) => {
                           fontWeight: "bold",
                           fontSize: "16px",
                           margin: "5px 0",
+                          color:'#000834',
                         }}
                       >
                         Description:

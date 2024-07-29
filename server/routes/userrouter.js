@@ -10,10 +10,138 @@ const RoleModel = require("../model/RoleModel");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 //Create User - or register, a simple post request to save user in db
+// userRouter.post(
+//   "/register/candidate",
+//   // authenticate,
+//   // checkPermission("create_applicant"),
+//   async (req, res) => {
+//     try {
+//       const {
+//         firstName,
+//         lastName,
+//         fullName,
+//         qualification,
+//         totalExperience,
+//         relevantExperience,
+//         noticePeriod,
+//         contact,
+//         email,
+//         position,
+//         currentLocation,
+//         image,
+//         department,
+//         resume,
+//         status,
+//         empCount,
+//         psychometric,
+//         quantitative,
+//         vocabulary,
+//         java,
+//         accounts,
+//         excel,
+//         dob,
+//         history,
+//         role,
+//         state,
+//         district,
+//         taluka,
+//         selectedCategory,
+//         mgrName,
+//         mgrEmail,
+//         skills,
+//         lwd,
+//         availability,
+//         panelistName,
+//         round,
+//         evaluationDetails,
+//         reference,
+//       } = req.body;
+
+//       const encryptedPassword = CryptoJS.AES.encrypt(
+//         req.body.password,
+//         process.env.PASSWORD_SECRET_KEY
+//       ).toString();
+
+//       let roleId = "";
+//       if (req.body.role) {
+//         try {
+//           const roleData = await RoleModel.findOne(
+//             { name: req.body.role },
+//             { name: 0, permissions: 0 }
+//           );
+//           if (roleData) {
+//             roleId = roleData._id;
+//           } else {
+//             console.log("Role not found");
+//           }
+//         } catch (error) {
+//           console.error("Error fetching role data:", error);
+//         }
+//       }
+
+//       const newCandidate = new Candidate({
+//         firstName,
+//         lastName,
+//         fullName,
+//         qualification,
+//         totalExperience,
+//         relevantExperience,
+//         noticePeriod,
+//         contact,
+//         email,
+//         position,
+//         currentLocation,
+//         image,
+//         resume,
+//         status,
+//         department,
+//         empCount,
+//         psychometric,
+//         quantitative,
+//         vocabulary,
+//         java,
+//         accounts,
+//         excel,
+//         dob,
+//         password: encryptedPassword, // Set the encrypted password
+//         confirmPassword: req.body.confirmPassword,
+//         role,
+//         roleId,
+//         state,
+//         district,
+//         taluka,
+//         selectedCategory,
+//         mgrName,
+//         mgrEmail,
+//         skills,
+//         lwd,
+//         availability,
+//         panelistName,
+//         round,
+//         evaluationDetails,
+//         history,
+//         reference,
+//       });
+
+//       const savedCandidate = await newCandidate.save();
+//       res.status(201).json(savedCandidate);
+//     } catch (error) {
+//       if (error.code === 11000) {
+//         res.status(409).json({ message: "Email already in use" });
+//       } else {
+//         res.status(400).json({
+//           message: "Could not create candidate",
+//           error: error.message,
+//         });
+//       }
+//     }
+//   }
+// );
+
 userRouter.post(
   "/register/candidate",
-  authenticate,
-  checkPermission("create_applicant"),
+  // authenticate,
+  // checkPermission("create_applicant"),
   async (req, res) => {
     try {
       const {
@@ -62,7 +190,7 @@ userRouter.post(
         process.env.PASSWORD_SECRET_KEY
       ).toString();
 
-      let roleId = "";
+      let roleId;
       if (req.body.role) {
         try {
           const roleData = await RoleModel.findOne(
@@ -78,8 +206,8 @@ userRouter.post(
           console.error("Error fetching role data:", error);
         }
       }
-      
-      const newCandidate = new Candidate({
+
+      const newCandidateData = {
         firstName,
         lastName,
         fullName,
@@ -106,7 +234,6 @@ userRouter.post(
         password: encryptedPassword, // Set the encrypted password
         confirmPassword: req.body.confirmPassword,
         role,
-        roleId,
         state,
         district,
         taluka,
@@ -121,7 +248,13 @@ userRouter.post(
         evaluationDetails,
         history,
         reference,
-      });
+      };
+
+      if (roleId) {
+        newCandidateData.roleId = roleId;
+      }
+
+      const newCandidate = new Candidate(newCandidateData);
 
       const savedCandidate = await newCandidate.save();
       res.status(201).json(savedCandidate);
@@ -435,7 +568,6 @@ userRouter.get(
       res.status(500).json({ message: "Error fetching panelists" });
     }
   }
-
 );
 
 userRouter.get(
@@ -450,7 +582,6 @@ userRouter.get(
       console.error("Error fetching HRs:", error);
       res.status(500).json({ message: "Error fetching HRs" });
     }
-
   }
 );
 

@@ -1,0 +1,84 @@
+.apply-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+    height: auto;
+  }
+  
+  .form-row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  
+  .form-group {
+    flex: 1;
+    margin: 30px;
+    position: relative;
+  }
+  
+  .form-group input{
+    position: absolute;
+    width: 100%;
+    outline: none;
+    padding: 0 10px;
+    line-height: 30px;
+    border-radius: 5px;
+    border: 1px solid #f0ffff;
+    background: transparent;
+    transition: 0.1s ease;
+    z-index: 1;
+  }
+
+  .form-group select{
+    position: absolute;
+    width: 108%;
+    outline: none;
+    padding: 8px 10px;
+    line-height: 30px;
+    border-radius: 5px;
+    border: 1px solid #f0ffff;
+    background: transparent;
+    transition: 0.1s ease;
+  }
+  
+  .form-group .labelline {
+    position: absolute;
+    color: #f0ffff;
+    padding: 5px 5px 0px 2px;
+    margin: 0 20px;
+    background: transparent;
+    transition: 0.2s ease;
+    z-index: 2; 
+  }
+  
+  .form-group input:focus,
+  input:valid {
+    color: #00B4d2;
+    border: 1px solid #00B4d2;
+  }
+  
+  .form-group input:focus + .labelline,
+  .form-group input:valid + .labelline {
+    color: #a7f1fe;
+    transform: translate(-15px, -16px) scale(0.88);
+    z-index: 3; /* Ensure focused label is above input and other labels */
+    background: transparent; /* Add background color to label to cover input border */
+    padding: 0 5px;
+  }
+  
+  button {
+    grid-column: span 2;
+    padding: 0.75rem;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  

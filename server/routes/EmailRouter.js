@@ -17,8 +17,8 @@ const compiledTemplate2 = Hogan.compile(template2);
 // send mail
 emailRouter.post(
   "/user/register",
-  authenticate,
-  checkPermission("job_approve_email"),
+  // authenticate,
+  // checkPermission("job_approve_email"),
   (req, res) => {
     const { role } = req.body;
     const { confirmPassword } = req.body;

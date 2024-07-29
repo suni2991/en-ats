@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import logo from "../Assests/enfuse-logo.png";
-import bgImg from "../Assests/Hire bg.jpg";
+import bgImg from "../Assests/hire.jpg";
 
 const URL = process.env.REACT_APP_API_URL;
 

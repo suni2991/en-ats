@@ -25,6 +25,8 @@ jobRouter.post(
       postedBy,
       status,
       mgrRole,
+      fullfilledBy,
+      jd,
     } = req.body;
 
     const newJob = new Job({
@@ -39,6 +41,8 @@ jobRouter.post(
       postedBy,
       status,
       mgrRole,
+      fullfilledBy,
+      jd,
       history: [
         {
           updatedBy: postedBy,
@@ -60,8 +64,8 @@ jobRouter.post(
 // GET route to fetch all job posts
 jobRouter.get(
   "/viewjobs",
-  authenticate,
-  checkPermission("view_jobs"),
+  // authenticate,
+  // checkPermission("view_jobs"),
   async (req, res) => {
     const { mgrRole, fullName } = req.query;
 

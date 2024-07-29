@@ -82,6 +82,7 @@ main img{
   width:    -moz-calc(100% - 180px);
   width:         calc(100% - 180px);
   margin-left: 180px;
+  
 }
 
 .main-content {

@@ -34,6 +34,8 @@ import Dashboard from "./pages/Dashboard.js";
 import Applicant from "./pages/Applicant.js";
 
 import ApproveJobDetails from "./pages/Approve.js";
+import WelcomePage from "./pages/WelcomePage.js";
+import Explore from "./pages/Explore.js";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,14 +57,18 @@ const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Sidebar>
+       
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<WelcomePage />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/login" element={<Home />} />
             <Route path="/job/:id" element={<ApproveJobDetails />} />
+            
             <Route element={<RequireAuth />}>
-              <Route path="/admins" element={<Admin />} />
-              <Route path="/registration" element={<Registration />} />
-              <Route path="/reports" element={<Reports />} />
+            
+              <Route path="/admins" element={<Sidebar><Admin /></Sidebar>} />
+              <Route path="/registration" element={<Sidebar><Registration /></Sidebar>} />
+              <Route path="/reports" element={<Sidebar><Reports /></Sidebar>} />
               <Route path="/candidate/candidate" element={<Candidate />} />
               <Route
                 path="/assessment/psychometric"
@@ -80,22 +86,23 @@ const App = () => {
               <Route path="/assessment/accounts" element={<Accounts />} />
               <Route path="/assessment/excel" element={<Excel />} />
 
-              <Route path="/hr" element={<HR />} />
+              <Route path="/hr" element={<Sidebar><HR /></Sidebar>} />
 
               <Route path="/thankyou" element={<Thankyou />} />
               <Route path="/statistics" element={<Statistics />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Sidebar><Dashboard /></Sidebar>} />
 
-              <Route path="/postjob" element={<Postjob />} />
-              <Route path="/create-hr" element={<Createhr />} />
-              <Route path="/feedbacks" element={<Feedback />} />
+              <Route path="/postjob" element={<Sidebar><Postjob /></Sidebar>} />
+              <Route path="/create-hr" element={<Sidebar><Createhr /></Sidebar>} />
+              <Route path="/feedbacks" element={<Sidebar><Feedback /></Sidebar>} />
 
-              <Route path="/editProfile" element={<ProfilePage />} />
-              <Route path="/panelist/:id" element={<Panelist />} />
-              <Route path="/applicants" element={<Applicant />} />
+              <Route path="/editProfile" element={<Sidebar><ProfilePage /></Sidebar>} />
+              <Route path="/panelist/:id" element={<Sidebar><Panelist /></Sidebar>} />
+              <Route path="/applicants" element={<Sidebar><Applicant /></Sidebar>} />
             </Route>
+            
           </Routes>
-        </Sidebar>
+       
       </AuthProvider>
     </BrowserRouter>
   );
