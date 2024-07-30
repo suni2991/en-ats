@@ -273,13 +273,14 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
         </Collapse>
        
         <div className="btn-wrapper" style={{display:'flex', justifyContent:'space-between'}}>
+        {candidateData.status === "Processing" && (
         <Button
             type="primary"
             onClick={handleSendEmail}
             style={{ marginTop: "20px", background: "#00B4D2" }}
           >
             Send Credentials
-          </Button>
+          </Button>)}
           <Button
             type="primary"
             onClick={handleHistoryDrawerOpen}
