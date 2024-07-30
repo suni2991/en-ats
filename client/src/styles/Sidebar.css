@@ -254,7 +254,6 @@ main img{
   height: 50px !important; /* Adjust as needed */
   width: 100%;
   box-sizing: border-box;
-  /* width: -webkit-calc(100% - 189px);
-  width:    -moz-calc(100% - 189px);
+  
 }
 
