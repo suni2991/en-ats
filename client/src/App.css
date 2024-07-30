@@ -322,8 +322,7 @@ h1{
 @media (min-width: 480px) and (max-width: 768px){
   
   .table-container {
-    width: 80%;
-    /* margin: 30px 20px; */
+    width: 100%;
     margin: 25px 25px 35px 0px;
   }
  
@@ -896,7 +895,6 @@ h2::after{
   flex-direction: row;
 }
 .list-applicants{
-
   background: #fff;
   width: 100%;
   float: left;
@@ -905,7 +903,7 @@ h2::after{
   margin: 10px 0;
 /*   
   overflow-y: auto; */
-  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
   position:relative;
   /* background: #fff;
   width: 60%;
@@ -1075,7 +1073,7 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 
   .ant-searchIn {
     height:30px;
-    width: 150px;
+    width: 120px;
     border: 1px dotted #00B4D2;
     margin-left:10px;
     margin-top:5px;
@@ -1088,6 +1086,11 @@ border: 1px solid rgba(255, 255, 255, 0.3);
     box-sizing: border-box;
     box-shadow: 0px 1px 2px rgb(38, 39, 130);
     background-color: #FFFFFF;
+  }
+
+  .table-container {
+    width: 100%;
+    margin: 10px 0px 10px 0px;
   }
 
 }

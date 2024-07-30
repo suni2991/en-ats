@@ -167,7 +167,7 @@ const Dashboard = () => {
       )}
       <div
         className="list-applicants"
-        style={{ width: "93.5%", marginLeft: "25px", height: "auto" }}
+        style={{ height: "auto" }}
       >
         <Table
           dataSource={pendingJobs}

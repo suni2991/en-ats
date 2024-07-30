@@ -45,20 +45,18 @@ const Hotpicks = () => {
           <Button
             type="primary"
             shape="circle"
-
             icon={<LeftOutlined />}
             onClick={prev}
             style={{ position: 'absolute', top: '50%', left: '0', background:'#00B4D2', transform: 'translateY(-50%)', zIndex: 1 }}
           />
-          <Carousel ref={carouselRef} dots={false} slidesToShow={4} slidesToScroll={4} infinite={false}>
+          <Carousel ref={carouselRef} dots={false} slidesToShow={3} slidesToScroll={3} infinite={false}>
             {selectedCandidates.map(candidate => (
-              <div key={candidate._id}>
+              <div key={candidate._id} >
                 <Card
                   title={<h2>{candidate.fullName}</h2>}
                   className="card-hover"
-                  style={{ padding:'5px', width: 220, margin: '0px 20px 0px 20px', textTransform: 'capitalize', borderRadius: '1px',
-                boxShadow: '0px 2px 4px rgb(38, 39, 130)', }}
-
+                  style={{ padding:'5px', width: '220px', height:'220px', margin: '10px 20px 10px 20px', textTransform: 'capitalize', borderRadius: '10px',
+                          boxShadow: '0px 1px 2px rgb(38, 39, 130)', }}
                 >
                   <p><strong>Position:</strong> {candidate.position}</p>
                   <p><strong>Experience:</strong> {candidate.relevantExperience} Years</p>
