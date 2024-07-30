@@ -5,6 +5,7 @@ import moment from 'moment';
 import '../styles/Explore.css';
 import logo from "../Assests/enfuse-logo.png";
 import Registration from "../components/Registration";
+import { useNavigate } from 'react-router-dom';
 
 const Explore = () => {
   const [jobs, setJobs] = useState([]);
@@ -12,6 +13,7 @@ const Explore = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const jobsPerPage = 8;
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get('http://localhost:5040/viewjobs')
@@ -19,6 +21,7 @@ const Explore = () => {
         const sortedJobs = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setJobs(sortedJobs);
       })
+
       .catch(error => console.error('Error fetching jobs:', error));
   }, []);
 
@@ -35,6 +38,10 @@ const Explore = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  const handleRedirect = () =>{
+    navigate('/')
+  }
 
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
@@ -97,6 +104,10 @@ const Explore = () => {
             );
           })}
         </Row>
+        <div style={{display:'flex', justifyContent:'space-between'}}>
+        <Button type="default" 
+        style={{ color: 'white', background: 'transparent', marginTop:'25px', fontWeight:'bold' }}
+        onClick={handleRedirect}>Back</Button>
         <Pagination
           current={currentPage}
           pageSize={jobsPerPage}
@@ -105,6 +116,7 @@ const Explore = () => {
           onChange={handlePageChange}
           style={{ textAlign: 'right', marginTop: '20px', color:'white'}}
         />
+      </div>
       </div>
 
       <Modal
