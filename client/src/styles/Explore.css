@@ -23,14 +23,28 @@
     font-size: 5rem;
   }
 
-h3{
+  h3 {
     color:aliceblue;
     font-size: 2.2rem;
     padding: 10px;
     width: 80%;
   }
 
-  
+  strong { 
+    font-weight: bold;
+  }
+
+  .job-description {
+    height: 90px;
+  }
+
+  .clamp2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+  }
+
   .logo {
     flex: 0;
   }
@@ -52,8 +66,6 @@ e
 .card-det{
   display: flex;
   justify-content: space-between;
-  padding: 0 5px;
-  
 }
 .card-det p{
   color:white;
@@ -63,12 +75,15 @@ e
 }
 
 
-.card-head{
+.card-head {
   font-weight: bold; 
   color: white; 
   font-size: 18px;
+  line-height: 20px;
   text-transform: capitalize;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  height: 50px;
+  overflow: hidden;
 }
   
   .card-hover {
