@@ -441,7 +441,6 @@ function Registration({ closeModal }) {
                   value={formData.lwd ? moment(formData.lwd) : null}
                   onChange={handleDateChange}
                   placeholder="Choose Last Working Day"
-                  style={{ width: '320px', border: '1px solid #00B4D2', padding: '5px 10px 0 10px', }}
                 />
               </div>
         

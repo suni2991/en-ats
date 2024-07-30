@@ -52,7 +52,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
     : "Candidate Profile";
 
   const labelStyle = { fontWeight: "bold" };
-  const valueStyle = { marginLeft: "30px", textTransform: "capitalize" };
+  const valueStyle = { textTransform: "capitalize" };
 
   const getPanelBackgroundColor = (roundName) => {
     switch (roundName) {
@@ -156,42 +156,57 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
             key="1"
             style={{ backgroundColor: "#005a69" }}
           >
-            <p>
-              <span style={labelStyle}>First Name</span>
-              <span style={valueStyle}>: {candidateData.firstName}</span>
-            </p>
-            <p>
-              <span style={labelStyle}>Last Name</span>
-              <span style={valueStyle}>: {candidateData.lastName}</span>
-            </p>
-            <p>
-              <span style={labelStyle}>Qualification</span>
-              <span style={valueStyle}>: {candidateData.qualification}</span>
-            </p>
-            <p>
-              <span style={labelStyle}>Experience</span>
-              <span style={valueStyle}>: {candidateData.totalExperience}</span>
-            </p>
+
+            <table style={{ width: '100%' }}>
+              <tbody>
+                <tr>
+                  <td style={{ width: '30%' }}><span style={labelStyle}>First Name</span></td>
+                  <td style={{ width: '5%' }}> : </td>
+                  <td style={{ width: '65%' }}><span style={valueStyle}>{candidateData.firstName}</span></td>
+                </tr>
+                <tr>
+                  <td><span style={labelStyle}>Last Name</span></td>
+                  <td> : </td>
+                  <td><span style={valueStyle}>{candidateData.lastName}</span></td>
+                </tr>
+                <tr>
+                  <td><span style={labelStyle}>Qualification</span></td>
+                  <td> : </td>
+                  <td><span style={valueStyle}>{candidateData.qualification}</span></td>
+                </tr>
+                <tr>
+                  <td><span style={labelStyle}>Experience</span></td>
+                  <td> : </td>
+                  <td><span style={valueStyle}>{candidateData.totalExperience}</span></td>
+                </tr>
+              </tbody>
+            </table>
+       
           </Panel>
           <Panel
             header={<span style={panelHeaderStyle}>Contact</span>}
             key="2"
             style={{ backgroundColor: "#007d93" }}
           >
-            <p>
-              <span style={labelStyle}>Email</span>
-              <span>: {candidateData.email}</span>
-            </p>
-            <p>
-              <span style={labelStyle}>Contact</span>
-              <span style={valueStyle}>: {candidateData.contact}</span>
-            </p>
-            <p>
-              <span style={labelStyle}>Address</span>
-              <span style={valueStyle}>
-                : {candidateData.currentLocation}, {candidateData.state}
-              </span>
-            </p>
+            <table style={{ width: '100%' }}>
+              <tbody>
+                <tr>
+                  <td style={{ width: '30%' }}><span style={labelStyle}>Email</span></td>
+                  <td style={{ width: '5%' }}> : </td>
+                  <td style={{ width: '65%' }}><span>{candidateData.email}</span></td>
+                </tr>
+                <tr>
+                  <td><span style={labelStyle}>Contact</span></td>
+                  <td> : </td>
+                  <td><span style={valueStyle}>{candidateData.contact}</span></td>
+                </tr>
+                <tr>
+                  <td><span style={labelStyle}>Address</span></td>
+                  <td> : </td>
+                  <td><span style={valueStyle}>{candidateData.currentLocation}, {candidateData.state}</span></td>
+                </tr>
+              </tbody>
+            </table>
           </Panel>
           {candidateData.round &&
             candidateData.round.length > 0 &&
@@ -206,33 +221,31 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
                   textTransform: "capitalize",
                 }}
               >
-                <p>
-                  <span style={labelStyle}>Round Name</span>
-                  <span style={valueStyle}>
-                    : {round ? round.roundName : ""}
-                  </span>
-                </p>
-                <p>
-                  <span style={labelStyle}>Panelist Name</span>
-                  <span style={valueStyle}>
-                    : {round ? round.panelistName : ""}
-                  </span>
-                </p>
-                <p>
-                  <span style={labelStyle}>Interview Date</span>
-                  <span style={valueStyle}>
-                    :{" "}
-                    {new Date(
-                      round ? round.interviewDate : ""
-                    ).toLocaleDateString()}
-                  </span>
-                </p>
-                <p>
-                  <span style={labelStyle}>Feedback Provided</span>
-                  <span style={valueStyle}>
-                    : {round && round.feedbackProvided ? "Yes" : "No"}
-                  </span>
-                </p>
+                <table style={{ width: '100%' }}>
+                  <tbody>
+                    <tr>
+                      <td style={{ width: '45%' }}><span style={labelStyle}>Round Name</span></td>
+                      <td style={{ width: '5%' }}> : </td>
+                      <td style={{ width: '50%' }}> <span style={valueStyle}>{round ? round.roundName : ""}</span></td>
+                    </tr>
+                    <tr>
+                      <td><span style={labelStyle}>Panelist Name</span></td>
+                      <td> : </td>
+                      <td><span style={valueStyle}>{round ? round.panelistName : ""}</span></td>
+                    </tr>
+                    <tr>
+                      <td><span style={labelStyle}>Interview Date</span></td>
+                      <td> : </td>
+                      <td><span style={valueStyle}>{" "} {new Date(round ? round.interviewDate : "").toLocaleDateString()}</span></td>
+                    </tr>
+                    <tr>
+                      <td><span style={labelStyle}>Feedback Provided</span></td>
+                      <td> : </td>
+                      <td><span style={valueStyle}> {round && round.feedbackProvided ? "Yes" : "No"} </span></td>
+                    </tr>
+                  </tbody>
+                </table>
+               
                 <ul>
                   {round?.skills &&
                     round.skills.map((skill, skillIndex) => (
@@ -255,20 +268,27 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
               textTransform: "capitalize",
             }}
           >
-            <div>
-              <p>
-                <span style={labelStyle}>Status</span>
-                <span style={valueStyle}>: {candidateData.status}</span>
-              </p>
-              <p>
-                <span style={labelStyle}>HR</span>
-                <span style={valueStyle}>: {candidateData.mgrName}</span>
-              </p>
-              <p>
-                <span style={labelStyle}>Reference</span>
-                <span style={valueStyle}>: {candidateData.reference}</span>
-              </p>
-            </div>
+
+              <table style={{ width: '100%' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ width: '30%' }}><span style={labelStyle}>Status</span></td>
+                    <td style={{ width: '5%' }}> : </td>
+                    <td style={{ width: '65%' }}><span style={valueStyle}>{candidateData.status}</span></td>
+                  </tr>
+                  <tr>
+                    <td><span style={labelStyle}>HR</span></td>
+                    <td> : </td>
+                    <td><span style={valueStyle}>{candidateData.mgrName}</span></td>
+                  </tr>
+                  <tr>
+                    <td><span style={labelStyle}>Reference</span></td>
+                    <td> : </td>
+                    <td><span style={valueStyle}>{candidateData.reference}</span></td>
+                  </tr>
+                  
+                </tbody>
+              </table>
           </Panel>
         </Collapse>
        

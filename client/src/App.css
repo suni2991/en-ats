@@ -51,6 +51,11 @@
 hr{
   background-color: #00B4D2 !important;
 }
+
+ul {
+  padding: 15px;
+}
+
 .button-hr{
   margin: 7px;
   padding: 7px;
