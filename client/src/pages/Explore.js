@@ -6,6 +6,7 @@ import '../styles/Explore.css';
 import logo from "../Assests/enfuse-logo.png";
 import Registration from "../components/Registration";
 import { useNavigate } from 'react-router-dom';
+import {useSpring, animated} from 'react-spring';
 
 const Explore = () => {
   const [jobs, setJobs] = useState([]);
@@ -14,6 +15,24 @@ const Explore = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const jobsPerPage = 8;
   const navigate = useNavigate();
+
+  const pageAnimation = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+    config: { duration: 1500 }
+  });
+
+  const headingAnimation = useSpring({
+    from: { opacity: 0, transform: 'translateX(-50px)' },
+    to: { opacity: 1, transform: 'translateX(0px)' },
+    config: { duration: 3000 },
+  });
+
+  const heading2Animation = useSpring({
+    from: { opacity: 0, transform: 'translateY(100%)' },
+  to: { opacity: 1, transform: 'translateY(0%)' },
+  config: { duration: 2000 }
+  })
 
   useEffect(() => {
     axios.get('http://localhost:5040/viewjobs')
@@ -48,16 +67,16 @@ const Explore = () => {
   const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
 
   return (
-    <div className="explore-page">
+    <animated.div style={pageAnimation} className="explore-page">
       <div className="header">
         <div className="quote">
-          <h1>Welcome to Enfuse!</h1>
+          <animated.h1 style={headingAnimation}>Welcome to Enfuse!</animated.h1>
         </div>
-        <div className="logo">
+        <animated.div style={heading2Animation} className="logo">
           <img src={logo} alt="Company Logo" />
-        </div>
+        </animated.div>
       </div>
-      <h3>Join us to be part of a dynamic team where your ideas shape the future and your career thrives with limitless possibilities.</h3>
+      <animated.h3 style={headingAnimation}>Join us to be part of a dynamic team where your ideas shape the future and your career thrives with limitless possibilities.</animated.h3>
       <div className="content">
         <Row gutter={[16, 16]}>
           {currentJobs.map((job) => {
@@ -106,7 +125,7 @@ const Explore = () => {
         </Row>
         <div style={{display:'flex', justifyContent:'space-between'}}>
         <Button type="default" 
-        style={{ color: 'white', background: 'transparent', marginTop:'25px', fontWeight:'bold' }}
+        style={{ color: '#00B4D2', background: 'white', marginTop:'25px', fontWeight:'bold' }}
         onClick={handleRedirect}>Back</Button>
         <Pagination
           current={currentPage}
@@ -129,7 +148,7 @@ const Explore = () => {
       >
         {selectedJob && <Registration closeModal={handleCancel} appliedPosition={selectedJob.position} />}
       </Modal>
-    </div>
+    </animated.div>
   );
 };
 
