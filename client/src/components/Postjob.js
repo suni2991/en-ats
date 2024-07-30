@@ -185,6 +185,7 @@ const Postjob = () => {
         }
       );
 
+
       message.success(
         "New Job created successfully and sent for Directors Approval"
       );
@@ -383,6 +384,7 @@ const Postjob = () => {
             />
           </div>
           </div>
+
         </div>
         <div id="desc">
           <div>

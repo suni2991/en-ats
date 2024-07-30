@@ -562,8 +562,10 @@ c
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
+
   margin: 10px 0px 10px 20px;
   }
+
 
 .stat-repo-dashboard {
   width: 100% !important;

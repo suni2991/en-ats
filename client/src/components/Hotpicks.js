@@ -36,8 +36,8 @@ const Hotpicks = () => {
   };
 
   return (
-    <div className='hotpicks' style={{ position: 'relative' }}>
-    <h1 style={{margin:'10px', fontSize:'22px' }}>HOT PICKS</h1><br/>
+    <div className='hotpicks'>
+    <h1 style={{margin:'10px 20px', fontSize:'20px' }}>HOT PICKS</h1><br/>
       {loading ? (
         <Spin size="large" />
       ) : selectedCandidates.length ? (

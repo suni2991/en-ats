@@ -194,10 +194,8 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
         ) : (
           <div className="profile-info">
             <div className="profile-header">
-
             <h2>{auth.fullName}</h2>
               <img src={userlogo} alt="User Logo" className="user-logo" width={70} />
-
             </div>
             <center>
               <p>{auth.email}</p>
@@ -226,7 +224,6 @@ const ProfilePage = ({ open, onClose, auth, setAuth }) => {
               </Button>
             </div>
             <br />
-
             <div style={{ width: '100%', marginBottom: '10px' }}><hr /></div>
             <p><span>First Name: </span>{auth.firstName}</p>
             <p><span>Last Name: </span>{auth.lastName}</p>

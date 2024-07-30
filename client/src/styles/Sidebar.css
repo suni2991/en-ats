@@ -82,13 +82,11 @@ main img{
   width:    -moz-calc(100% - 180px);
   width:         calc(100% - 180px);
   margin-left: 180px;
-  
 }
 
 .main-content {
   min-height: 90vh;
 }
-
 
 @media screen and (max-width:480px){
   .sidebar{
@@ -102,8 +100,6 @@ main img{
   padding: 12px 5px 5px 5px;
   color: rgb(75, 178, 212);
   z-index: 1000 !important;
-  /* margin-bottom: 60px; */
-  
 }
 
 .link{
@@ -113,7 +109,7 @@ main img{
   gap: 10px;
   transition: all 0.5s;
   font-size: 14px;
- margin: 0px 0px 15px 0px;
+  margin: 0px 0px 15px 0px;
   padding-inline-end: 5rem;
 }
 .link-text{
@@ -260,5 +256,5 @@ main img{
   box-sizing: border-box;
   /* width: -webkit-calc(100% - 189px);
   width:    -moz-calc(100% - 189px);
-  width:         calc(100% - 189px); */
 }
+
