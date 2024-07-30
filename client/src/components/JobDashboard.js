@@ -117,7 +117,7 @@ const JobDashboard = ({ jobs }) => {
           const daysRemaining = moment(job.fullfilledBy).diff(moment(), 'days');
 
           return (
-            <Col key={job._id} xs={20} sm={12} md={8} lg={6}>
+            <Col key={job._id}>
               <Badge
                 count={
                   candidateCounts[job.position] !== undefined
