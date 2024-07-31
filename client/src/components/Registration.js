@@ -496,7 +496,7 @@ function Registration({ closeModal }) {
                 <option value="Non-Technical">Non-Technical</option>
               </select>
             </div>
-            <div style={{marginTop:'10px'}}>
+            <div>
             <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
           </div>
            </div>    

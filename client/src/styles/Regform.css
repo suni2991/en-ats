@@ -113,7 +113,6 @@ textarea{
 }
 
 .ant-select {
-    border: 1px solid #00B4D2;
     border-radius: 6px;
     width: 100%;
     margin-bottom: 30px;
@@ -123,6 +122,8 @@ textarea{
 
 .ant-select-selector {
     min-height: 38px!important;
+    border: 1px solid #00B4D2!important;
+
 }
 
 .ant-select-selection-placeholder, .ant-select-selection-item {
