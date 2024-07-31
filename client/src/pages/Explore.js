@@ -37,10 +37,10 @@ const Explore = () => {
   useEffect(() => {
     axios.get('http://localhost:5040/viewjobs')
       .then(response => {
-        const sortedJobs = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const activeJobs = response.data.filter(job => job.status === 'Active');
+        const sortedJobs = activeJobs.reverse();
         setJobs(sortedJobs);
       })
-
       .catch(error => console.error('Error fetching jobs:', error));
   }, []);
 
@@ -70,7 +70,7 @@ const Explore = () => {
     <animated.div style={pageAnimation} className="explore-page">
       <div className="header">
         <div className="quote">
-          <animated.h1 style={headingAnimation}>Welcome to Enfuse!</animated.h1>
+          <animated.h1 style={headingAnimation}>Welcome to EnFuse!</animated.h1>
         </div>
         <animated.div style={heading2Animation} className="logo">
           <img src={logo} alt="Company Logo" />

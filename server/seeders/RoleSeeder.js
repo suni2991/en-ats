@@ -76,8 +76,7 @@ const hrPermissionJson = [
   "view_employees_by_enfusian",
   "view_hr_name",
   "view_panelist_details_by_name",
-  "delete_candidate_by_id",
-  "update_candidate_by_id",
+   "update_candidate_by_id",
   "create_new_job",
   "view_jobs",
   "view_pending_jobs",
@@ -96,6 +95,10 @@ const panelistPermissionData = [
   "login",
   "view_candidate_profile",
   "update_feedback_data",
+  "update_candidate_by_id",
+  "update_evaluate_data",
+  "view_panelist_details_by_name",
+  "update_candidate_by_id",
 ];
 const enfusianPermissionData = [];
 const opsManagerPermissionData = [
@@ -103,8 +106,12 @@ const opsManagerPermissionData = [
   "view_hrs",
   "view_candidate_profile",
   "update_feedback_data",
+  "view_panelist_details_by_name",
+  "update_candidate_by_id",
   "create_new_job",
   "view_jobs",
+  "update_candidate_by_id",
+  "update_evaluate_data",
   "view_pending_jobs",
   "view_job_post_by_id",
   "delete_job_post_by_id",

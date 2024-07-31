@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Button, Rate, Input, Tabs } from 'antd';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-
-import { Button, Rate, Input, Tabs } from 'antd';
 import useAuth from '../hooks/useAuth';
 
 const { TabPane } = Tabs;
 const URL = process.env.REACT_APP_API_URL;
-const Panelist = ({ candidateData, auth }) => {
 
+const Panelist = ({ candidateData, auth, onClose }) => {
   const [rounds, setRounds] = useState([]);
   const [rating, setRating] = useState({});
   const [formData, setFormData] = useState({
@@ -18,10 +17,10 @@ const Panelist = ({ candidateData, auth }) => {
     noticePeriod: '',
     panelistName: '',
     feedback: '',
-    role: 'Applicant', 
+    role: 'Applicant',
   });
   const [isFeedbackGiven, setIsFeedbackGiven] = useState(false);
-  const {token} = useAuth();
+  const { token } = useAuth();
 
   useEffect(() => {
     if (candidateData) {
@@ -84,7 +83,7 @@ const Panelist = ({ candidateData, auth }) => {
     }
 
     const updatedRounds = rounds.map((round, index) => {
-      if (index === rounds.length - 1) { 
+      if (index === rounds.length - 1) {
         return {
           ...round,
           feedbackProvided: true,
@@ -99,7 +98,7 @@ const Panelist = ({ candidateData, auth }) => {
       return round;
     });
 
-    const roundIndex = rounds.length - 1; 
+    const roundIndex = rounds.length - 1;
     const requestBody = {
       roundIndex: roundIndex,
       feedback: feedback,
@@ -108,17 +107,13 @@ const Panelist = ({ candidateData, auth }) => {
     };
 
     try {
-      
-      const response = await axios.put(`${URL}/update-feedback/${candidateData._id}`, requestBody,
-        {
-          headers:{
-            Authorization: `Bearer ${token}`
-          }
+      const response = await axios.put(`${URL}/update-feedback/${candidateData._id}`, requestBody, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
 
       if (response.status === 200) {
-
         let newStatus;
         switch (feedback) {
           case 'L2':
@@ -148,23 +143,20 @@ const Panelist = ({ candidateData, auth }) => {
           historyUpdate: historyUpdate
         };
 
-        await axios.put(`${URL}/candidates/${candidateData._id}`, statusUpdate,
-          {
-            headers:
-            {
-              Authorization: `Bearer ${token}`
-            }
-          });
+        await axios.put(`${URL}/candidates/${candidateData._id}`, statusUpdate, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
-        
         Swal.fire({
           title: "Success",
           text: "Interview feedback updated successfully.",
           icon: "success",
           confirmButtonText: "OK"
         }).then(() => {
-          
-          setIsFeedbackGiven(true); 
+          setIsFeedbackGiven(true);
+          onClose(); // Close the modal
         });
       } else {
         throw new Error("Failed to update feedback. Please try again later.");
@@ -194,17 +186,16 @@ const Panelist = ({ candidateData, auth }) => {
           <p style={{ fontWeight: 'bold', color: '#00B4D2' }}>Candidate Name: {candidateData.fullName} for the role {candidateData.position}</p>
           <p>Total Experience: {candidateData.totalExperience}</p>
           <p>Availability / Notice Period: {candidateData.noticePeriod}</p>
-
-          {isFeedbackGiven && (
-            <p style={{ color: 'red', marginTop: '10px' }}>Feedback is already given</p>
-          )}
         </>
       )}
-
       <Tabs>
         {rounds.map((round, index) => (
           <TabPane tab={round.roundName} key={index}>
             <p>Interviewed by {round.panelistName} on {new Date(round.interviewDate).toLocaleDateString()}</p>
+
+            {round.feedbackProvided && (
+              <p style={{ color: 'red', marginTop: '10px' }}>Feedback is already given for this round</p>
+            )}
 
             <p>Feedback Provided: {round.feedbackProvided ? 'Yes' : 'Not yet'}</p>
 
@@ -224,7 +215,7 @@ const Panelist = ({ candidateData, auth }) => {
                       <Rate
                         value={rating[skill.name.toLowerCase()] || 0}
                         onChange={(value) => handleRateChange(value, skill.name)}
-                        disabled={index !== rounds.length - 1 || isFeedbackGiven}
+                        disabled={round.feedbackProvided || index !== rounds.length - 1}
                       />
                     </td>
                     <td>
@@ -236,7 +227,7 @@ const Panelist = ({ candidateData, auth }) => {
                             [`${skill.name.toLowerCase()}Comments`]: e.target.value,
                           })
                         }
-                        disabled={index !== rounds.length - 1 || isFeedbackGiven}
+                        disabled={round.feedbackProvided || index !== rounds.length - 1}
                       />
                     </td>
                   </tr>
@@ -244,7 +235,7 @@ const Panelist = ({ candidateData, auth }) => {
               </tbody>
             </table>
 
-            {index === rounds.length - 1 && !isFeedbackGiven && (
+            {index === rounds.length - 1 && !round.feedbackProvided && (
               <div className='panelistTable'>
                 <label htmlFor='feedback'>Final Feedback:</label>
                 <select name='feedback' value={formData.feedback} onChange={handleChange}>
@@ -256,15 +247,15 @@ const Panelist = ({ candidateData, auth }) => {
                 </select>
               </div>
             )}
+
+            {index === rounds.length - 1 && !round.feedbackProvided && (
+              <div id='panelistbtn' onClick={handleSubmit}>
+                <center><Button style={{ background: '#A50707' }} className='add-button'>Submit</Button></center>
+              </div>
+            )}
           </TabPane>
         ))}
       </Tabs>
-
-      {rounds.length > 0 && !isFeedbackGiven && (
-        <div id='panelistbtn' onClick={handleSubmit}>
-          <center><Button style={{ background: '#A50707' }} className='add-button'>Submit</Button></center>
-        </div>
-      )}
     </div>
   );
 };

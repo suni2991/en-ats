@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { TbEyeCheck } from "react-icons/tb";
-import { List, Spin, Typography, Button, message, Pagination } from "antd";
+import { List, Spin, Typography, Button, message, Pagination, Modal } from "antd";
 import CandidateProfileDrawer from "../components/CandidateProfileDrawer";
 import EmailAllotModal from "../components/EmailAllotModal";
 import Statistics from "./Statistics";
 import useAuth from "../hooks/useAuth";
 
 const { Title } = Typography;
+const { confirm } = Modal;
 
 const URL = process.env.REACT_APP_API_URL;
 const Applicant = () => {
@@ -24,7 +25,8 @@ const Applicant = () => {
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [emailModalVisible, setEmailModalVisible] = useState(false);
 
-  const {token} = useAuth();
+  const { token, auth } = useAuth();
+
   useEffect(() => {
     fetchCandidates();
     fetchOnboardedCandidates();
@@ -32,14 +34,11 @@ const Applicant = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await axios.get(
-        `${URL}/candidatesreport`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${URL}/candidatesreport`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setCandidates(response.data.reverse());
       setLoading(false);
     } catch (error) {
@@ -51,9 +50,7 @@ const Applicant = () => {
 
   const fetchOnboardedCandidates = async () => {
     try {
-      const response = await axios.get(
-        `${URL}/candidate/Onboarded`
-      );
+      const response = await axios.get(`${URL}/candidate/Onboarded`);
       setOnboardedCandidates(response.data.reverse());
     } catch (error) {
       console.error("Error fetching onboarded candidates:", error);
@@ -63,12 +60,11 @@ const Applicant = () => {
 
   const deleteCandidate = async (id) => {
     try {
-      await axios.delete(`${URL}/candidate/${id}`,
-        {
-          headers:{
-            Authorization: `Bearer ${token}`
-          }
-        });
+      await axios.delete(`${URL}/candidate/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       message.success("Candidate deleted successfully");
       fetchCandidates();
       fetchOnboardedCandidates();
@@ -99,9 +95,9 @@ const Applicant = () => {
           historyUpdate,
         },
         {
-          headers:{
-            Authorization: `Bearer ${token}`
-          }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -167,6 +163,18 @@ const Applicant = () => {
     setSelectedCandidateId(null);
   };
 
+  const showDeleteConfirm = (id) => {
+    confirm({
+      title: 'Are you sure you want to delete this candidate?',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        deleteCandidate(id);
+      },
+    });
+  };
+
   if (loading) {
     return <Spin size="large" />;
   }
@@ -191,10 +199,9 @@ const Applicant = () => {
   return (
     <div className="vh-page">
       <Statistics />
-
-    <div className='list-applicants' style={{ width: '61%', height: 'auto' }}>
-        <div className='title-container'>
-          <Title level={5} className='fixed-title'>
+      <div className="list-applicants" style={{ width: '61%', height: 'auto' }}>
+        <div className="title-container">
+          <Title level={5} className="fixed-title">
             Total Applicants ({candidates.length})
           </Title>
         </div>
@@ -212,13 +219,15 @@ const Applicant = () => {
                   >
                     <TbEyeCheck size={20} color="#00B4D2" />
                   </Button>,
-                  <Button
-                    type="text"
-                    danger
-                    onClick={() => deleteCandidate(candidate._id)}
-                  >
-                    <MdOutlineDeleteOutline size={20} />
-                  </Button>,
+                  auth.role === "Admin" && (
+                    <Button
+                      type="text"
+                      danger
+                      onClick={() => showDeleteConfirm(candidate._id)}
+                    >
+                      <MdOutlineDeleteOutline size={20} />
+                    </Button>
+                  ),
                 ]}
               >
                 <List.Item.Meta
@@ -296,14 +305,6 @@ const Applicant = () => {
             >
               <List.Item.Meta
                 title={<span>{capitalizeEachWord(candidate.fullName)}</span>}
-                description={
-                  candidate.email &&
-                  candidate.email
-                    .toLowerCase()
-                    .includes("@enfuse-solutions.com")
-                    ? candidate.email
-                    : "Email not assigned yet"
-                }
               />
             </List.Item>
           )}
@@ -316,15 +317,15 @@ const Applicant = () => {
         />
       </div>
       <CandidateProfileDrawer
-        open={drawerOpen}
+        visible={drawerOpen}
         onClose={handleDrawerClose}
         candidateId={selectedCandidateId}
       />
       <EmailAllotModal
         visible={emailModalVisible}
         onClose={handleEmailModalClose}
-        onAllotEmail={allotEmail}
         candidateId={selectedCandidateId}
+        onAllotEmail={allotEmail}
       />
     </div>
   );

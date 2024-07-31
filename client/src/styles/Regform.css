@@ -112,7 +112,7 @@ textarea{
     margin: 0;
 }
 
-.ant-select {
+.formContainer .ant-select {
     border: 1px solid #00B4D2;
     border-radius: 6px;
     width: 100%;

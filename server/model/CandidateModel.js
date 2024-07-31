@@ -77,6 +77,7 @@ const candidateSchema = new mongoose.Schema({
   meetingDate: { type: Date },
   history: [historySchema],
   reference: { type: String },
+  source:{type: String},
 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);
