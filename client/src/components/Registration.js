@@ -417,8 +417,8 @@ function Registration({ closeModal }) {
             />
           </div>
           <div><label>State<span className='require'>*</span></label>
-            <input type="text" name="state" value={formData.state} maxLength={10} onChange={handleChange} required placeholder="Enter your State"></input><ul className=
-              'no-bullets'>
+            <input type="text" name="state" value={formData.state} maxLength={10} onChange={handleChange} required placeholder="Enter your State"></input>
+            <ul className='no-bullets' style={{margin: '0'}}>
               {stateSuggestions.map((state, index) => (
                 <li key={index} onClick={() => handleSelectState(state)}>{state}</li>
               ))}

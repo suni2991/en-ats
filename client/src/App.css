@@ -788,7 +788,7 @@ h2::after{
   width: 100%;
   margin: 20px 0px 20px 0px;
   align-items: flex-start;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .stat-repo1{
@@ -930,13 +930,11 @@ h2::after{
 
 .list-onboarded{
   background: #fff;
-  width: 33.5%;
   float: right;
   height: auto;
-  padding: 8px;
   margin: 10px 0 0 0;
   overflow: auto;
-  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
   position:relative;
 }
 
@@ -956,6 +954,11 @@ h2::after{
 
 .ant-pagination {
   padding: 5px 0;
+}
+
+.pagination-bottom {
+  position: absolute;
+  bottom: 0;
 }
 
 .form-btn{

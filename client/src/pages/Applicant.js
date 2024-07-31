@@ -19,7 +19,7 @@ const Applicant = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [currentOnboardedPage, setCurrentOnboardedPage] = useState(1);
-  const [onboardedPageSize, setOnboardedPageSize] = useState(5);
+  const [onboardedPageSize, setOnboardedPageSize] = useState(6);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [emailModalVisible, setEmailModalVisible] = useState(false);
@@ -192,7 +192,7 @@ const Applicant = () => {
     <div className="vh-page">
       <Statistics />
 
-    <div className='list-applicants' style={{ width: '61%', height: 'auto' }}>
+    <div className='list-applicants' style={{ width: '60%', height: '570px' }}>
         <div className='title-container'>
           <Title level={5} className='fixed-title'>
             Total Applicants ({candidates.length})
@@ -229,15 +229,15 @@ const Applicant = () => {
                         justifyContent: "space-between",
                       }}
                     >
-                      <span>{candidate.fullName}</span>
-                      <span style={{ textAlign: "center" }}>
+                      <span style={{ width: "40%" }}>{candidate.fullName}</span>
+                      <span style={{ textAlign: "left", width: "40%" }}>
                         {candidate.position}
                       </span>
                       <span
                         style={{
                           color: getStatusColor(candidate.status),
-                          textAlign: "center",
-                          alignItems: "center",
+                          textAlign: "left",
+                          width: "20%"
                         }}
                       >
                         {candidate.status}
@@ -249,25 +249,20 @@ const Applicant = () => {
             )}
           />
         </div>
-        <Pagination
+        <Pagination className="pagination-bottom"
           current={currentPage}
           pageSize={pageSize}
           total={candidates.length}
           onChange={handlePageChange}
         />
       </div>
-      <div className="list-onboarded">
-        <Title
-          level={5}
-          style={{
-            backgroundColor: "#00B4D2",
-            fontWeight: "bold",
-            padding: "10px",
-            color: "#FFFF",
-          }}
-        >
-          Onboarded Applicants ({onboardedCandidates.length})
-        </Title>
+      <div className="list-onboarded" style={{ width: '35%', height: '570px' }}>
+        <div className='title-container'>
+          <Title level={5} className='fixed-title'>
+            Onboarded Applicants ({onboardedCandidates.length})
+          </Title>
+        </div>
+        <div className="list-container">
         <List
           itemLayout="horizontal"
           dataSource={paginatedOnboardedCandidates}
@@ -308,7 +303,8 @@ const Applicant = () => {
             </List.Item>
           )}
         />
-        <Pagination
+        </div>
+        <Pagination className="pagination-bottom"
           current={currentOnboardedPage}
           pageSize={onboardedPageSize}
           total={onboardedCandidates.length}
