@@ -102,7 +102,6 @@ const Createhr = ({ closeModal }) => {
           <div className="block">
             <div>
               <label htmlFor="firstName">First Name:</label>
-              <br />
               <input
                 type="text"
                 id="firstName"
@@ -115,7 +114,6 @@ const Createhr = ({ closeModal }) => {
             </div>
             <div>
               <label htmlFor="lastName">Last Name:</label>
-              <br />
               <input
                 type="text"
                 id="lastName"
@@ -128,7 +126,6 @@ const Createhr = ({ closeModal }) => {
             </div>
             <div>
               <label htmlFor="email">Email:</label>
-              <br />
               <input
                 type="email"
                 id="email"
@@ -143,7 +140,6 @@ const Createhr = ({ closeModal }) => {
           <div className="block">
             <div>
               <label htmlFor="currentLocation">Current Location:</label>
-              <br />
               <input
                 type="text"
                 id="currentLocation"
@@ -156,7 +152,6 @@ const Createhr = ({ closeModal }) => {
             </div>
             <div>
               <label htmlFor="department">Department:</label>
-              <br />
               <input
                 type="text"
                 id="department"
@@ -169,7 +164,6 @@ const Createhr = ({ closeModal }) => {
             </div>
             <div>
               <label htmlFor="role">Role:</label>
-              <br />
               <select
                 id="roleSelect"
                 name="role"

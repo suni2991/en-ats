@@ -229,7 +229,7 @@ const JobPositionPieChart = () => {
       >
         <Select
           placeholder="Select Department"
-          style={{ width: 240 }}
+          style={{ width: '240px', margin: '0' }}
           value={selectedDepartment}
           onChange={handleDepartmentChange}
           allowClear
@@ -242,10 +242,10 @@ const JobPositionPieChart = () => {
         </Select>
         <Button
           className="add-button"
-          style={{ background: "#A60808" }}
+          style={{ background: "#A60808", padding: '0 15px 0 28px', }}
           onClick={handleDownloadReport}
         >
-          <MdOutlineDownload />
+          <MdOutlineDownload style={{ marginTop: '6px', position: 'absolute', left: '8px' }}/>
           Download Report
         </Button>
       </div>
