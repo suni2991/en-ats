@@ -418,8 +418,8 @@ function Registration({ closeModal }) {
             />
           </div>
           <div><label>State<span className='require'>*</span></label>
-            <input type="text" name="state" value={formData.state} maxLength={10} onChange={handleChange} required placeholder="Enter your State"></input><ul className=
-              'no-bullets'>
+            <input type="text" name="state" value={formData.state} maxLength={10} onChange={handleChange} required placeholder="Enter your State"></input>
+            <ul className='no-bullets' style={{margin: '0'}}>
               {stateSuggestions.map((state, index) => (
                 <li key={index} onClick={() => handleSelectState(state)}>{state}</li>
               ))}
@@ -442,7 +442,6 @@ function Registration({ closeModal }) {
                   value={formData.lwd ? moment(formData.lwd) : null}
                   onChange={handleDateChange}
                   placeholder="Choose Last Working Day"
-                  style={{ width: '320px', border: '1px solid #00B4D2', padding: '5px 10px 0 10px', }}
                 />
               </div>
         
@@ -499,10 +498,12 @@ function Registration({ closeModal }) {
               </select>
             </div>
             <div>
+
             <label>Source<span className='require'>*</span></label>
         <input type="text" name="source" value={formData.source} required onChange={handleChange} placeholder="Source (e.g., Online Ad, Career Site)"></input></div>
          
             <div style={{marginTop:'10px'}}>
+
             <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
           </div>
            </div>    

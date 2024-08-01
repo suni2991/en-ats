@@ -110,14 +110,14 @@ const JobDashboard = ({ jobs }) => {
   ];
 
   return (
-    <div>
+    <div className="fetch-cards">
       <Row gutter={[16, 16]}>
 
         {currentJobs.map((job) => {
           const daysRemaining = moment(job.fullfilledBy).diff(moment(), 'days');
 
           return (
-            <Col key={job._id} xs={20} sm={12} md={8} lg={6}>
+            <Col key={job._id} xs={6} sm={6} md={6} lg={6}>
               <Badge
                 count={
                   candidateCounts[job.position] !== undefined
@@ -215,7 +215,7 @@ const JobDashboard = ({ jobs }) => {
           background: "#fff",
           maxWidth: "100%",
           height: "50px",
-          boxShadow: '0px 1px 2px rgb(38, 39, 130)',
+          // boxShadow: '0px 1px 2px rgb(38, 39, 130)',
         }}
       />
       <Modal

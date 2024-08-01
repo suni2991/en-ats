@@ -114,7 +114,7 @@ const Fetchtable = ({
           placeholder="Search by FullName/ Job Title or Location"
           value={searchQuery}
           onChange={handleSearch}
-          style={{ float: "left", width: "50%", padding: "6px", margin: "2px" }}
+          style={{ float: "left", width: "50%", padding: "10px", margin: "0 10px" }}
         />
         <Button
           style={{
@@ -122,12 +122,13 @@ const Fetchtable = ({
             margin: "0px",
             color: "#FFF",
             float: "right",
+            padding: '0 15px 0 28px',
           }}
           onClick={() =>
             handleExportToExcel(filteredResults.length ? filteredResults : data)
           }
         >
-          <MdOutlineDownload /> Download Excel
+          <MdOutlineDownload  style={{ marginTop: '6px', position: 'absolute', left: '8px' }}/> Download Excel
         </Button>
       </div>
       <DataTable

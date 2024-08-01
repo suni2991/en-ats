@@ -72,4 +72,5 @@ form button{
 .swal2-title {
     box-sizing: border-box;
     padding: 1em;
+    width: auto;
 }

@@ -51,6 +51,11 @@
 hr{
   background-color: #00B4D2 !important;
 }
+
+ul {
+  padding: 15px;
+}
+
 .button-hr{
   margin: 7px;
   padding: 7px;
@@ -322,8 +327,7 @@ h1{
 @media (min-width: 480px) and (max-width: 768px){
   
   .table-container {
-    width: 80%;
-    /* margin: 30px 20px; */
+    width: 100%;
     margin: 25px 25px 35px 0px;
   }
  
@@ -483,7 +487,7 @@ c
   float: left;
   width: 50%;
   border: 1px solid #00B4D2;
-  border-radius: 2px;
+  border-radius: 6px;
   
 }
 
@@ -682,7 +686,7 @@ c
   box-sizing: border-box;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0px 2px 4px rgb(38, 39, 130)
+  box-shadow: 0px 1px 2px rgb(38, 39, 130)
 }
 
 chart-details {
@@ -755,11 +759,24 @@ h2::after{
   margin-bottom: -5px;
 }
 
+.gsuded {
+  padding: 20px 0!important;
+  border-top: 1px solid #ccc!important;
+}
 
 .fetch-table{
   width: 100%;
   margin: 10px 0px;
   padding: 10px;
+  box-sizing: border-box;
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
+  background-color: #FFFFFF;
+}
+
+.fetch-cards {
+  width: 100%;
+  margin: 10px 0px;
+  padding: 20px 20px;
   box-sizing: border-box;
   box-shadow: 0px 1px 2px rgb(38, 39, 130);
   background-color: #FFFFFF;
@@ -771,13 +788,14 @@ h2::after{
   width: 100%;
   margin: 20px 0px 20px 0px;
   align-items: flex-start;
+  justify-content: space-between;
 }
 
 .stat-repo1{
   background-color: #fff;
   margin-right: 30px;
   width: 35%;
-  height: 30vw !important;
+  height: 500px;
   padding: 10px;
   box-shadow: 0px 2px 4px rgb(38, 39, 130)
 }
@@ -785,7 +803,7 @@ h2::after{
 .stat-repo2{
   background-color: #fff;
   width: 59%;
-  height: 30vw !important;
+  height: 500px;
   padding: 10px;
   box-shadow: 0px 2px 4px rgb(38, 39, 130);
   overflow: auto;
@@ -846,7 +864,6 @@ h2::after{
 }
 
 .ant-select{
-  border: 1px solid #00B4D2;
   border-radius: 5px;
   max-width: 100%;
 }
@@ -887,7 +904,6 @@ h2::after{
   flex-direction: row;
 }
 .list-applicants{
-
   background: #fff;
   width: 100%;
   float: left;
@@ -896,7 +912,7 @@ h2::after{
   margin: 10px 0;
 /*   
   overflow-y: auto; */
-  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
   position:relative;
   /* background: #fff;
   width: 60%;
@@ -914,13 +930,11 @@ h2::after{
 
 .list-onboarded{
   background: #fff;
-  width: 33.5%;
   float: right;
   height: auto;
-  padding: 8px;
   margin: 10px 0 0 0;
   overflow: auto;
-  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
   position:relative;
 }
 
@@ -940,6 +954,11 @@ h2::after{
 
 .ant-pagination {
   padding: 5px 0;
+}
+
+.pagination-bottom {
+  position: absolute;
+  bottom: 0;
 }
 
 .form-btn{
@@ -1049,6 +1068,46 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 .btn-divider {
   padding: 0 10px;
 }
+
+
+/* for Tablet 768 x 1024 */
+@media (min-width: 768px) and (max-width: 1024px){ 
+
+  .topContainer {
+    display: flex;
+    justify-content:space-between;
+    background-color: #ffff;
+    margin-top: 50px;
+    max-width: 100%;
+    height: 40px;
+    padding: 5px;
+    box-shadow: 0px 1px 2px rgb(38, 39, 130);
+  }
+
+  .ant-searchIn {
+    height:30px;
+    width: 120px;
+    border: 1px dotted #00B4D2;
+    margin-left:10px;
+    margin-top:5px;
+  }
+
+  .fetch-cards {
+    width: 100%;
+    margin: 10px 0px;
+    padding: 20px 20px;
+    box-sizing: border-box;
+    box-shadow: 0px 1px 2px rgb(38, 39, 130);
+    background-color: #FFFFFF;
+  }
+
+  .table-container {
+    width: 100%;
+    margin: 10px 0px 10px 0px;
+  }
+
+}
+
 /* CSS For dashboard Jobs sent for Approval */
 .approval-pending-row {
   color: #00B4D2;
@@ -1057,3 +1116,4 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 .denied-row {
   color: rgb(245, 28, 21);
 }
+

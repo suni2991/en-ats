@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Col, Row, Pagination, Button, Modal } from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Card, Col, Row, Pagination, Button, Modal, Tooltip } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
 import '../styles/Explore.css';
@@ -14,6 +14,20 @@ const Explore = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const jobsPerPage = 8;
+
+  const [arrow, setArrow] = useState('Show');
+  const mergedArrow = useMemo(() => {
+    if (arrow === 'Hide') {
+      return false;
+    }
+    if (arrow === 'Show') {
+      return true;
+    }
+    return {
+      pointAtCenter: true,
+    };
+  }, [arrow]);
+
   const navigate = useNavigate();
 
   const pageAnimation = useSpring({
@@ -33,6 +47,7 @@ const Explore = () => {
   to: { opacity: 1, transform: 'translateY(0%)' },
   config: { duration: 2000 }
   })
+
 
   useEffect(() => {
     axios.get('http://localhost:5040/viewjobs')
@@ -90,7 +105,8 @@ const Explore = () => {
                   bordered={false}
                   style={{
                     borderRadius: '10px',
-                    height: '220px',
+                    height: '240px',
+                    maxWidth: '250px',
                     textAlign: 'center',
                     cursor: 'pointer',
                     color: 'white',
@@ -102,14 +118,19 @@ const Explore = () => {
                   <div>
                     <h4 className="card-head">{job.position}</h4>
                   </div>
-                  <div className="card-det">
-                    <p>Location: {job.jobLocation}</p>
-                    <p>Exp: {job.experience}+</p>
+
+                  <div className="job-description">
+                    <div className="card-det">
+                      <p><strong>Location: </strong>{job.jobLocation}</p>
+                      <p><strong>Exp: </strong>{job.experience}+</p>
+                    </div>
+                    <Tooltip placement="bottom" title={primarySkills} arrow={mergedArrow}>
+                      <p className="clamp2" style={{ textAlign: 'left', color:'white' }}><strong>Skills: </strong>{primarySkills}</p>
+                    </Tooltip>
+                    <p style={{ textAlign: 'left', color:'white' }}><strong>Closes in: </strong> {daysRemaining} days</p>
                   </div>
-                  <p style={{ textAlign: 'left', padding: '0 5px',  color:'white' }}>Skills: {primarySkills}</p>
-                  <p style={{ textAlign: 'left', padding: '0 5px',  color:'white' }}><strong>Closes in: </strong> {daysRemaining} days</p>
+                  
                   <div className="btn-wrapper">
-                    
                     <Button 
                       type="default" 
                       style={{ color: 'white', background: 'transparent', marginTop:'15px' }}

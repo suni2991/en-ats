@@ -22,19 +22,19 @@ const CandidateCard = ({ candidates }) => {
   };
 
   return (
-    <div>
+    <div className='fetch-cards'>
       <Row gutter={[16, 16]}>
         {currentCandidates.map((candidate) => (
-          <Col key={candidate._id} xs={20} sm={12} md={8} lg={6}>
+          <Col key={candidate._id} >
             <Card
               className="card-hover"
               bordered={false}
               style={{
-                borderRadius: '1px',
+                borderRadius: '10px',
                 boxShadow: '0px 2px 4px rgb(38, 39, 130)',
-                backgroundColor: '#FFFF',
-                height: '180px',
-                width: '100%',
+                backgroundColor: '#FFFFFF',
+                height: '200px',
+                width: '200px',
                 textAlign: 'center',
                 cursor: 'pointer',
               }}
@@ -64,7 +64,7 @@ const CandidateCard = ({ candidates }) => {
           background: "#fff",
           maxWidth: "100%",
           height: "50px",
-          boxShadow: '0px 1px 2px rgb(38, 39, 130)',
+          // boxShadow: '0px 1px 2px rgb(38, 39, 130)',
         }}
       />
       <CandidateProfileDrawer

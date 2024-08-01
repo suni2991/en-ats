@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  ResponsiveContainer,
   Tooltip as BarTooltip,
   Legend as BarLegend,
 } from "recharts";
@@ -223,12 +224,12 @@ const JobPositionPieChart = () => {
           height: "50px",
           width: "100%",
           boxSizing: "border-box",
-          boxShadow: "0px 1px 2px rgb(38, 39, 130)",
+          // boxShadow: "0px 1px 2px rgb(38, 39, 130)",
         }}
       >
         <Select
           placeholder="Select Department"
-          style={{ width: 240 }}
+          style={{ width: '240px', margin: '0' }}
           value={selectedDepartment}
           onChange={handleDepartmentChange}
           allowClear
@@ -241,16 +242,17 @@ const JobPositionPieChart = () => {
         </Select>
         <Button
           className="add-button"
-          style={{ background: "#A60808" }}
+          style={{ background: "#A60808", padding: '0 15px 0 28px', }}
           onClick={handleDownloadReport}
         >
-          <MdOutlineDownload />
+          <MdOutlineDownload style={{ marginTop: '6px', position: 'absolute', left: '8px' }}/>
           Download Report
         </Button>
       </div>
       <br />
       <div className="pie-chart">
         {filteredVacanciesData && filteredVacanciesData.length > 0 ? (
+        <ResponsiveContainer width="95%" height={400}>
           <PieChart width={400} height={400} cursor="pointer">
             <Pie
               dataKey="value"
@@ -275,6 +277,7 @@ const JobPositionPieChart = () => {
             <Tooltip />
             <Legend />
           </PieChart>
+        </ResponsiveContainer>
         ) : (
           <div>No data available for the selected department</div>
         )}
@@ -288,6 +291,7 @@ const JobPositionPieChart = () => {
                   {clickedPosition}
                   {jobLocation && `, ${jobLocation}`}
                 </div>
+                <ResponsiveContainer width="95%" height={400}>
                 <BarChart width={500} height={350} data={positionData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
@@ -302,6 +306,7 @@ const JobPositionPieChart = () => {
                     />
                   ))}
                 </BarChart>
+                </ResponsiveContainer>
               </>
             ) : (
               <div
