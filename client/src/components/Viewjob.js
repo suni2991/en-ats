@@ -232,36 +232,58 @@ const Viewjob = ({ auth }) => {
   };
 
   const handleSaveChanges = async () => {
-    setLoading(true);
-    try {
-      const updatedJob = {
-        ...editFields,
-        updatedAt: new Date(), // Set updatedAt to the current date
-      };
-      await axios.put(
-        `${URL}/job-posts/${selectedJob._id}`,
-        updatedJob,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  setLoading(true);
+  try {
+    // Determine which fields have changed
+    const changes = [];
+    Object.keys(editFields).forEach((key) => {
+      if (editFields[key] !== selectedJob[key]) {
+        changes.push({ field: key, oldValue: selectedJob[key], newValue: editFields[key] });
+      }
+    });
 
-      const updatedJobs = jobs.map((job) =>
-        job._id === selectedJob._id ? updatedJob : job
-      );
-      setJobs(updatedJobs);
-      setFilteredJobs(updatedJobs);
+    // Create history entry
+    const historyEntry = {
+      date: new Date(),
+      updatedBy: auth.fullName,
+      note: `Updated fields: ${changes.map(change => `${change.field} (from "${change.oldValue}" to "${change.newValue}")`).join(", ")}`,
+    };
 
-      setIsModalVisible(false);
-      setIsEditClicked(false);
-    } catch (error) {
-      console.error("Error updating job details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const updatedJob = {
+      ...editFields,
+      updatedAt: new Date(),
+      note: editFields.note,
+      updatedBy: auth.fullName,
+      history: [...(selectedJob.history || []), historyEntry],
+    };
+
+    // Update job in backend
+    await axios.put(
+      `${URL}/job-posts/${selectedJob._id}`,
+      updatedJob,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Update job list locally
+    const updatedJobs = jobs.map((job) =>
+      job._id === selectedJob._id ? updatedJob : job
+    );
+    setJobs(updatedJobs);
+    setFilteredJobs(updatedJobs);
+
+    setIsModalVisible(false);
+    setIsEditClicked(false);
+  } catch (error) {
+    console.error("Error updating job details:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -532,7 +554,59 @@ const Viewjob = ({ auth }) => {
                     </div>
                   </Col>
                 </Row>
-
+                <Row gutter={16}>
+                  <Col span={8}>
+                    <div>
+                      <h3
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          margin: "5px 0",
+                          color:'#000834',
+                        }}
+                      >
+                        Primary Skills:
+                      </h3>
+                      <p>
+                        {isEditClicked ? (
+                          <Input
+                            name="primarySkills"
+                            value={editFields.primarySkills}
+                            onChange={handleInputChange}
+                          />
+                        ) : (
+                          selectedJob.primarySkills
+                        )}
+                      </p>
+                    </div>
+                  </Col>
+                  <Col span={8}>
+                    <div>
+                      <h3
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "16px",
+                          margin: "5px 0",
+                          color:'#000834',
+                        }}
+                      >
+                        Secondary Skills:
+                      </h3>
+                      <p>
+                        {isEditClicked ? (
+                          <Input
+                            name="secondarySkills"
+                            value={editFields.secondarySkills}
+                            onChange={handleInputChange}
+                          />
+                        ) : (
+                          selectedJob.secondarySkills
+                        )}
+                      </p>
+                    </div>
+                  </Col>
+                </Row>
+                
                 <Row gutter={16}>
                   <Col span={24}>
                     <div>

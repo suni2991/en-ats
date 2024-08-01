@@ -96,42 +96,53 @@ const Sidebar = ({ children }) => {
             <br />
           </div>
 
-          {menuItem.map((item, index) => {
-            if (auth.role === 'Admin') {
-              return (
-                (item.name === 'EnFusians' || item.name === 'Statistics' || item.name === 'Dashboard') && (
-                  <NavLink to={item.path} key={index} className="link" activeclassname="active">
-                    <div className="icon">{item.icon}</div>
-                    <div className="link-text">{item.name}</div>
-                  </NavLink>
-                )
-              );
-            } else if (auth.role === 'HR') {
-              return (
-                (
-                  item.name === 'ATS' ||
-                  item.name === 'Dashboard' ||
-                  item.name === 'Scores' ||
-                  item.name === 'Statistics' ||
-                  item.name === 'Feedback') && (
-                  <NavLink to={item.path} key={index} className="link" activeclassname="active">
-                    <div className="icon">{item.icon}</div>
-                    <div className="link-text">{item.name}</div>
-                  </NavLink>
-                )
-              );
-            } else if (auth.role === 'Panelist') {
-              return (
-                item.name === 'Feedback' && (
-                  <NavLink to={item.path} key={index} className="link" activeclassname="active">
-                    <div className="icon">{item.icon}</div>
-                    <div className="link-text">{item.name}</div>
-                  </NavLink>
-                )
-              );
-            } else if (auth.role === 'Ops-Manager') {
-              return (item.name === 'Dashboard' || item.name === 'Feedback') && (
-                <NavLink to={item.path} key={index} className="link" activeclassname="active">
+
+        {menuItem.map((item, index) => {
+          if (auth.role === "Admin") {
+            return (
+              (item.name === "EnFusians" ||
+                item.name === "Statistics" ||
+                item.name === "ATS" ||
+                item.name === "Dashboard") && (
+                <NavLink
+                  to={item.path}
+                  key={index}
+                  className="link"
+                  activeclassname="active"
+                >
+                  <div className="icon">{item.icon}</div>
+                  <div className="link-text">{item.name}</div>
+                </NavLink>
+              )
+            );
+          } else if (auth.role === "HR") {
+            return (
+              (item.name === "ATS" ||
+                item.name === "Dashboard" ||
+                item.name === "Scores" ||
+                item.name === "Statistics" ||
+                item.name === "Feedback") && (
+                <NavLink
+                  to={item.path}
+                  key={index}
+                  className="link"
+                  activeclassname="active"
+                >
+                  <div className="icon">{item.icon}</div>
+                  <div className="link-text">{item.name}</div>
+                </NavLink>
+              )
+            );
+          } else if (auth.role === "Panelist") {
+            return (
+              item.name === "Feedback" && (
+                <NavLink
+                  to={item.path}
+                  key={index}
+                  className="link"
+                  activeclassname="active"
+                >
+
                   <div className="icon">{item.icon}</div>
                   <div className="link-text">{item.name}</div>
                 </NavLink>

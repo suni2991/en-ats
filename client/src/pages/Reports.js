@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Fetchtable from "../components/Fetchtable";
-import { Select } from "antd";
+import { Select, message } from "antd";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
 const URL = process.env.REACT_APP_API_URL;
+
 const Reports = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [data, setData] = useState([]);
@@ -23,14 +24,16 @@ const Reports = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log("Fetched data:", response.data); // Debugging line
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
+        message.error("Failed to fetch data");
       }
     };
 
     fetchData();
-  }, [selectedCategory]);
+  }, [selectedCategory, token]);
 
   const userColumns = [
     {
@@ -49,7 +52,6 @@ const Reports = () => {
     },
     {
       name: "Name",
-
       selector: (row) => row.fullName,
       sortable: true,
       cell: (row) => (

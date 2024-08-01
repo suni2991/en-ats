@@ -183,6 +183,7 @@ userRouter.post(
         round,
         evaluationDetails,
         reference,
+        source
       } = req.body;
 
       const encryptedPassword = CryptoJS.AES.encrypt(
@@ -248,6 +249,7 @@ userRouter.post(
         evaluationDetails,
         history,
         reference,
+        source,
       };
 
       if (roleId) {
@@ -467,8 +469,8 @@ userRouter.get(
 
 userRouter.put(
   "/evaluate/:id",
-  authenticate,
-  checkPermission("update_evaluate_data"),
+  // authenticate,
+  // checkPermission("update_evaluate_data"),
   async (req, res) => {
     const { id } = req.params;
     const { round, status, history } = req.body;
@@ -509,8 +511,8 @@ userRouter.put(
 
 userRouter.put(
   "/update-feedback/:id",
-  authenticate,
-  checkPermission("update_feedback_data"),
+  // authenticate,
+  // checkPermission("update_feedback_data"),
   async (req, res) => {
     try {
       const candidateId = req.params.id;
@@ -554,8 +556,8 @@ userRouter.put(
 
 userRouter.get(
   "/panelists/enfusian",
-  authenticate,
-  checkPermission("view_employees_by_enfusian"),
+  // authenticate,
+  // checkPermission("view_employees_by_enfusian"),
   async (req, res) => {
     try {
       const panelists = await Candidate.find(

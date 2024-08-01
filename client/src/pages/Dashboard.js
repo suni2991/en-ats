@@ -85,6 +85,10 @@ const Dashboard = () => {
       job.jobLocation.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   const columns = [
     {
       title: "Posted Date",
@@ -96,6 +100,7 @@ const Dashboard = () => {
       title: "Position",
       dataIndex: "position",
       key: "position",
+      render: (position) => capitalizeFirstLetter(position),
     },
     {
       title: "Department",
@@ -107,7 +112,25 @@ const Dashboard = () => {
       dataIndex: "status",
       key: "status",
     },
+    {
+      title: "Note",
+      key: "note",
+      render: (text, record) => {
+        const lastHistory = record.history && record.history[record.history.length - 1];
+        return lastHistory ? lastHistory.note : "No notes available";
+      },
+    },
   ];
+
+  const getRowClassName = (record) => {
+    if (record.status === "Approval Pending") {
+      return "approval-pending-row";
+    }
+    if (record.status === "Denied") {
+      return "denied-row";
+    }
+    return "";
+  };
 
   return (
     <div className="dashboard-container">
@@ -173,8 +196,9 @@ const Dashboard = () => {
           dataSource={pendingJobs}
           columns={columns}
           rowKey={(record) => record._id}
+          rowClassName={getRowClassName}
           title={() => (
-            <h1 style={{ marginBottom: "10px" }}>Jobs Sent for Approval</h1>
+            <h1 style={{ marginBottom: "10px" }}>Jobs Sent for Approval pages dashboard</h1>
           )}
         />
       </div>
