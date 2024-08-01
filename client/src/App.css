@@ -1049,3 +1049,11 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 .btn-divider {
   padding: 0 10px;
 }
+/* CSS For dashboard Jobs sent for Approval */
+.approval-pending-row {
+  color: #00B4D2;
+}
+
+.denied-row {
+  color: rgb(245, 28, 21);
+}
