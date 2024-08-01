@@ -237,7 +237,6 @@ const Postjob = () => {
               <label htmlFor="position">
                 Job Title:<span className="require">*</span>
               </label>
-              <br />
               <input
                 type="text"
                 name="position"
@@ -252,7 +251,6 @@ const Postjob = () => {
               <label htmlFor="vacancies">
                 Vacancies:<span className="require">*</span>
               </label>
-              <br />
               <input
                 type="text"
                 name="vacancies"
@@ -266,10 +264,8 @@ const Postjob = () => {
               <label htmlFor="primarySkills">
                 Primary Skills:<span className="require">*</span>
               </label>
-              <br />
               <Select
                 mode="tags"
-                style={{ width: "25vw" }}
                 placeholder="Enter skill & press Enter Key"
                 value={formData.primarySkills}
                 onChange={(value) => handleSelectChange("primarySkills", value)}
@@ -286,7 +282,6 @@ const Postjob = () => {
               <label htmlFor="department">
                 Department:<span className="require">*</span>
               </label>
-              <br />
               <select
                 name="department"
                 id="department"
@@ -306,20 +301,19 @@ const Postjob = () => {
             <label htmlFor="fullfilledBy">
               Fullfilled By:<span className="require">*</span>
             </label>
-            <br />
             <DatePicker
               onChange={handleDateChange}
               format="YYYY-MM-DD"
               value={formData.fullfilledBy ? moment(formData.fullfilledBy) : null}
             />
           </div>
+
           </div>
           <div className="block">
             <div>
               <label htmlFor="jobLocation">
                 Location:<span className="require">*</span>
               </label>
-              <br />
               <input
                 type="text"
                 name="jobLocation"
@@ -334,7 +328,6 @@ const Postjob = () => {
               <label htmlFor="experience">
                 Experience:<span className="require">*</span>
               </label>
-              <br />
               <input
                 type="text"
                 name="experience"
@@ -346,10 +339,8 @@ const Postjob = () => {
             </div>
             <div>
               <label htmlFor="secondarySkills">Secondary Skills:</label>
-              <br />
               <Select
                 mode="tags"
-                style={{ width: "25vw" }}
                 placeholder="Enter skill & press Enter Key"
                 value={formData.secondarySkills}
                 onChange={(value) =>
@@ -363,7 +354,8 @@ const Postjob = () => {
                 ))}
               </Select>
             </div>
-            <div style={{ width: "25vw", padding: "15px" }}>
+            <div style={{ }}>
+            <label htmlFor="secondarySkills">HR</label>
               <HrDropdown
                 onSelect={handleSelectHr}
                 onSelectHr={handleSelectHr}
@@ -374,7 +366,7 @@ const Postjob = () => {
             <label htmlFor="jd">
               JD:<span className="require">*</span>
             </label>
-            <br />
+            
             <input
               type="file"
               name="jd"
@@ -391,36 +383,20 @@ const Postjob = () => {
             <label htmlFor="rolesNResponsibilities">
               Roles & Responsibilities:
             </label>
-            <br />
             <textarea
               name="responsibilities"
               id="responsibilities"
               value={formData.responsibilities}
               onChange={handleChange}
-              style={{
-                width: "90%",
-                height: "60px",
-                padding: "5px",
-                marginLeft: "35px",
-                border: "1px solid #00B4D2",
-              }}
             />
           </div>
           <div>
             <label htmlFor="description">Job Description:</label>
-            <br />
             <textarea
               name="description"
               id="description"
               value={formData.description}
               onChange={handleChange}
-              style={{
-                width: "90%",
-                height: "110px",
-                padding: "5px",
-                marginLeft: "35px",
-                border: "1px solid #00B4D2",
-              }}
             />
           </div>
         </div>

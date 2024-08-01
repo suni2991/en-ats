@@ -40,6 +40,7 @@ function Registration({ closeModal }) {
     district: "",
     city: "",
     reference: "",
+    source:"",
   });
 
   const [selectedHrName, setSelectedHrName] = useState("");
@@ -427,11 +428,11 @@ function Registration({ closeModal }) {
 
           <div>
             <label>Resume<span className='require'>*</span></label>
-            <input type="file" name="resume" path={formData.resume}  onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
+            <input type="file" name="resume" path={formData.resume} required onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
           </div>
           <div>
         <label>Reference</label>
-        <input type="text" name="reference" value={formData.reference} required onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
+        <input type="text" name="reference" value={formData.reference} onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
          
         <div>
         <label>Last Working Day</label>
@@ -490,13 +491,17 @@ function Registration({ closeModal }) {
                 </select>
               </div>
               <div><label>Category<span className='require'>*</span></label>
-              <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
+              <select name="selectedCategory" value={formData.selectedCategory} required style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
 
                 <option value="">Choose One</option>
               <option value="Techincal">Technical</option>
                 <option value="Non-Technical">Non-Technical</option>
               </select>
             </div>
+            <div>
+            <label>Source<span className='require'>*</span></label>
+        <input type="text" name="source" value={formData.source} required onChange={handleChange} placeholder="Source (e.g., Online Ad, Career Site)"></input></div>
+         
             <div style={{marginTop:'10px'}}>
             <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required /> 
           </div>

@@ -1,12 +1,10 @@
 .formContainer{
     display: flex;
-    max-width: fit-content;
-    justify-content: center;
+    justify-content: space-between;
     align-content: center;
-    padding: 5px;
+    padding: 0px;
     gap:2rem;
-    margin: 50px 30px 10px 0px;
-    
+    margin: 60px 0px 10px 0px;
 }
 .block{
     width: 45%;
@@ -39,14 +37,14 @@ select{
     
 }
 #desc div{
-    width: 95%;
-    margin: 0px 0px 0px 10px;
+    width: 97%;
+    margin: 0px 0px 0px 0px;
     position: relative;
 }
 .block label{
     background-color: white;
     padding: 2px;
-    top: -12px;
+    top: -14px;
     left: 10px;
     position: absolute;
     color: #00B4D2;
@@ -74,17 +72,57 @@ select{
 
 .block input{
     border: 1px solid #00B4D2;
+    border-radius: 6px;
     padding: 10px 10px;
-    width: 23.5vw !important;
+    width: 100%;
     background: transparent;
+    box-sizing: border-box;
 }
 
 .block select{
     border: 1px solid #00B4D2;
-    width: 25vw !important;
+    border-radius: 6px;
+    width: 100%;
     padding: 10px 10px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     background: transparent;
+    box-sizing: border-box;
+}
+
+textarea{
+    border: 1px solid #00B4D2;
+    border-radius: 6px;
+    width: 100%;
+    min-height: 80px;
+    padding: 10px 10px;
+    margin-bottom: 25px;
+    background: transparent;
+    /* box-sizing: border-box; */
+}
+
+.ant-picker {
+    width: 100%;
+    border: 1px solid #00B4D2;
+    margin: 0;
+    padding: 10px;
+}
+
+.ant-picker input {
+    
+    margin: 0;
+}
+
+.formContainer .ant-select {
+    border: 1px solid #00B4D2;
+    border-radius: 6px;
+    width: 100%;
+    margin-bottom: 30px;
+    background: transparent;
+    box-sizing: border-box;
+}
+
+.ant-select-selector {
+    min-height: 38px!important;
 }
 
 .ant-select-selection-placeholder, .ant-select-selection-item {

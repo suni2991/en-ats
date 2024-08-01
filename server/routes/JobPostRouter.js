@@ -273,8 +273,9 @@ jobRouter.get(
 );
 
 jobRouter.put("/job-posts/:id", 
-	authenticate,
-	checkPermission("update_job_post_by_id"),async (req, res) => {
+	// authenticate,
+	// checkPermission("update_job_post_by_id"),
+  async (req, res) => {
   const jobId = req.params.id;
   const {
     position,

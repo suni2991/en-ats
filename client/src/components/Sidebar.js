@@ -114,6 +114,7 @@ const Sidebar = ({ children }) => {
             return (
               (item.name === "EnFusians" ||
                 item.name === "Statistics" ||
+                item.name === "ATS" ||
                 item.name === "Dashboard") && (
                 <NavLink
                   to={item.path}

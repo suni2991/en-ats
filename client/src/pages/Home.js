@@ -6,6 +6,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import logo from "../Assests/enfuse-logo.png";
 import bgImg from "../Assests/hire.jpg";
+import { useSpring, animated } from "react-spring";
 
 const URL = process.env.REACT_APP_API_URL;
 
@@ -52,6 +53,7 @@ function Home() {
         setToken(response.data.token);
         setAuth(response.data);
         
+
       })
       .catch((error) => {
         setIsLoading(false);
@@ -91,8 +93,15 @@ function Home() {
     navigate(from, { replace: true });
   };
 
+  const pageAnimation = useSpring({
+   from: { opacity: 0 },
+    to: { opacity: 1 },
+    config: { duration: 1000 }
+  });
+  
+
   return (
-    <div>
+    <animated.div style={pageAnimation}>
       {auth.role ? (
         <h1>Welcome to {auth.role} Dashboard</h1>)
       
@@ -130,7 +139,7 @@ function Home() {
           </div>
         </div>
       )}
-    </div>
+    </animated.div>
   );
 }
 

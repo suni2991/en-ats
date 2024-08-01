@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { message } from "antd";
+import { message, Modal, Input } from "antd";
 import useAuth from "../hooks/useAuth";
 
 const URL = process.env.REACT_APP_API_URL;
+
 const ApproveJobDetails = () => {
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [note, setNote] = useState("");
+  const [updatedBy, setUpdatedBy] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalMode, setModalMode] = useState(""); // 'Approve' or 'Reject'
   const { token } = useAuth();
 
   useEffect(() => {
@@ -27,7 +32,7 @@ const ApproveJobDetails = () => {
     fetchJobDetails();
   }, [id]);
 
-  const updateJobStatus = async (newStatus, note) => {
+  const updateJobStatus = async (newStatus) => {
     try {
       const updatedJob = {
         ...job,
@@ -35,7 +40,7 @@ const ApproveJobDetails = () => {
         history: [
           ...job.history,
           {
-            updatedBy: "Directors",
+            updatedBy: updatedBy || "Directors", // Use provided name or default
             updatedAt: new Date(),
             note: note,
           },
@@ -49,25 +54,40 @@ const ApproveJobDetails = () => {
       setJob((prevJob) => ({ ...prevJob, status: newStatus }));
       message.success(
         `Job ${
-          note === "Job has been Approved & Active" ? "Approved" : "Rejected"
+          newStatus === "Active" ? "Approved" : "Rejected"
         } successfully`
       );
+      setIsModalVisible(false);
     } catch (error) {
       console.error("Update request failed:", error);
       message.error(
-        `Failed to ${
-          note === "Job has been Approved & Active" ? "approve" : "reject"
-        } job`
+        `Failed to ${newStatus === "Active" ? "approve" : "reject"} job`
       );
     }
   };
 
-  const handleApprove = () => {
-    updateJobStatus("Active", "Job has been Approved & Active");
+  const handleModalOk = () => {
+    if (!note || !updatedBy) {
+      message.error("Please provide both a note and your name.");
+      return;
+    }
+    updateJobStatus(modalMode);
   };
 
-  const handleReject = () => {
-    updateJobStatus("Denied", "Job has been Denied");
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+    setNote("");
+    setUpdatedBy("");
+  };
+
+  const showApproveModal = () => {
+    setModalMode("Active");
+    setIsModalVisible(true);
+  };
+
+  const showRejectModal = () => {
+    setModalMode("Denied");
+    setIsModalVisible(true);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -131,13 +151,35 @@ const ApproveJobDetails = () => {
           {new Date(job.postedAt).toLocaleString()}
         </p>
 
-        {job.status !== "Active" && job.status !== "Denied" && (
+        {(job.status !== "Active" && job.status !== "Denied") && (
           <div className="button-container">
-            <button onClick={handleApprove}>Approve</button>
-            <button onClick={handleReject}>Reject</button>
+            <button onClick={showApproveModal}>Approve</button>
+            <button onClick={showRejectModal}>Reject</button>
           </div>
         )}
       </div>
+
+      <Modal
+        title={modalMode === "Active" ? "Approve Job" : "Reject Job"}
+        visible={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+        okText={modalMode === "Active" ? "Approve" : "Reject"}
+        cancelText="Cancel"
+      >
+        <Input.TextArea
+          rows={4}
+          placeholder="Enter note"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+        <Input
+          placeholder="Enter your name"
+          value={updatedBy}
+          onChange={(e) => setUpdatedBy(e.target.value)}
+          style={{ marginTop: '10px' }}
+        />
+      </Modal>
     </div>
   );
 };

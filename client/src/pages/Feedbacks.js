@@ -182,7 +182,7 @@ const Feedback = () => {
         footer={null}
       >
         {selectedCandidate && (
-          <Panelist candidateData={selectedCandidate} auth={auth} />
+          <Panelist candidateData={selectedCandidate} auth={auth} onClose={closeModal} />
         )}
       </Modal>
       <Modal
