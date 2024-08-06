@@ -151,7 +151,7 @@ const JobDashboard = () => {
 
       <div
         className="list-applicants"
-        style={{ width: "91%", marginLeft: "25px", height: "auto" }}
+        style={{ marginLeft: "25px", height: "auto" }}
       >
         <Table
           dataSource={pendingJobs}

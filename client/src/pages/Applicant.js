@@ -200,7 +200,7 @@ const Applicant = () => {
     <div className="vh-page">
       <Statistics />
 
-    <div className='list-applicants' style={{ width: '60%', height: '570px' }}>
+    <div className='list-applicants' style={{ height: '570px' }}>
         <div className='title-container'>
           <Title level={5} className='fixed-title'>
 
@@ -267,7 +267,7 @@ const Applicant = () => {
           onChange={handlePageChange}
         />
       </div>
-      <div className="list-onboarded" style={{ width: '35%', height: '570px' }}>
+      <div className="list-onboarded" style={{ height: '570px' }}>
         <div className='title-container'>
           <Title level={5} className='fixed-title'>
             Onboarded Applicants ({onboardedCandidates.length})

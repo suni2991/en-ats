@@ -114,7 +114,7 @@ const Fetchtable = ({
           placeholder="Search by FullName/ Job Title or Location"
           value={searchQuery}
           onChange={handleSearch}
-          style={{ float: "left", width: "50%", padding: "10px", margin: "0 10px" }}
+          style={{ float: "left", width: "35%", margin: "0 10px" }}
         />
         <Button
           style={{

@@ -93,7 +93,6 @@ const Sidebar = ({ children }) => {
                 alt="logo"
               />
             ) : null}
-            <br />
           </div>
 
 
@@ -147,7 +146,7 @@ const Sidebar = ({ children }) => {
                   <div className="link-text">{item.name}</div>
                 </NavLink>
 
-              );
+              ))
             } else {
               return null;
             }

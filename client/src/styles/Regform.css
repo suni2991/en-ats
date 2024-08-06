@@ -114,7 +114,7 @@ textarea{
 
 
 .formContainer .ant-select {
-    border: 1px solid #00B4D2;
+    /* border: 1px solid #00B4D2; */
     border-radius: 6px;
     width: 100%;
     margin-bottom: 30px;
