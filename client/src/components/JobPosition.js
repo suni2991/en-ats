@@ -214,18 +214,8 @@ const JobPositionPieChart = () => {
         maxWidth: "100%",
       }}
     >
-      <div
-        style={{
-          paddingLeft: "5px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "#FFFF",
-          height: "50px",
-          width: "100%",
-          boxSizing: "border-box",
-          // boxShadow: "0px 1px 2px rgb(38, 39, 130)",
-        }}
+      <div className="dept-list"
+       
       >
         <Select
           placeholder="Select Department"
