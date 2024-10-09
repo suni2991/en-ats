@@ -261,6 +261,10 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
                 <span style={valueStyle}>: {candidateData.status}</span>
               </p>
               <p>
+                <span style={labelStyle}>Source</span>
+                <span style={valueStyle}>: {candidateData.source}</span>
+              </p>
+              <p>
                 <span style={labelStyle}>HR</span>
                 <span style={valueStyle}>: {candidateData.mgrName}</span>
               </p>
