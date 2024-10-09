@@ -36,6 +36,8 @@ import Applicant from "./pages/Applicant.js";
 import ApproveJobDetails from "./pages/Approve.js";
 import WelcomePage from "./pages/WelcomePage.js";
 import Explore from "./pages/Explore.js";
+import Schedule from "./pages/Schedule.js";
+import Availability from "./pages/Availability.js";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -63,13 +65,14 @@ const App = () => {
             <Route path="/explore" element={<Explore />} />
             <Route path="/login" element={<Home />} />
             <Route path="/job/:id" element={<ApproveJobDetails />} />
-            
+            <Route path="/register-job/:positionId" element={<Registration />} />
             <Route element={<RequireAuth />}>
             
               <Route path="/admins" element={<Sidebar><Admin /></Sidebar>} />
               <Route path="/registration" element={<Sidebar><Registration /></Sidebar>} />
               <Route path="/reports" element={<Sidebar><Reports /></Sidebar>} />
               <Route path="/candidate/candidate" element={<Candidate />} />
+              
               <Route
                 path="/assessment/psychometric"
                 element={<PsychometricTest />}
@@ -91,11 +94,11 @@ const App = () => {
               <Route path="/thankyou" element={<Thankyou />} />
               <Route path="/statistics" element={<Statistics />} />
               <Route path="/dashboard" element={<Sidebar><Dashboard /></Sidebar>} />
-
+              <Route path="/schedule" element={<Sidebar><Schedule /></Sidebar>} />
               <Route path="/postjob" element={<Sidebar><Postjob /></Sidebar>} />
               <Route path="/create-hr" element={<Sidebar><Createhr /></Sidebar>} />
               <Route path="/feedbacks" element={<Sidebar><Feedback /></Sidebar>} />
-
+              <Route path="/slots" element={<Sidebar><Availability /></Sidebar>} />
               <Route path="/editProfile" element={<Sidebar><ProfilePage /></Sidebar>} />
               <Route path="/panelist/:id" element={<Sidebar><Panelist /></Sidebar>} />
               <Route path="/applicants" element={<Sidebar><Applicant /></Sidebar>} />

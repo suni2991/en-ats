@@ -68,7 +68,7 @@ const Createhr = ({ closeModal }) => {
         };
 
         const emailResponse = await axios.post(
-          `${URL}/user/register`,
+          `${URL}/user/credentials`,
           emailData,
           {
               headers: {

@@ -124,6 +124,7 @@ const CandidateTable = ({auth}) => {
         url={`${URL}/candidatesreport`}
         columns={userColumns} 
         setSelectedCandidate={setSelectedCandidate}
+       
       />
       <AssignInterview 
         open={showDrawer} 

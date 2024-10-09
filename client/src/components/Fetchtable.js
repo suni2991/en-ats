@@ -36,18 +36,25 @@ const Fetchtable = ({
               Authorization: `Bearer ${token}`,
             },
           });
-          setData(response.data.reverse());
+          console.log("Fetched Data:", response.data); // Debugging
+  
+          // Check if response.data contains the array
+          const dataArray = Array.isArray(response.data)
+            ? response.data
+            : response.data.items || []; // Adjust this based on your data structure
+  
+          setData(dataArray.reverse());
         } catch (error) {
           console.error("Error fetching data:", error);
         }
       };
-
+  
       fetchData();
     } else {
       setData(filteredData.reverse());
     }
   }, [url, filteredData, token]);
-
+  
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -59,6 +66,8 @@ const Fetchtable = ({
     const location = item.location ? item.location.toLowerCase() : "";
     const postedBy = item.postedBy ? item.postedBy.toLowerCase() : "";
     const role = item.role ? item.role.toLowerCase() : "";
+    const primarySkills = item.primarySkills ? item.primarySkills.toLowerCase() : "";
+    const currentLocation = item.currentLocation ? item.currentLocation.toLowerCase() : "";
     const selectedCategory = item.selectedCategory
       ? item.selectedCategory.toLowerCase()
       : "";
@@ -68,17 +77,38 @@ const Fetchtable = ({
       postedBy.includes(query) ||
       role.includes(query) ||
       location.includes(query) ||
+      primarySkills.includes(query)||
+      currentLocation.includes(query)||
       selectedCategory.includes(query)
     );
   });
 
   const filterDataForExport = (dataToFilter) => {
-    return dataToFilter.map(({ _id, __v, ...rest }) => rest);
+    const fieldsToExclude = [
+      "empCount",
+      "image",
+      "resume",
+      "history",
+      "roleId",
+      "availableSlots",
+      "notification",
+      "mgrName",
+      "mgrEmail",
+      "password",
+      "confirmPassword",
+      "_v",
+      "_id",
+    ];
+
+    return dataToFilter.map((item) => {
+      let filteredItem = { ...item };
+      fieldsToExclude.forEach((field) => delete filteredItem[field]);
+      return filteredItem;
+    });
   };
 
   const handleExportToExcel = (dataToExport) => {
     const filteredData = filterDataForExport(dataToExport);
-
     const capitalizedHeaders = Object.keys(filteredData[0] || {}).reduce(
       (acc, key) => {
         acc[capitalizeWords(key.replace(/_/g, " "))] = key;
@@ -86,14 +116,12 @@ const Fetchtable = ({
       },
       {}
     );
-
     const formattedData = filteredData.map((item) => {
       return Object.keys(item).reduce((acc, key) => {
         acc[capitalizeWords(key.replace(/_/g, " "))] = item[key];
         return acc;
       }, {});
     });
-
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
@@ -111,24 +139,25 @@ const Fetchtable = ({
         {extraContent && <div style={{ float: "left" }}>{extraContent}</div>}
         <input
           type="text"
-          placeholder="Search by FullName/ Job Title or Location"
+          placeholder="Search by Name skills, Job Title or Location"
           value={searchQuery}
           onChange={handleSearch}
           style={{ float: "left", width: "50%", padding: "6px", margin: "2px" }}
         />
         <Button
-          style={{
-            background: "#A60808",
-            margin: "0px",
-            color: "#FFF",
-            float: "right",
-          }}
-          onClick={() =>
-            handleExportToExcel(filteredResults.length ? filteredResults : data)
-          }
-        >
-          <MdOutlineDownload /> Download Excel
-        </Button>
+        style={{
+          background: "#A60808",
+          margin: "0px",
+          color: "#FFF",
+          float: "right",
+        }}
+        onClick={() => handleExportToExcel(filteredResults.length ? filteredResults : data)}
+        disabled={!data.length} // Disable if there's no data to download
+      >
+        <MdOutlineDownload /> 
+        {searchQuery ? "Download Filtered Data" : "Download All Data"}
+      </Button>
+      
       </div>
       <DataTable
         title={title}

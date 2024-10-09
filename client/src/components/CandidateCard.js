@@ -22,7 +22,7 @@ const CandidateCard = ({ candidates }) => {
   };
 
   return (
-    <div>
+    <div className='fetch-cards'>
       <Row gutter={[16, 16]}>
         {currentCandidates.map((candidate) => (
           <Col key={candidate._id} xs={20} sm={12} md={8} lg={6}>

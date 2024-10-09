@@ -265,57 +265,53 @@ const Applicant = () => {
           onChange={handlePageChange}
         />
       </div>
-      <div className="list-onboarded">
-        <Title
-          level={5}
-          style={{
-            backgroundColor: "#00B4D2",
-            fontWeight: "bold",
-            padding: "10px",
-            color: "#FFFF",
-          }}
-        >
+      <div className="list-onboarded" style={{ width: '35%', height: '570px' }}>
+      <div className='title-container'>
+        <Title level={5} className='fixed-title'>
           Onboarded Applicants ({onboardedCandidates.length})
         </Title>
-        <List
-          itemLayout="horizontal"
-          dataSource={paginatedOnboardedCandidates}
-          renderItem={(candidate) => (
-            <List.Item
-              actions={[
+      </div>
+      <div className="list-container">
+      <List
+        itemLayout="horizontal"
+        dataSource={paginatedOnboardedCandidates}
+        renderItem={(candidate) => (
+          <List.Item
+            actions={[
+              <Button
+                type="text"
+                color="cyan"
+                onClick={() => handleViewCandidate(candidate._id)}
+              >
+                <TbEyeCheck size={20} color="#00B4D2" />
+              </Button>,
+              !candidate.email
+                ?.toLowerCase()
+                .includes("@enfuse-solutions.com") && (
                 <Button
                   type="text"
-                  color="cyan"
-                  onClick={() => handleViewCandidate(candidate._id)}
+                  style={{ backgroundColor: "#00B4D2", color: "#FFF" }}
+                  onClick={() => handleAllotEmail(candidate._id)}
                 >
-                  <TbEyeCheck size={20} color="#00B4D2" />
-                </Button>,
-                !candidate.email
-                  ?.toLowerCase()
-                  .includes("@enfuse-solutions.com") && (
-                  <Button
-                    type="text"
-                    style={{ backgroundColor: "#00B4D2", color: "#FFF" }}
-                    onClick={() => handleAllotEmail(candidate._id)}
-                  >
-                    Allot Email
-                  </Button>
-                ),
-              ]}
-            >
-              <List.Item.Meta
-                title={<span>{capitalizeEachWord(candidate.fullName)}</span>}
-              />
-            </List.Item>
-          )}
-        />
-        <Pagination
-          current={currentOnboardedPage}
-          pageSize={onboardedPageSize}
-          total={onboardedCandidates.length}
-          onChange={handleOnboardedPageChange}
-        />
+                  Allot Email
+                </Button>
+              ),
+            ]}
+          >
+            <List.Item.Meta
+              title={<span>{capitalizeEachWord(candidate.fullName)}</span>}
+            />
+          </List.Item>
+        )}
+      />
       </div>
+      <Pagination className="pagination-bottom"
+        current={currentOnboardedPage}
+        pageSize={onboardedPageSize}
+        total={onboardedCandidates.length}
+        onChange={handleOnboardedPageChange}
+      />
+    </div>
       <CandidateProfileDrawer
         visible={drawerOpen}
         onClose={handleDrawerClose}

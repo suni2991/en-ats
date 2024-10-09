@@ -14,6 +14,39 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
   const { token } = useAuth();
   // console.log("asas", token);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `${URL}/candidate/profile/${candidateId}`,
+  //         {
+  //           method: "GET",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //             "Content-Type": "application/json", // Add this if you're sending JSON data
+  //           },
+  //         }
+  //       );
+  //       const data = await response.json();
+
+  //       console.log(data);
+  //       if (data.status === "SUCCESS") {
+  //         setCandidateData(data.data);
+  //       } else {
+  //         console.error("Failed to fetch candidate data:", data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching candidate data:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (open && candidateId) {
+  //     fetchData();
+  //   }
+  // }, [open, candidateId, token]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,15 +56,30 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json", // Add this if you're sending JSON data
+              "Content-Type": "application/json",
             },
           }
         );
         const data = await response.json();
 
-        console.log(data);
         if (data.status === "SUCCESS") {
-          setCandidateData(data.data);
+          // Filter only the last added L1, L2, and HR rounds
+          const filteredRounds = data.data.round.reduce((acc, round) => {
+            if (
+              ["L1", "L2", "HR"].includes(round.roundName) &&
+              (!acc[round.roundName] ||
+                new Date(round.interviewDate) >
+                  new Date(acc[round.roundName].interviewDate))
+            ) {
+              acc[round.roundName] = round;
+            }
+            return acc;
+          }, {});
+
+          setCandidateData({
+            ...data.data,
+            round: Object.values(filteredRounds),
+          });
         } else {
           console.error("Failed to fetch candidate data:", data.message);
         }
@@ -46,7 +94,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
       fetchData();
     }
   }, [open, candidateId, token]);
-
+  
   const drawerTitle = candidateData.fullName
     ? `${candidateData.fullName}'s Profile`
     : "Candidate Profile";
@@ -103,7 +151,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
     };
 
     try {
-      const emailResponse = await axios.post(`${URL}/user/register`, emailData);
+      const emailResponse = await axios.post(`${URL}/user/credentials`, emailData);
       if (emailResponse.status === 201) {
         message.success("Email sent successfully!");
       } else {

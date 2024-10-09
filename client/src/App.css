@@ -1057,3 +1057,16 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 .denied-row {
   color: rgb(245, 28, 21);
 }
+
+.animated-copy-button {
+  /* Hover effect: Button grows slightly */
+  &:hover {
+    transform: scale(1.05);  /* Slightly increase the size */
+    background-color: #40f2ff;  /* Change to a lighter blue */
+  }
+
+  /* Click animation: Button shrinks briefly */
+  &:active {
+    transform: scale(0.100);  /* Slightly decrease the size */
+  }
+}

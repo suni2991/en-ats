@@ -232,57 +232,57 @@ const Viewjob = ({ auth }) => {
   };
 
   const handleSaveChanges = async () => {
-  setLoading(true);
-  try {
-    // Determine which fields have changed
-    const changes = [];
-    Object.keys(editFields).forEach((key) => {
-      if (editFields[key] !== selectedJob[key]) {
-        changes.push({ field: key, oldValue: selectedJob[key], newValue: editFields[key] });
-      }
-    });
-
-    // Create history entry
-    const historyEntry = {
-      date: new Date(),
-      updatedBy: auth.fullName,
-      note: `Updated fields: ${changes.map(change => `${change.field} (from "${change.oldValue}" to "${change.newValue}")`).join(", ")}`,
-    };
-
-    const updatedJob = {
-      ...editFields,
-      updatedAt: new Date(),
-      note: editFields.note,
-      updatedBy: auth.fullName,
-      history: [...(selectedJob.history || []), historyEntry],
-    };
-
-    // Update job in backend
-    await axios.put(
-      `${URL}/job-posts/${selectedJob._id}`,
-      updatedJob,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    // Update job list locally
-    const updatedJobs = jobs.map((job) =>
-      job._id === selectedJob._id ? updatedJob : job
-    );
-    setJobs(updatedJobs);
-    setFilteredJobs(updatedJobs);
-
-    setIsModalVisible(false);
-    setIsEditClicked(false);
-  } catch (error) {
-    console.error("Error updating job details:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    try {
+      // Determine which fields have changed
+      const changes = [];
+      Object.keys(editFields).forEach((key) => {
+        if (key !== 'note' && editFields[key] !== selectedJob[key]) {
+          changes.push({ field: key, oldValue: selectedJob[key], newValue: editFields[key] });
+        }
+      });
+  
+      // Create history entry
+      const historyEntry = {
+        date: new Date(),
+        updatedBy: auth.fullName,
+        note: `Updated fields: ${changes.map(change => `${change.field} (from "${change.oldValue}" to "${change.newValue}")`).join(", ")}. Note: ${editFields.note}`,
+      };
+  
+      const updatedJob = {
+        ...editFields,
+        updatedAt: new Date(),
+        updatedBy: auth.fullName,
+        history: [...(selectedJob.history || []), historyEntry],
+      };
+  
+      // Update job in backend
+      await axios.put(
+        `${URL}/job-posts/${selectedJob._id}`,
+        updatedJob,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Update job list locally
+      const updatedJobs = jobs.map((job) =>
+        job._id === selectedJob._id ? updatedJob : job
+      );
+      setJobs(updatedJobs);
+      setFilteredJobs(updatedJobs);
+  
+      setIsModalVisible(false);
+      setIsEditClicked(false);
+    } catch (error) {
+      console.error("Error updating job details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
 
   const handleInputChange = (e) => {

@@ -123,6 +123,10 @@ const permissions = [
     name: "job_approve_email",
     description: "Job Approval Email",
   },
+  {
+    name: "request_for_slot",
+    description:"Request panelist for Available slot"
+  }
 ];
 
 async function seedPermission() {

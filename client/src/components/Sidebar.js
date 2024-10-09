@@ -11,6 +11,8 @@ import { Tooltip, Button } from "antd";
 import ProfilePage from "./ProfilePage";
 import { VscFeedback } from "react-icons/vsc";
 import {message} from 'antd';
+import { SlCalender } from "react-icons/sl";
+
 
 const URL = process.env.REACT_APP_API_URL;
 
@@ -66,6 +68,16 @@ const Sidebar = ({ children }) => {
       icon: <FaRegUser />,
     },
     {
+      path: "/schedule",
+      name: "Schedule",
+      icon: <SlCalender />,
+    },
+    {
+      path: "/slots",
+      name: "My Slot",
+      icon: <FaTh />,
+    },
+    {
       path: "/reports",
       name: "Scores",
       icon: <FaTh />,
@@ -115,7 +127,9 @@ const Sidebar = ({ children }) => {
               (item.name === "EnFusians" ||
                 item.name === "Statistics" ||
                 item.name === "ATS" ||
-                item.name === "Dashboard") && (
+                item.name === "Dashboard" ||
+                item.name === "Schedule" 
+              ) && (
                 <NavLink
                   to={item.path}
                   key={index}
@@ -133,7 +147,9 @@ const Sidebar = ({ children }) => {
                 item.name === "Dashboard" ||
                 item.name === "Scores" ||
                 item.name === "Statistics" ||
-                item.name === "Feedback") && (
+                item.name === "Feedback" ||
+                item.name === "Schedule" 
+              ) && (
                 <NavLink
                   to={item.path}
                   key={index}
@@ -147,7 +163,7 @@ const Sidebar = ({ children }) => {
             );
           } else if (auth.role === "Panelist") {
             return (
-              item.name === "Feedback" && (
+              item.name === "Feedback" ||  item.name === "My Slot") && (
                 <NavLink
                   to={item.path}
                   key={index}
@@ -158,10 +174,9 @@ const Sidebar = ({ children }) => {
                   <div className="link-text">{item.name}</div>
                 </NavLink>
               )
-            );
-          } else if (auth.role === "Ops-Manager") {
+            } else if (auth.role === "Ops-Manager") {
             return (
-              (item.name === "Dashboard" || item.name === "Feedback") && (
+              (item.name === "Dashboard" || item.name === "Feedback" || item.name === "My Slot") && (
                 <NavLink
                   to={item.path}
                   key={index}
@@ -177,6 +192,7 @@ const Sidebar = ({ children }) => {
             return null;
           }
         })}
+
       </div>
       <div className="main-container">
         <main>
@@ -205,6 +221,7 @@ const Sidebar = ({ children }) => {
                     <span className="icon-container">
                       <MdLogout />
                     </span>{" "}
+                  
                     <span className="text">Logout</span>
 
                   </button>
@@ -220,7 +237,9 @@ const Sidebar = ({ children }) => {
               />
             )}
           </div>
-          <div className="main-content">{children}</div>
+          <div className="main-content">
+         
+          {children}</div>
 
           {auth.role && (
             <div className="footer">

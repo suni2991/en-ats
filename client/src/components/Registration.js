@@ -6,6 +6,7 @@ import moment from "moment";
 import { DatePicker, message, Button } from "antd";
 import HrDropdown from "./HrDropdown";
 import "../styles/Regform.css";
+import { useParams } from 'react-router-dom';
 
 import useAuth from "../hooks/useAuth";
 
@@ -19,6 +20,8 @@ function Registration({ closeModal }) {
   const [customQualification, setCustomQualification] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [stateSuggestions, setStateSuggestions] = useState([]);
+  const { positionId } = useParams();  // Capture positionId from the URL
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -50,6 +53,33 @@ function Registration({ closeModal }) {
     setSelectedHrName(fullName);
     setSelectedHrEmail(email);
   };
+
+  useEffect(() => {
+    // Fetch job data using positionId to prefill relevant fields
+    if (positionId) {
+      fetchJobDetails(positionId);
+    }
+  }, [positionId]);
+
+  const fetchJobDetails = async (positionId) => {
+    try {
+      const response = await axios.get(`${URL}/job/${positionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const jobData = response.data;
+  
+      setFormData((prevState) => ({
+        ...prevState,
+        position: jobData.positionId,
+        qualification: jobData.requiredQualification,
+      }));
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+    }
+  };
+  
 
   const statesList = [
     "Andhra Pradesh",
@@ -146,6 +176,11 @@ function Registration({ closeModal }) {
 
       isValid = false;
     }
+    if (!formData.resume ) {
+      message.warning("Please upload Resume");
+
+      isValid = false;
+    }
 
     if (!formData.contact) {
       message.error("Enter valid contact Number");
@@ -161,11 +196,7 @@ function Registration({ closeModal }) {
       isValid = false;
     }
 
-    if (!formData.position || formData.position.length < 2) {
-      message.error("Add Custom Position");
-
-      isValid = false;
-    }
+   
 
     const expRegex = /^\d{0,5}(\.\d{0,2})?$/;
     if (
@@ -345,6 +376,7 @@ function Registration({ closeModal }) {
       reference: formData.reference,
       currentLocation: formData.city,
       history: [historyUpdate],
+      position: positionId,
     };
     const isValid = validateForm();
     if (isValid) {
@@ -356,28 +388,45 @@ function Registration({ closeModal }) {
           // Authorization: `Bearer ${token}`,
         },
       });
-      // const data = await response.json();
+      const data = await response.json();
 
-      // const emailData = {
-      //   role: data.role,
-      //   confirmPassword: data.confirmPassword,
-      //   email: data.email,
-      //   fullName: data.fullName,
-      // };
+      const emailToManager = {
+        role: data.role,
+        email: data.email,
+        fullName: data.fullName,
+        mgrEmail: data.mgrEmail,
+        source:data.source,
+        position: data.position,
+        reference: data.reference,
+        lwd: data.lwd,
+        currentLocation: data.currentLocation,
+        selectedCategory: data.selectedCategory,
+      };
 
-      // const emailResponse = await axios.post(
-      //   `${URL}/user/register`,
-      //   emailData,
-      //   // {
-      //   //   headers: {
-      //   //     Authorization: `Bearer ${token}`,
-      //   //   },
-      //   // }
-      // );
+      const emailResponse = await axios.post(
+        `${URL}/user/register`,
+        emailToManager,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      
 
       if (response.status === 201) {
         message.success("Applicant saved successfully");
-        closeModal();
+        await Swal.fire({
+          title: 'Application Submitted',
+          text: 'Your application has been submitted successfully. HR will get back to you shortly.',
+          icon: 'success',
+          confirmButtonText: 'Close'
+      });
+
+      // Close the window after alert is closed
+      window.close();
+      closeModal();
       } else if (response.status === 409) {
         message.error("Email or Username already in use");
       } else {
@@ -481,15 +530,24 @@ function Registration({ closeModal }) {
                   onChange={handleChange}
                 />
               </div>
-
-              <div><label>Applied Position<span className='require'>*</span></label>
-                <select name="position" style={{ width: '100%', marginBottom:'25px' }} value={formData.position} onChange={handleChange}>
-                  <option value="">Choose One</option>
-                  {positions.map((position) => (
-                    <option key={position._id} value={position.position}>{position.position}</option>
-                  ))}
-                </select>
-              </div>
+              {!positionId && (
+                <div>
+                  <label>Applied Position<span className="require">*</span></label>
+                  <select
+                    name="position"
+                    value={formData.position}
+                    onChange={handleChange}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="">Choose One</option>
+                    {positions.map((position) => (
+                      <option key={position._id} value={position.position}>
+                        {position.position}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div><label>Category<span className='require'>*</span></label>
               <select name="selectedCategory" value={formData.selectedCategory} required style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
 

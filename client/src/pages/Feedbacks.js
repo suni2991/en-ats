@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Fetchtable from "../components/Fetchtable";
 import useAuth from "../hooks/useAuth";
-import { Tooltip, DatePicker, Form, Button, Modal, Select } from "antd";
+import { Tooltip, DatePicker, Form, Button, Modal, Select, Input } from "antd";
 import axios from "axios";
 import { MdUpdate } from "react-icons/md";
 import { VscFeedback } from "react-icons/vsc";
@@ -14,12 +14,24 @@ const Feedback = () => {
   const { auth, token } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-  const [isJoiningDateModalVisible, setIsJoiningDateModalVisible] =
-    useState(false);
+  const [isJoiningDateModalVisible, setIsJoiningDateModalVisible] = useState(false);
   const [joiningDate, setJoiningDate] = useState(null);
   const [status, setStatus] = useState("");
+  const [offeredCTC, setOfferedCTC] = useState(""); // New state for Offered CTC
   const [candidateData, setCandidateData] = useState([]);
   const [historyUpdate, setHistoryUpdate] = useState(null);
+  const [offeredCtc, setOfferedCtc] = useState(null);
+const [benefits, setBenefits] = useState("");
+const [startDate, setStartDate] = useState(null);
+const [deadline, setDeadline] = useState(null);
+
+const handleStartDateChange = (date) => {
+  setStartDate(date);
+};
+
+const handleDeadlineChange = (date) => {
+  setDeadline(date);
+};
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -109,6 +121,7 @@ const Feedback = () => {
     setSelectedCandidate(null);
     setJoiningDate(null);
     setStatus("");
+    setOfferedCTC(""); // Reset CTC field
   };
 
   const handleJoiningDateChange = (date) => {
@@ -119,37 +132,30 @@ const Feedback = () => {
     setStatus(value);
   };
 
+  const handleCTCChange = (e) => {
+    setOfferedCTC(e.target.value);
+  };
+
   const handleUpdate = async () => {
     if (selectedCandidate) {
       try {
         const updates = {};
         if (joiningDate) {
           updates.joiningDate = joiningDate.toISOString();
-        
+        }
+        if (offeredCTC && status === "Offered") {
+          updates.offeredCTC = offeredCTC;
         }
         if (status) {
           updates.status = status;
         
-          // Prepare history update
           const historyUpdateData = {
             updatedAt: new Date(),
             updatedBy: auth.fullName,
             note: `Applicant ${status}`,
           };
           setHistoryUpdate(historyUpdateData);
-         
-          if (status === "Onboarded") {
-            updates.role = "Enfusian";
-            updates.dateCreated = new Date().toISOString(); // Set dateCreated to current date
-            // console.log(
-            //   "Role set to Enfusian and dateCreated set:",
-            //   updates.dateCreated
-            // );
-          } else {
-            updates.role = "Applicant";
-          }
         }
-        // console.log("Updates being sent:", updates);
 
         await axios.put(
           `${URL}/candidates/${selectedCandidate._id}`,
@@ -160,7 +166,23 @@ const Feedback = () => {
             },
           }
         );
-        console.log("Update successful");
+        // Send email to candidate upon status update
+        await axios.post(
+          `${URL}/send-status`,
+          {
+            candidateName: selectedCandidate.fullName,
+            offeredCTC: offeredCTC || "",
+            benefits: benefits || "",
+            startDate:startDate || "",
+            deadline: deadline || "",
+            statusUpdate: status,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
         closeJoiningDateModal();
       } catch (error) {
         console.error("Failed to update", error);
@@ -186,26 +208,64 @@ const Feedback = () => {
         )}
       </Modal>
       <Modal
-        title="Update Status / Joining Date"
+        title="Update Status / Joining Date / Offered CTC"
         open={isJoiningDateModalVisible}
         onCancel={closeJoiningDateModal}
         footer={null}
       >
-        <Form layout="vertical">
-          <Form.Item label="Status">
-            <Select onChange={handleStatusChange} placeholder="Choose Status">
-              <Option value="Selected">Selected</Option>
-              <Option value="Onboarded">Onboarded</Option>
-              <Option value="Rejected">Rejected</Option>
-            </Select>
+      <Form layout="vertical">
+      <Form.Item label="Status">
+        <Select onChange={handleStatusChange} placeholder="Choose Status">
+          <Option value="Selected">Selected</Option>
+          <Option value="Onboarded">Onboarded</Option>
+          <Option value="Rejected">Rejected</Option>
+          <Option value="Document_Processing">Documents Processing</Option>
+          <Option value="Hold">Hold</Option>
+          <Option value="Offered">Pre-Offer</Option>
+        </Select>
+      </Form.Item>
+    
+      {status === "Onboarded" && (
+        <Form.Item label="Joining Date">
+          <DatePicker
+            onChange={handleJoiningDateChange}
+            style={{ width: "100%" }}
+          />
+        </Form.Item>
+      )}
+    
+      {status === "Offered" && (
+        <>
+          <Form.Item label="Offered CTC">
+            <Input
+              type="number"
+              placeholder="Enter Offered CTC"
+              onChange={(e) => setOfferedCtc(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item label="Joining Date">
+          <Form.Item label="Benefits">
+            <Input.TextArea
+              placeholder="Enter Benefits"
+              onChange={(e) => setBenefits(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Start Date">
             <DatePicker
-              onChange={handleJoiningDateChange}
+              onChange={handleStartDateChange}
               style={{ width: "100%" }}
             />
           </Form.Item>
-        </Form>
+          <Form.Item label="Deadline">
+            <DatePicker
+              onChange={handleDeadlineChange}
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+        </>
+      )}
+    </Form>
+    
+
         <center>
           <Button
             type="primary"

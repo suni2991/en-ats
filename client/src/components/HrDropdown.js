@@ -27,11 +27,12 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
     const fetchPanelists = async () => {
       try {
         const response = await axios.get(`${URL}/hrs/name`,
-          {
-            headers:{
-              Authorization: `Bearer ${token}`
-            }
-          });
+          // {
+          //   headers:{
+          //     Authorization: `Bearer ${token}`
+          //   }
+          // }
+          );
         const data = response.data;
         if (data.length > 0) {
           setHrs(data);

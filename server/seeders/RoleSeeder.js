@@ -60,6 +60,7 @@ const adminPermissionJson = [
   "view_vacancy_status_by_position",
   "update_job_post_by_id",
   "job_approve_email",
+  "request_for_slot",
 ];
 const hrPermissionJson = [
   "create_applicant",
@@ -89,6 +90,7 @@ const hrPermissionJson = [
   "update_job_post_by_id",
   "user_register_email",
   "job_approve_email",
+  "request_for_slot",
 ];
 const applicantPermissionData = ["login", "update_candidate_by_id"];
 const panelistPermissionData = [

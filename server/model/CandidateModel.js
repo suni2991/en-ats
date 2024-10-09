@@ -19,9 +19,26 @@ const roundSchema = new Schema({
   roundName: { type: String, required: false },
   panelistName: { type: String },
   interviewDate: { type: Date },
+  interviewDt:{type: String},
   feedbackProvided: { type: Boolean, default: false },
   skills: [skillSchema],
   feedback: { type: String },
+});
+
+const availabilitySchema = new Schema({
+  requestedDateRange:{type: [Date]},
+  
+  fromTime:{type: Date},
+  toTime: {type: Date},
+  availableDate:{type: Date},
+  booked:{type:Boolean, default: false},
+})
+
+const notificationSchema = new mongoose.Schema({
+  message: { type: String, required: true },
+  read: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+  actionRequired: { type: Boolean, default: true }, // If the notification requires some action (like selecting available slots)
 });
 
 const candidateSchema = new mongoose.Schema({
@@ -78,6 +95,8 @@ const candidateSchema = new mongoose.Schema({
   history: [historySchema],
   reference: { type: String },
   source:{type: String},
+  availableSlots:[availabilitySchema],
+  notification:[notificationSchema],
 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);

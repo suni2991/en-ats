@@ -9,135 +9,6 @@ const {
 const RoleModel = require("../model/RoleModel");
 const JWT_SECRET = process.env.JWT_SECRET;
 
-//Create User - or register, a simple post request to save user in db
-// userRouter.post(
-//   "/register/candidate",
-//   // authenticate,
-//   // checkPermission("create_applicant"),
-//   async (req, res) => {
-//     try {
-//       const {
-//         firstName,
-//         lastName,
-//         fullName,
-//         qualification,
-//         totalExperience,
-//         relevantExperience,
-//         noticePeriod,
-//         contact,
-//         email,
-//         position,
-//         currentLocation,
-//         image,
-//         department,
-//         resume,
-//         status,
-//         empCount,
-//         psychometric,
-//         quantitative,
-//         vocabulary,
-//         java,
-//         accounts,
-//         excel,
-//         dob,
-//         history,
-//         role,
-//         state,
-//         district,
-//         taluka,
-//         selectedCategory,
-//         mgrName,
-//         mgrEmail,
-//         skills,
-//         lwd,
-//         availability,
-//         panelistName,
-//         round,
-//         evaluationDetails,
-//         reference,
-//       } = req.body;
-
-//       const encryptedPassword = CryptoJS.AES.encrypt(
-//         req.body.password,
-//         process.env.PASSWORD_SECRET_KEY
-//       ).toString();
-
-//       let roleId = "";
-//       if (req.body.role) {
-//         try {
-//           const roleData = await RoleModel.findOne(
-//             { name: req.body.role },
-//             { name: 0, permissions: 0 }
-//           );
-//           if (roleData) {
-//             roleId = roleData._id;
-//           } else {
-//             console.log("Role not found");
-//           }
-//         } catch (error) {
-//           console.error("Error fetching role data:", error);
-//         }
-//       }
-
-//       const newCandidate = new Candidate({
-//         firstName,
-//         lastName,
-//         fullName,
-//         qualification,
-//         totalExperience,
-//         relevantExperience,
-//         noticePeriod,
-//         contact,
-//         email,
-//         position,
-//         currentLocation,
-//         image,
-//         resume,
-//         status,
-//         department,
-//         empCount,
-//         psychometric,
-//         quantitative,
-//         vocabulary,
-//         java,
-//         accounts,
-//         excel,
-//         dob,
-//         password: encryptedPassword, // Set the encrypted password
-//         confirmPassword: req.body.confirmPassword,
-//         role,
-//         roleId,
-//         state,
-//         district,
-//         taluka,
-//         selectedCategory,
-//         mgrName,
-//         mgrEmail,
-//         skills,
-//         lwd,
-//         availability,
-//         panelistName,
-//         round,
-//         evaluationDetails,
-//         history,
-//         reference,
-//       });
-
-//       const savedCandidate = await newCandidate.save();
-//       res.status(201).json(savedCandidate);
-//     } catch (error) {
-//       if (error.code === 11000) {
-//         res.status(409).json({ message: "Email already in use" });
-//       } else {
-//         res.status(400).json({
-//           message: "Could not create candidate",
-//           error: error.message,
-//         });
-//       }
-//     }
-//   }
-// );
-
 userRouter.post(
   "/register/candidate",
   // authenticate,
@@ -183,7 +54,8 @@ userRouter.post(
         round,
         evaluationDetails,
         reference,
-        source
+        source,
+        availableSlots,
       } = req.body;
 
       const encryptedPassword = CryptoJS.AES.encrypt(
@@ -250,14 +122,13 @@ userRouter.post(
         history,
         reference,
         source,
+        availableSlots,
       };
 
       if (roleId) {
         newCandidateData.roleId = roleId;
       }
-
       const newCandidate = new Candidate(newCandidateData);
-
       const savedCandidate = await newCandidate.save();
       res.status(201).json(savedCandidate);
     } catch (error) {
@@ -321,6 +192,27 @@ userRouter.get(
   }
 );
 
+userRouter.get("/hrs/candidate-count", async (req, res) => {
+  try {
+    // Find HR managers with their full names
+    const hrManagers = await Candidate.find({ role: "HR", fullName: { $ne: null, $ne: "" } })
+      .distinct("fullName"); // Get distinct HR manager full names
+
+    // Count candidates for each HR manager
+    const counts = await Candidate.aggregate([
+      { $match: { mgrName: { $in: hrManagers } } }, // Match candidates whose mgrName is in the list of HR managers
+      { $group: { _id: "$mgrName", candidateCount: { $sum: 1 } } }, // Group by mgrName and count candidates
+      { $sort: { candidateCount: -1 } } // Optionally sort by count (descending)
+    ]);
+
+    res.json({ hrCounts: counts });
+  } catch (error) {
+    console.error("Error fetching HR candidate counts:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+
 userRouter.get(
   "/candidatesreport",
   authenticate,
@@ -336,7 +228,6 @@ userRouter.get(
       if (selectedCategory && selectedCategory !== "all") {
         query.selectedCategory = selectedCategory;
       }
-
       const docs = await Candidate.find(query);
       res.json(docs);
     } catch (error) {
@@ -364,7 +255,8 @@ userRouter.get(
       const formattedData = {
         Onboarded: 0,
         Rejected: 0,
-        "In Progress": 0,
+        Processing: 0,
+        Selected:0,     
       };
 
       candidatesByStatus.forEach((candidate) => {
@@ -443,8 +335,8 @@ userRouter.get("/candidates/:fullName", async (req, res) => {
 
 userRouter.get(
   "/candidate/profile/:id",
-  authenticate,
-  checkPermission("view_candidate_profile"),
+  // authenticate,
+  // checkPermission("view_candidate_profile"),
   async (req, res) => {
     try {
       const _id = req.params.id;
@@ -562,7 +454,7 @@ userRouter.get(
     try {
       const panelists = await Candidate.find(
         { role: { $in: ["Panelist", "Ops-Manager"] } },
-        "fullName"
+        "fullName email availableSlots"
       );
       res.json(panelists);
     } catch (error) {
@@ -574,8 +466,8 @@ userRouter.get(
 
 userRouter.get(
   "/hrs/name",
-  authenticate,
-  checkPermission("view_hr_name"),
+  // authenticate,
+  // checkPermission("view_hr_name"),
   async (req, res) => {
     try {
       const hrs = await Candidate.find({ role: "HR" }, "fullName email");
@@ -593,19 +485,16 @@ userRouter.get(
   checkPermission("view_panelist_details_by_name"),
   async (req, res) => {
     const { panelistName } = req.params;
-
     try {
       const candidates = await Candidate.find({
         "round.panelistName": panelistName,
         role: "Applicant",
       });
-
       if (candidates.length === 0) {
         return res
           .status(404)
           .json({ error: "Candidates not found for this panelist" });
       }
-
       res.json(candidates);
     } catch (error) {
       console.error("Error retrieving candidates:", error);
@@ -648,9 +537,7 @@ userRouter.get(
   async (req, res) => {
     try {
       const { position } = req.params;
-
       const candidates = await Candidate.find({ position });
-
       res.json(candidates);
     } catch (error) {
       console.error("Error fetching candidates:", error);
@@ -674,6 +561,7 @@ userRouter.put(
       mgrName,
       city,
       totalExperience,
+      
     } = req.body;
 
     try {
@@ -702,9 +590,7 @@ userRouter.put(
       if (historyUpdate) {
         candidate.history.push(historyUpdate);
       }
-
       await candidate.save();
-
       res.json({ status: "SUCCESS" });
     } catch (error) {
       console.error("Error updating candidate:", error);
@@ -713,4 +599,109 @@ userRouter.put(
   }
 );
 
+userRouter.post("/candidates/:id/availability", async (req, res) => {
+  const { id } = req.params;
+  const { availableSlot, notification } = req.body;
+
+  try {
+    const candidate = await Candidate.findById(id);
+    if (!candidate) {
+      return res.status(404).json({ message: "Candidate not found" });
+    }
+    candidate.availableSlots.push({
+      availableDate: new Date(availableSlot.availableDate),
+      fromTime: new Date(availableSlot.fromTime),
+      toTime: new Date(availableSlot.toTime),
+      booked: false,
+    });
+
+    candidate.notification.push(notification);
+
+    await candidate.save();
+
+    res.status(200).json({ message: "Availability slot and notification added successfully", candidate });
+  } catch (error) {
+    console.error("Error adding availability slot:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// GET endpoint to fetch availability slots
+userRouter.get("/candidates/:id/availability", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const candidate = await Candidate.findById(id).select("availableSlots");
+    if (!candidate) {
+      return res.status(404).json({ message: "Candidate not found" });
+    }
+    res.status(200).json({ availableSlots: candidate.availableSlots });
+  } catch (error) {
+    console.error("Error fetching availability slots:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+userRouter.get('/api/mgr/:mgrName/status-count', async (req, res) => {
+  try {
+    const mgrName = req.params.mgrName;
+
+    // Aggregate the data to count the status of candidates and gather their names under the specified mgrName
+    const statusCounts = await Candidate.aggregate([
+      { $match: { mgrName: mgrName } },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+          names: { $push: "$fullName" } // Collecting the full names of the candidates
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          status: "$_id",
+          count: 1,
+          names: 1
+        }
+      }
+    ]);
+
+    res.status(200).json(statusCounts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+userRouter.put("/panelists/slot/:panelistEmail", async (req, res) => {
+  try {
+    const { slotId, booked } = req.body; // slotId and booked status from request body
+    const { panelistEmail } = req.params; // Email from request params
+
+    // Find the panelist (Candidate with role Panelist) by email
+    const panelist = await Candidate.findOne({ email: panelistEmail});
+
+    if (!panelist) {
+      return res.status(404).json({ message: "Panelist not found" });
+    }
+
+    // Find the specific slot by ID in availableSlots and update booked status
+    const slotIndex = panelist.availableSlots.findIndex(slot => slot._id.toString() === slotId);
+
+    if (slotIndex === -1) {
+      return res.status(404).json({ message: "Slot not found" });
+    }
+
+    // Update the slot's booked status
+    panelist.availableSlots[slotIndex].booked = booked;
+
+    // Save the updated panelist
+    await panelist.save();
+
+    return res.status(200).json({ message: "Slot booked successfully", panelist });
+  } catch (error) {
+    console.error("Error updating slot:", error);
+    return res.status(500).json({ message: "Server error, unable to book slot" });
+  }
+});
 module.exports = userRouter;

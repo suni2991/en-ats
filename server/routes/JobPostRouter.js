@@ -120,11 +120,28 @@ jobRouter.get(
 );
 
 // Removed. Should be deleted
-jobRouter.get("/job/:id", async (req, res) => {
-  const jobId = req.params.id;
+// jobRouter.get("/job/:id", async (req, res) => {
+//   const jobId = req.params.id;
+
+//   try {
+//     const job = await Job.findById(jobId);
+
+//     if (!job) {
+//       return res.status(404).json({ message: "Job not found" });
+//     }
+
+//     res.status(200).json(job);
+//   } catch (error) {
+//     console.error("Error fetching job by ID:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
+
+jobRouter.get("/job/position/:name", async (req, res) => {
+  const positionName = req.params.name;
 
   try {
-    const job = await Job.findById(jobId);
+    const job = await Job.findOne({ position: positionName });
 
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
@@ -132,7 +149,7 @@ jobRouter.get("/job/:id", async (req, res) => {
 
     res.status(200).json(job);
   } catch (error) {
-    console.error("Error fetching job by ID:", error);
+    console.error("Error fetching job by position name:", error);
     res.status(500).json({ message: "Server error" });
   }
 });

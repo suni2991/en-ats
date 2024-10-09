@@ -37,7 +37,7 @@ const Hotpicks = () => {
 
   return (
     <div className='hotpicks'>
-    <h1 style={{margin:'10px 20px', fontSize:'20px' }}>HOT PICKS</h1><br/>
+    <h1 style={{margin:'10px 20px', fontSize:'20px' }}>Shortlisted / To be Onboarded</h1><br/>
       {loading ? (
         <Spin size="large" />
       ) : selectedCandidates.length ? (

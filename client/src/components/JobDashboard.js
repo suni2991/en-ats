@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Col, Row, Badge, Pagination, Modal, Table, Tag } from "antd";
+import { Card, Col, Row, Badge, Pagination, Modal, Table, Tag, message, Button } from "antd";
 import CircularProgressCard from "./CircularProgressCard";
+import { CopyOutlined } from '@ant-design/icons';
 import useAuth from "../hooks/useAuth";
 import moment from "moment";
 
@@ -51,6 +52,19 @@ const JobDashboard = ({ jobs }) => {
 
     fetchCandidateCounts();
   }, [jobs, token]);
+
+  const copyJobLink = (positionId) => {
+    const frontendURL = `${window.location.origin}/register-job/${positionId}`;
+    navigator.clipboard.writeText(frontendURL)
+      .then(() => {
+        message.success("Link copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Error copying link: ", err);
+        message.error("Failed to copy link.");
+      });
+  };
+  
 
   const showApplicants = async (position) => {
     try {
@@ -219,20 +233,47 @@ const JobDashboard = ({ jobs }) => {
         }}
       />
       <Modal
-        title={`Applicants for ${selectedJob}`}
-        open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        footer={null}
-        width={800}
-      >
-        <Table
-          columns={columns}
-          dataSource={applicants}
-          rowKey="_id"
-          style={{ textTransform: "capitalize" }}
-          pagination={{ pageSize: 8 }}
-        />
-      </Modal>
+      title={null} // Set title to null for custom header
+      open={isModalVisible}
+      onCancel={() => setIsModalVisible(false)}
+      footer={null}
+      width={800}
+    >
+      <Row justify="space-between" align="middle">
+        {/* Table Title */}
+        <Col>
+          <h2 style={{ margin: 0, paddingtop: 0 }}>Applicants for {selectedJob}</h2>
+        </Col>
+    
+        {/* Copy Button */}
+        <Col>
+          <Button
+            icon={<CopyOutlined />}
+            onClick={() => copyJobLink(selectedJob)}
+            style={{
+              backgroundColor: "#00B4D2",
+              color: "white",
+              transition: "transform 0.2s ease, background-color 0.2s ease",
+              height: 'auto', 
+              margin:'20px 10px', // Adjust height for centering
+              // padding: '8px 16px', // Button padding to look even
+            }}
+          >
+            Copy Job Registration Link
+          </Button>
+        </Col>
+      </Row>
+    
+      {/* Table with Applicants */}
+      <Table
+        columns={columns}
+        dataSource={applicants}
+        rowKey="_id"
+        style={{ textTransform: "capitalize" }}
+        pagination={{ pageSize: 8 }}
+      />
+    </Modal>
+    
     </div>
   );
 };
