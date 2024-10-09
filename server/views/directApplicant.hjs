@@ -262,30 +262,43 @@
                                                   </tbody>
                                                 </table>
                                                   <p>Dear {{mgrName}},</p>
-        <p>We would like to inform you that a {{role}} has directly applied for the position of <strong>{{position}}</strong>.</p>
+        <p>We would like to inform you that an {{role}} has been directly applied for the position of <strong>{{position}}</strong>.</p>
         
-        <div class="details">
-            <dl>
-               
-                <dt>Full Name:</dt>
-                <dd>{{fullName}}</dd>
-                <dt>Email:</dt>
-                <dd>{{email}}</dd>
-                <dt>Source:</dt>
-                <dd>{{source}}</dd>
-              
-                <dt>Reference:</dt>
-                <dd>{{reference}}</dd>
-                <dt>Last Working Day (LWD):</dt>
-                <dd>{{lwd}}</dd>
-                <dt>Current Location:</dt>
-                <dd>{{currentLocation}}</dd>
-                <dt>Category:</dt>
-                <dd>{{selectedCategory}}</dd>
-            </dl>
-        </div>
+                <table style="border-collapse: collapse; width: 100%;">
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Candidate Name:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{fullName}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Candidate Email:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{email}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Location:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{currentLocation}}</td>
+                    </tr>
+                     <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Category:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{selectedCategory}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Last Working Day:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{lwd}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Reference:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{reference}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><strong>Source:</strong></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{source}}</td>
+                    </tr>
+                </table>
+       <p
+                                                          style="color: rgb(0, 0, 0);font-size: 12px; font-family:Century Gothic;">
+                                                          <span>
+To know more about the candidate, Please login into you CTS account <a style="font-family: Century Gothic;" href="http://localhost:3000/">Login Here</a></span>
 
-        <p>If you have any questions or need further details, please do not hesitate to reach out.</p>
 
                                                 <table cellpadding="0" cellspacing="0" border="0" role="presentation"
                                                   style="width: 100%; border-collapse: collapse;">
