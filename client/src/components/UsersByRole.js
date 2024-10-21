@@ -5,15 +5,17 @@ import useAuth from "../hooks/useAuth";
 const UsersByRole = () => {
   const [usersByRole, setUsersByRole] = useState([]);
   const { token } = useAuth();
-
+  const URL = process.env.REACT_APP_API_URL;
+  
   useEffect(() => {
     const fetchUsersByRole = async () => {
       try {
-        const response = await axios.get("/users-by-role", {
+        const response = await axios.get(`${URL}/users-by-role`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.warn("users-by-role ", response.data);
         setUsersByRole(response.data);
       } catch (error) {
         console.error("Error fetching users by role:", error);
