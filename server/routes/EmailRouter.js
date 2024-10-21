@@ -3,10 +3,7 @@ const emailRouter = new express.Router();
 const nodemailer = require("nodemailer");
 const Hogan = require("hogan.js");
 const fs = require("fs");
-const {
-  authenticate,
-  checkPermission,
-} = require("../middleware/PermissionMiddleware");
+const {} = require("../middleware/PermissionMiddleware");
 //const { dirname } = require("path");
 
 const template = fs.readFileSync("./views/email.hjs", "utf-8");
@@ -17,8 +14,8 @@ const compiledTemplate2 = Hogan.compile(template2);
 // send mail
 emailRouter.post(
   "/user/register",
-  // authenticate,
-  // checkPermission("job_approve_email"),
+  //
+  //
   (req, res) => {
     const { role } = req.body;
     const { confirmPassword } = req.body;
@@ -75,8 +72,7 @@ emailRouter.post(
 
 emailRouter.post(
   "/job/approval",
-  authenticate,
-  checkPermission("job_approve_email"),
+
   (req, res) => {
     const { position, department, postedBy, jobId } = req.body;
 
