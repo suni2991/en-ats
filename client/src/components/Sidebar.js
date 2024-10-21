@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { FaTh, FaAdn, FaRegUser } from 'react-icons/fa';
-import { MdLogout } from 'react-icons/md';
-import { TiBriefcase } from 'react-icons/ti';
+import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { FaTh, FaAdn, FaRegUser } from "react-icons/fa";
+import { MdLogout } from "react-icons/md";
+import { TiBriefcase } from "react-icons/ti";
 
-import { LuMonitorCheck } from 'react-icons/lu';
-import useAuth from '../hooks/useAuth';
-import '../styles/Sidebar.css';
-import logo from '../Assests/enfuse-logo.png';
-import { Tooltip, Button } from 'antd';
-import ProfilePage from './ProfilePage';
-import { VscFeedback } from 'react-icons/vsc';
+import { LuMonitorCheck } from "react-icons/lu";
+import useAuth from "../hooks/useAuth";
+import "../styles/Sidebar.css";
+import logo from "../Assests/enfuse-logo.png";
+import { Tooltip, Button } from "antd";
+import ProfilePage from "./ProfilePage";
+import { VscFeedback } from "react-icons/vsc";
+import axios from "axios";
 
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const Sidebar = ({ children }) => {
   const navigate = useNavigate();
@@ -25,128 +26,154 @@ const Sidebar = ({ children }) => {
     setIsDarkMode(!isDarkMode);
   };
 
-  const logout = () => {
+  const { token } = useAuth();
+  const URL = process.env.REACT_APP_API_URL;
+  const logout = async () => {
     setAuth({});
-    navigate('/');
-    Swal.fire("You have been successfully logged out!!");
+    // call logout api
+    console.warn(`${URL}/logout`);
+    const response = await axios.post(
+      `${URL}/logout`,
+      {},{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    console.warn("status ",response.status);
+    if (response.status === 200) {
+      console.log("Logged out successfully");
+      // Redirect to login page or perform other actions
+      navigate("/");
+      Swal.fire("You have been successfully logged out!!");
+    } else {
+      console.error("Logout failed:", response.data);
+    }
   };
 
   const menuItem = [
     {
-      path: '/dashboard',
-      name: 'Dashboard',
+      path: "/dashboard",
+      name: "Dashboard",
       icon: <LuMonitorCheck />,
     },
     {
-      path: '/jobdashboard',
-      name: 'Job Dashboard',
+      path: "/jobdashboard",
+      name: "Job Dashboard",
       icon: <LuMonitorCheck />,
     },
     {
-      path: '/admins',
-      name: 'EnFusians',
+      path: "/admins",
+      name: "EnFusians",
       icon: <FaAdn />,
     },
     {
-      path: '/jobs',
-      name: 'Jobs',
+      path: "/jobs",
+      name: "Jobs",
       icon: <TiBriefcase />,
     },
     {
-      path: '/hr',
-      name: 'ATS',
+      path: "/hr",
+      name: "ATS",
       icon: <FaRegUser />,
     },
     {
-      path: '/applicants',
-      name: 'Statistics',
+      path: "/applicants",
+      name: "Statistics",
       icon: <FaRegUser />,
     },
     {
-      path: '/reports',
-      name: 'Scores',
+      path: "/reports",
+      name: "Scores",
       icon: <FaTh />,
     },
 
     {
-      path: '/feedbacks',
-      name: 'Feedback',
+      path: "/feedbacks",
+      name: "Feedback",
       icon: <VscFeedback />,
     },
   ];
 
-
   return (
-
     <div className="container">
       {auth.role && (
         <div className="sidebar">
           {/* <div style={{ width: isOpen ? '180px' : '25px' }} className="sidebar"> */}
           <div className="top-section">
-            <button style={{ background: 'none', border: 'none', float: 'left' }} onClick={toggleDarkMode}>
+            <button
+              style={{ background: "none", border: "none", float: "left" }}
+              onClick={toggleDarkMode}
+            >
               <img src={logo} alt="EnFuse" />
             </button>
-            {auth.role === 'Admin' || auth.role === 'Enfusian' ? (
+            {auth.role === "Admin" || auth.role === "Enfusian" ? (
               <img
-                style={{ width: '45%', borderRadius: '50%', background: 'white' }}
-                src={auth.image !== '' ? `http://localhost:5040${auth.image}` : require('../Assests/User.png')}
+                style={{
+                  width: "45%",
+                  borderRadius: "50%",
+                  background: "white",
+                }}
+                src={
+                  auth.image !== ""
+                    ? `http://localhost:5040${auth.image}`
+                    : require("../Assests/User.png")
+                }
                 alt="logo"
               />
             ) : null}
             <br />
           </div>
 
-
-        {menuItem.map((item, index) => {
-          if (auth.role === "Admin") {
-            return (
-              (item.name === "EnFusians" ||
-                item.name === "Statistics" ||
-                item.name === "ATS" ||
-                item.name === "Dashboard") && (
-                <NavLink
-                  to={item.path}
-                  key={index}
-                  className="link"
-                  activeclassname="active"
-                >
-                  <div className="icon">{item.icon}</div>
-                  <div className="link-text">{item.name}</div>
-                </NavLink>
-              )
-            );
-          } else if (auth.role === "HR") {
-            return (
-              (item.name === "ATS" ||
-                item.name === "Dashboard" ||
-                item.name === "Scores" ||
-                item.name === "Statistics" ||
-                item.name === "Feedback") && (
-                <NavLink
-                  to={item.path}
-                  key={index}
-                  className="link"
-                  activeclassname="active"
-                >
-                  <div className="icon">{item.icon}</div>
-                  <div className="link-text">{item.name}</div>
-                </NavLink>
-              )
-            );
-          } else if (auth.role === "Panelist") {
-            return (
-              item.name === "Feedback" && (
-                <NavLink
-                  to={item.path}
-                  key={index}
-                  className="link"
-                  activeclassname="active"
-                >
-
-                  <div className="icon">{item.icon}</div>
-                  <div className="link-text">{item.name}</div>
-                </NavLink>
-
+          {menuItem.map((item, index) => {
+            if (auth.role === "Admin") {
+              return (
+                (item.name === "EnFusians" ||
+                  item.name === "Statistics" ||
+                  item.name === "ATS" ||
+                  item.name === "Dashboard") && (
+                  <NavLink
+                    to={item.path}
+                    key={index}
+                    className="link"
+                    activeclassname="active"
+                  >
+                    <div className="icon">{item.icon}</div>
+                    <div className="link-text">{item.name}</div>
+                  </NavLink>
+                )
+              );
+            } else if (auth.role === "HR") {
+              return (
+                (item.name === "ATS" ||
+                  item.name === "Dashboard" ||
+                  item.name === "Scores" ||
+                  item.name === "Statistics" ||
+                  item.name === "Feedback") && (
+                  <NavLink
+                    to={item.path}
+                    key={index}
+                    className="link"
+                    activeclassname="active"
+                  >
+                    <div className="icon">{item.icon}</div>
+                    <div className="link-text">{item.name}</div>
+                  </NavLink>
+                )
+              );
+            } else if (auth.role === "Panelist") {
+              return (
+                item.name === "Feedback" && (
+                  <NavLink
+                    to={item.path}
+                    key={index}
+                    className="link"
+                    activeclassname="active"
+                  >
+                    <div className="icon">{item.icon}</div>
+                    <div className="link-text">{item.name}</div>
+                  </NavLink>
+                )
               );
             } else {
               return null;
@@ -154,15 +181,22 @@ const Sidebar = ({ children }) => {
           })}
         </div>
       )}
-      <div className='main-container'>
+      <div className="main-container">
         <main>
           <div>
-            {(auth.role === 'HR' || auth.role === 'Admin' || auth.role === 'Panelist' || auth.role === 'Ops-Manager') && (
+            {(auth.role === "HR" ||
+              auth.role === "Admin" ||
+              auth.role === "Panelist" ||
+              auth.role === "Ops-Manager") && (
               <nav className="navbar">
                 <div className="navbar-right">
-                  <Tooltip title="View & Update Profile" color='cyan'>
-                    <Button type="text" onClick={() => setProfileVisible(true)} style={{ color: '#00B4D2' }}>
-                      Welcome, {auth.fullName} 
+                  <Tooltip title="View & Update Profile" color="cyan">
+                    <Button
+                      type="text"
+                      onClick={() => setProfileVisible(true)}
+                      style={{ color: "#00B4D2" }}
+                    >
+                      Welcome, {auth.fullName}
                     </Button>
                   </Tooltip>
                 </div>
@@ -171,17 +205,22 @@ const Sidebar = ({ children }) => {
                   <button className="logout-button" onClick={logout}>
                     <span className="logout-container">
                       <MdLogout />
-                    </span>{' '}
+                    </span>{" "}
                     <span className="">Logout</span>
                   </button>
                 )}
               </nav>
             )}
-            {auth && <ProfilePage open={profileVisible} auth={auth} setAuth={setAuth} onClose={() => setProfileVisible(false)} />}
+            {auth && (
+              <ProfilePage
+                open={profileVisible}
+                auth={auth}
+                setAuth={setAuth}
+                onClose={() => setProfileVisible(false)}
+              />
+            )}
           </div>
-          <div className='main-content'>
-            {children}
-          </div>
+          <div className="main-content">{children}</div>
 
           {auth.role && (
             <div className="footer">
@@ -191,7 +230,6 @@ const Sidebar = ({ children }) => {
         </main>
       </div>
     </div>
-
   );
 };
 
