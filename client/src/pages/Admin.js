@@ -5,6 +5,7 @@ import Createhr from "../components/Createhr";
 import axios from "axios";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import useAuth from "../hooks/useAuth";
+import Updatehr from "../components/Updatehr";
 
 const URL = process.env.REACT_APP_API_URL;
 const Admin = () => {
@@ -13,6 +14,12 @@ const Admin = () => {
   const { token } = useAuth();
 
   const userColumns = [
+    {
+      name: "Employee ID",
+      selector: (row) => row.employeeID,
+      sortable: true,
+      width: "300px",
+    },
     {
       name: "Name",
       selector: (row) => row.fullName,
@@ -35,12 +42,12 @@ const Admin = () => {
       sortable: true,
       width: "150px",
     },
-    {
-      name: "Location",
-      cell: (row) => row.currentLocation,
-      sortable: true,
-      width: "150px",
-    },
+    // {
+    //   name: "Location",
+    //   cell: (row) => row.currentLocation,
+    //   sortable: true,
+    //   width: "150px",
+    // },
     {
       name: "Role",
       width: "120px",
@@ -131,7 +138,7 @@ const Admin = () => {
                 type="primary"
                 style={{ marginTop: "1px" }}
               >
-                Create User
+                Update User
               </Button>
             </Tooltip>
           }
@@ -142,9 +149,9 @@ const Admin = () => {
         onCancel={closeModal}
         footer={null}
         width={800}
-        title={<h2>Create ATS User</h2>}
+        title={<h2>Update ATS User</h2>}
       >
-        <Createhr closeModal={closeModal} />
+        <Updatehr closeModal={closeModal} />
       </Modal>
     </div>
   );
