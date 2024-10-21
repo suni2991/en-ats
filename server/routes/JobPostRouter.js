@@ -2,16 +2,20 @@ const jobRouter = require("express").Router();
 const Job = require("../model/JobpostModel");
 const Candidate = require("../model/CandidateModel");
 const {
-  authenticate,
+  cdbAuthenticate,
   checkPermission,
 } = require("../middleware/PermissionMiddleware");
+const { getClient } = require("../redis/redisconfig");
+
+let cacheClient = "";
+(async () => {
+  cacheClient = await getClient();
+})();
 
 // POST route to create a new job post
 jobRouter.post(
   "/createjob",
 
-  authenticate,
-  checkPermission("create_new_job"),
   async (req, res) => {
     const {
       position,
@@ -64,8 +68,8 @@ jobRouter.post(
 // GET route to fetch all job posts
 jobRouter.get(
   "/viewjobs",
-  // authenticate,
-  // checkPermission("view_jobs"),
+  cdbAuthenticate,
+  checkPermission("view_jobs"),
   async (req, res) => {
     const { mgrRole, fullName } = req.query;
 
@@ -87,12 +91,11 @@ jobRouter.get(
       res.status(500).json({ error: "Error fetching jobs" });
     }
   }
-
 );
 
 jobRouter.get(
   "/pendingjobs",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_pending_jobs"),
   async (req, res) => {
     const { mgrRole, fullName } = req.query;
@@ -114,7 +117,6 @@ jobRouter.get(
     } catch (error) {
       console.error("Error fetching job posts:", error);
       res.status(500).json({ error: "Error fetching job posts" });
-
     }
   }
 );
@@ -140,8 +142,8 @@ jobRouter.get("/job/:id", async (req, res) => {
 // GET route to fetch a single job post by ID
 jobRouter.get(
   "/job-posts/:id",
-  authenticate,
-  checkPermission("view_job_post_by_id"),
+  cdbAuthenticate,
+  checkPermission("update_job_post_by_id"),
   async (req, res) => {
     try {
       const jobPost = await Job.findById(req.params.id);
@@ -158,8 +160,7 @@ jobRouter.get(
 // DELETE route to delete a job post by ID
 jobRouter.delete(
   "/job-posts/:id",
-  authenticate,
-  checkPermission("delete_job_post_by_id"),
+
   async (req, res) => {
     try {
       const deletedJob = await Job.findByIdAndDelete(req.params.id);
@@ -176,7 +177,7 @@ jobRouter.delete(
 // Removed. Should be deleted
 jobRouter.get(
   "/positions",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_all_positions"),
   async (req, res) => {
     try {
@@ -219,8 +220,9 @@ jobRouter.get(
       });
 
       const result = Object.values(consolidatedData);
-
+      await cacheClient.set("positions", JSON.stringify(result), "EX", 1800);
       res.status(200).json(result);
+      console.log("result ", result);
     } catch (error) {
       res.status(500).json({ message: "Error fetching positions data", error });
     }
@@ -231,7 +233,7 @@ jobRouter.get(
 
 jobRouter.get(
   "/positions-with-vacancies/:department",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_positions_with_vacancies_by_department"),
   async (req, res) => {
     const department = req.params.department;
@@ -250,8 +252,7 @@ jobRouter.get(
 
 jobRouter.get(
   "/vacancy-status/:position",
-  authenticate,
-  checkPermission("view_vacancy_status_by_position"),
+
   async (req, res) => {
     const position = req.params.position;
     try {
@@ -272,51 +273,53 @@ jobRouter.get(
   }
 );
 
-jobRouter.put("/job-posts/:id", 
-	// authenticate,
-	// checkPermission("update_job_post_by_id"),
+jobRouter.put(
+  "/job-posts/:id",
+  cdbAuthenticate,
+  checkPermission("update_job_post_by_id"),
   async (req, res) => {
-  const jobId = req.params.id;
-  const {
-    position,
-    department,
-    jobLocation,
-    experience,
-    vacancies,
-    postedBy,
-    status,
-    description,
-    responsibilities,
-    history,
-  } = req.body;
+    const jobId = req.params.id;
+    const {
+      position,
+      department,
+      jobLocation,
+      experience,
+      vacancies,
+      postedBy,
+      status,
+      description,
+      responsibilities,
+      history,
+    } = req.body;
 
-  try {
-    const job = await Job.findById(jobId);
-    if (!job) {
-      return res.status(404).json({ message: "Job not found" });
+    try {
+      const job = await Job.findById(jobId);
+      if (!job) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+
+      if (history && history.length > 0) {
+        job.history.push(history[history.length - 1]);
+      }
+
+      job.position = position;
+      job.department = department;
+      job.jobLocation = jobLocation;
+      job.experience = experience;
+      job.vacancies = vacancies;
+      job.postedBy = postedBy;
+      job.status = status;
+      job.description = description;
+      job.responsibilities = responsibilities;
+
+      const updatedJob = await job.save();
+
+      res.status(200).json(updatedJob);
+    } catch (error) {
+      console.error("Error updating job details:", error);
+      res.status(500).json({ message: "Server error" });
     }
-
-    if (history && history.length > 0) {
-      job.history.push(history[history.length - 1]);
-    }
-
-    job.position = position;
-    job.department = department;
-    job.jobLocation = jobLocation;
-    job.experience = experience;
-    job.vacancies = vacancies;
-    job.postedBy = postedBy;
-    job.status = status;
-    job.description = description;
-    job.responsibilities = responsibilities;
-
-    const updatedJob = await job.save();
-
-    res.status(200).json(updatedJob);
-  } catch (error) {
-    console.error("Error updating job details:", error);
-    res.status(500).json({ message: "Server error" });
   }
-});
+);
 
 module.exports = jobRouter;
