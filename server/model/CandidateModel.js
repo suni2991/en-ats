@@ -26,6 +26,7 @@ const roundSchema = new Schema({
 
 const candidateSchema = new mongoose.Schema({
   id: { type: Number },
+  employeeID: { type: String },
   firstName: { type: String },
   lastName: { type: String },
   fullName: { type: String, required: true },
@@ -51,7 +52,14 @@ const candidateSchema = new mongoose.Schema({
   confirmPassword: { type: String },
   role: {
     type: String,
-    enum: ["Applicant", "HR", "Admin", "Enfusian", "Panelist", "Ops-Manager"],
+    enum: [
+      "Applicant",
+      "HR",
+      "Admin",
+      "Enfusian",
+      "Panelist",
+      "Ops-Manager",
+    ],
     default: "Applicant",
   },
   roleId: {
@@ -77,7 +85,7 @@ const candidateSchema = new mongoose.Schema({
   meetingDate: { type: Date },
   history: [historySchema],
   reference: { type: String },
-  source:{type: String},
+  source: { type: String },
 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);
