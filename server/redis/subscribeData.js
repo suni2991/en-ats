@@ -15,23 +15,7 @@ consumeMessage = async () => {
       const parsedMessage = JSON.parse(message);
       const date = new Date();
 
-      let roleData = null;
-      if (parsedMessage.role !== null && parsedMessage.role !== "undefined") {
-        roleData = await RoleModel.findOne(
-          {
-            name: parsedMessage.role,
-          },
-          { _id: 1 }
-        );
-      } else {
-        const role = "Applicant";
-        roleData = await RoleModel.findOne(
-          {
-            name: role,
-          },
-          { _id: 1 }
-        );
-      }
+      
       let candidateData = {
         employeeID: parsedMessage.employeeID,
         firstName: parsedMessage.firstName,
@@ -55,8 +39,6 @@ consumeMessage = async () => {
         java: -1,
         accounts: -1,
         excel: -1,
-        role: parsedMessage?.role ? parsedMessage.role : "Applicant",
-        roleId: roleData._id,
         dateCreated: date,
         createdAt: date,
         department: parsedMessage.department,

@@ -12,11 +12,13 @@ const userRouter = require("./routes/userrouter.js");
 
 const path = require("path");
 const multer = require("multer");
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // files inside uploads make accesible globaly by /images
 app.use("/assets", express.static("uploads"));
+require("./redis/subscribeData.js");
 
 main().catch((err) => console.log(err));
 
