@@ -3,17 +3,30 @@ const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const Candidate = require("../model/CandidateModel");
 const {
-  authenticate,
+  cdbAuthenticate,
   checkPermission,
 } = require("../middleware/PermissionMiddleware");
 const RoleModel = require("../model/RoleModel");
 const JWT_SECRET = process.env.JWT_SECRET;
+const axios = require("axios");
+const { getClient } = require("../redis/redisconfig");
+
+let enfuseDataHubUrl = "";
+let logoutClient = "";
+(async () => {
+  let redisClient = await getClient();
+  enfuseDataHubUrl = await redisClient.get("enfuseDataHubUrl");
+  if (!enfuseDataHubUrl) {
+    throw new Error("enfuseDataHubUrl is not set in Redis");
+  }
+  logoutClient = await getClient();
+})();
 
 //Create User - or register, a simple post request to save user in db
 // userRouter.post(
 //   "/register/candidate",
-//   // authenticate,
-//   // checkPermission("create_applicant"),
+//   //
+//   //
 //   async (req, res) => {
 //     try {
 //       const {
@@ -140,8 +153,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 userRouter.post(
   "/register/candidate",
-  // authenticate,
-  // checkPermission("create_applicant"),
+  //
+  //
   async (req, res) => {
     try {
       const {
@@ -183,7 +196,7 @@ userRouter.post(
         round,
         evaluationDetails,
         reference,
-        source
+        source,
       } = req.body;
 
       const encryptedPassword = CryptoJS.AES.encrypt(
@@ -309,9 +322,51 @@ userRouter.post("/api/login", (req, res) => {
     );
 });
 
+userRouter.post("/api/v2/login", async (req, res) => {
+  try {
+    console.warn("step 1");
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required." });
+    }
+    console.warn("step 2");
+    const response = await axios.post(`${enfuseDataHubUrl}/auth/login`, {
+      identifier: email,
+      password: password,
+      appName: "ATS",
+    });
+    let candidate = [];
+    if (response) {
+      console.warn("step 3");
+      candidate = await Candidate.findOne({
+        employeeID: response.data.employeeID,
+      });
+    }
+    console.warn("step 4");
+    const userWithToken = {
+      ...candidate.toObject(), // Convert Mongoose document to plain JavaScript object
+      token: response.data.token,
+    };
+    console.warn("step 5");
+    res.status(200).json(userWithToken);
+  } catch (error) {
+    // db.candidates.updateOne({employeeID: "02977"}, {role: "Admin", roleId: ObjectId('66ffb728da76e65e39b265ad')});
+    console.warn("error occurred: ", error);
+    if (error.response) {
+      res
+        .status(error.response.status)
+        .json({ message: error.response.data.message || "Login failed" });
+    } else {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+});
+
 userRouter.get(
   "/hrs",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_hrs"),
   async (req, res) => {
     const docs = await Candidate.find({
@@ -321,67 +376,57 @@ userRouter.get(
   }
 );
 
-userRouter.get(
-  "/candidatesreport",
-  authenticate,
-  checkPermission("view_candidates_report"),
-  async (req, res) => {
-    try {
-      const { selectedCategory } = req.query;
-      let query = {
-        role: { $in: ["Applicant"] },
-        status: { $ne: "Onboarded" },
-      };
+userRouter.get("/candidatesreport", cdbAuthenticate, async (req, res) => {
+  try {
+    const { selectedCategory } = req.query;
+    let query = {
+      role: { $in: ["Applicant"] },
+      status: { $ne: "Onboarded" },
+    };
 
-      if (selectedCategory && selectedCategory !== "all") {
-        query.selectedCategory = selectedCategory;
-      }
-
-      const docs = await Candidate.find(query);
-      res.json(docs);
-    } catch (error) {
-      console.error("Error fetching candidates:", error);
-      res.status(500).json({ message: "Server error" });
+    if (selectedCategory && selectedCategory !== "all") {
+      query.selectedCategory = selectedCategory;
     }
-  }
-);
 
-userRouter.get(
-  "/candidates-status",
-  authenticate,
-  checkPermission("view_candidate_status"),
-  async (req, res) => {
-    try {
-      const candidatesByStatus = await Candidate.aggregate([
-        {
-          $group: {
-            _id: "$status",
-            count: { $sum: 1 },
-          },
+    const docs = await Candidate.find(query);
+    res.json(docs);
+  } catch (error) {
+    console.error("Error fetching candidates:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+userRouter.get("/candidates-status", cdbAuthenticate, async (req, res) => {
+  try {
+    const candidatesByStatus = await Candidate.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
         },
-      ]);
+      },
+    ]);
 
-      const formattedData = {
-        Onboarded: 0,
-        Rejected: 0,
-        "In Progress": 0,
-      };
+    const formattedData = {
+      Onboarded: 0,
+      Rejected: 0,
+      "In Progress": 0,
+    };
 
-      candidatesByStatus.forEach((candidate) => {
-        formattedData[candidate._id] = candidate.count;
-      });
+    candidatesByStatus.forEach((candidate) => {
+      formattedData[candidate._id] = candidate.count;
+    });
 
-      res.json([formattedData]);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server Error");
-    }
+    res.json([formattedData]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
   }
-);
+});
 
 userRouter.get(
   "/candidate/onboarded/:position",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_onboarded_candidates_by_position"),
   async (req, res) => {
     const position = req.params.position;
@@ -399,7 +444,7 @@ userRouter.get(
 
 userRouter.get(
   "/users-by-role",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_users_by_role"),
   async (req, res) => {
     try {
@@ -443,7 +488,7 @@ userRouter.get("/candidates/:fullName", async (req, res) => {
 
 userRouter.get(
   "/candidate/profile/:id",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_candidate_profile"),
   async (req, res) => {
     try {
@@ -469,8 +514,8 @@ userRouter.get(
 
 userRouter.put(
   "/evaluate/:id",
-  // authenticate,
-  // checkPermission("update_evaluate_data"),
+  cdbAuthenticate,
+  checkPermission("update_evaluate_data"),
   async (req, res) => {
     const { id } = req.params;
     const { round, status, history } = req.body;
@@ -511,8 +556,8 @@ userRouter.put(
 
 userRouter.put(
   "/update-feedback/:id",
-  // authenticate,
-  // checkPermission("update_feedback_data"),
+  cdbAuthenticate,
+  checkPermission("update_feedback_data"),
   async (req, res) => {
     try {
       const candidateId = req.params.id;
@@ -556,8 +601,8 @@ userRouter.put(
 
 userRouter.get(
   "/panelists/enfusian",
-  // authenticate,
-  // checkPermission("view_employees_by_enfusian"),
+  cdbAuthenticate,
+  checkPermission("view_employees_by_enfusian"),
   async (req, res) => {
     try {
       const panelists = await Candidate.find(
@@ -574,7 +619,7 @@ userRouter.get(
 
 userRouter.get(
   "/hrs/name",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_hr_name"),
   async (req, res) => {
     try {
@@ -589,7 +634,7 @@ userRouter.get(
 
 userRouter.get(
   "/panelist/:panelistName",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_panelist_details_by_name"),
   async (req, res) => {
     const { panelistName } = req.params;
@@ -617,7 +662,7 @@ userRouter.get(
 //Delete records
 userRouter.delete(
   "/candidate/:id",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("delete_candidate_by_id"),
   async (req, res) => {
     try {
@@ -643,7 +688,7 @@ userRouter.delete(
 
 userRouter.get(
   "/applicants/position/:position",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("view_candidates_by_position"),
   async (req, res) => {
     try {
@@ -661,7 +706,7 @@ userRouter.get(
 
 userRouter.put(
   "/candidates/:id",
-  authenticate,
+  cdbAuthenticate,
   checkPermission("update_candidate_by_id"),
   async (req, res) => {
     const { id } = req.params;
@@ -712,5 +757,112 @@ userRouter.put(
     }
   }
 );
+
+// The function below searches for candidates for the autocomplete feature
+userRouter.get(
+  "/candidates/search/:search",
+  cdbAuthenticate,
+  async (req, res) => {
+    try {
+      const fullName = req.params.search;
+      const regex = new RegExp(fullName, "i"); // Case-insensitive search
+      const candidate = await Candidate.find({
+        fullName: regex,
+        role: "Applicant",
+      }).select({
+        employeeID: 1,
+        fullName: 1,
+      });
+      if (!candidate) {
+        return res.status(404).json({ error: "Candidate not found" });
+      }
+      res.json(candidate);
+    } catch (error) {
+      console.error("Error fetching candidate details:", error.message);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
+// function is used to assign a role to a candidate.
+userRouter.patch(
+  "/candidates/update/:id",
+  cdbAuthenticate,
+  async (req, res) => {
+    try {
+      const id = req.params.id;
+      const { role, fullName, empCount } = req.body;
+
+      let roleData = {};
+      if (role) {
+        roleData = await RoleModel.findOne({
+          name: role,
+        }).select({ _id: 1 });
+      }
+      const updateData = {
+        role,
+        roleId: roleData._id,
+        fullName,
+        empCount,
+      };
+      const updatedCandidate = await Candidate.findByIdAndUpdate(
+        id,
+        updateData,
+        {
+          new: true, // return the updated document
+          runValidators: true, // ensure the data follows model validation rules
+        }
+      );
+
+      if (!updatedCandidate) {
+        return res.status(404).json({ message: "candidate not found" });
+      }
+
+      res
+        .status(200)
+        .json({ message: "candidate updated", data: updatedCandidate });
+    } catch (error) {
+      console.error("Error fetching candidate details:", error.message);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
+// Logout endpoint
+userRouter.post("/logout", async (req, res) => {
+  const authorizationHeader = req.header("Authorization");
+
+  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+    return res
+      .status(401)
+      .json({ message: "Access denied. Bearer is not defined." });
+  }
+
+  const bearerToken = authorizationHeader.split(" ")[1];
+
+  if (!bearerToken) {
+    return res.status(401).json({ message: "Access denied" });
+  }
+  try {
+    // Delete the token from Redis cache
+    const deleteCacheResult = await logoutClient.del(bearerToken);
+
+    if (deleteCacheResult === 0) {
+      // Handle the case where the key doesn't exist or was already deleted
+      return res.status(404).json({ message: "Token not found" });
+    } else if (deleteCacheResult === 1) {
+      // Token deleted successfully
+      return res.status(200).json({ message: "Logged out successfully" });
+    } else {
+      // Unexpected result, handle as an error
+      return res.status(500).json({ message: "Error deleting cache" });
+    }
+  } catch (error) {
+    console.error("Error deleting token:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+});
 
 module.exports = userRouter;
