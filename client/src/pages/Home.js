@@ -28,7 +28,7 @@ function Home() {
     
     setIsLoading(true);
     axios
-      .post(`${URL}/api/login`, credentials)
+      .post(`${URL}/api/v2/login`, credentials)
       .then((response) => {
         if (response.status === 200) {
           switch (response.data.role) {
