@@ -1,40 +1,45 @@
-*{font-family: Helvetica, Sans-Serif;
+* {
+  font-family: Helvetica, Sans-Serif;
   font-weight: 500;
   font-display: calc(transition);
-  font-style:initial;
-   font-variant-east-asian: simplified;
-   font-size: 14px; 
+  font-style: initial;
+  font-variant-east-asian: simplified;
+  font-size: 14px;
 }
-  .buttn-container{
-    margin: 30px 0px 0px 50px;
-  }
+
+.buttn-container {
+  margin: 30px 0px 0px 50px;
+}
 
 
-  .logout{
-    font-weight: bold;
-  }
-  
-  p{
-    color: #9f9f9f;
-  }
-  .profile-container-img{
-    border-radius: 50%;
-  }
-  .heading-timer{
-    background: #28325A;
-    border-radius: 2rem;
-  }
+.logout {
+  font-weight: bold;
+}
 
-  .heading-timer p{
-    color: white;
-    font-weight: bold;
-  }
-  .heading-timer h1{
-    color: white;
-    font-weight: bolder;
-    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
-  }
- 
+p {
+  color: #9f9f9f;
+}
+
+.profile-container-img {
+  border-radius: 50%;
+}
+
+.heading-timer {
+  background: #28325A;
+  border-radius: 2rem;
+}
+
+.heading-timer p {
+  color: white;
+  font-weight: bold;
+}
+
+.heading-timer h1 {
+  color: white;
+  font-weight: bolder;
+  text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
+}
+
 .card-info h2 {
   margin-bottom: 5px;
   font-weight: bold;
@@ -42,13 +47,14 @@
   text-transform: capitalize;
   text-align: center;
 }
+
 .card-info p {
   margin-bottom: 5px;
   color: black;
   text-align: center;
 }
 
-hr{
+hr {
   background-color: #00B4D2 !important;
 }
 
@@ -56,7 +62,7 @@ ul {
   padding: 15px;
 }
 
-.button-hr{
+.button-hr {
   margin: 7px;
   padding: 7px;
   width: auto;
@@ -66,7 +72,8 @@ ul {
   box-shadow: 2rem grey;
   cursor: pointer;
 }
-.button-edit{
+
+.button-edit {
   margin: 5px;
   padding: 10px;
   width: auto;
@@ -74,7 +81,8 @@ ul {
   border-radius: 2rem white;
   cursor: pointer;
 }
-.button-dlt{
+
+.button-dlt {
   margin: 5px;
   padding: 10px;
   width: auto;
@@ -91,24 +99,25 @@ ul {
 }
 
 
-.submitbutton{
+.submitbutton {
   font-size: 20px;
   padding: 8px 20px 13px 30px;
-    width: 170px;
-    height: 40px;
-    border-radius: 2rem;
-    float: center;
-    margin: 3px;
-    background: linear-gradient(to right, #0a6ca9ce 0%, #18d6e0 100%);
-    cursor: pointer;
-    /* display: flex; */
-    text-align: center;
+  width: 170px;
+  height: 40px;
+  border-radius: 2rem;
+  float: center;
+  margin: 3px;
+  background: linear-gradient(to right, #0a6ca9ce 0%, #18d6e0 100%);
+  cursor: pointer;
+  /* display: flex; */
+  text-align: center;
 }
-.submitbutton:hover{
-    font-weight: bold;
-    background: linear-gradient(to right, #0e1286d6 0%, #b010a3 100%);
-    color: white;
-    box-shadow: 0px 8px 8px 0 rgb(14, 218, 229);
+
+.submitbutton:hover {
+  font-weight: bold;
+  background: linear-gradient(to right, #0e1286d6 0%, #b010a3 100%);
+  color: white;
+  box-shadow: 0px 8px 8px 0 rgb(14, 218, 229);
 }
 
 @media screen and (min-width: 768px) {
@@ -116,7 +125,8 @@ ul {
     width: 48%;
   }
 }
-.reg-container{
+
+.reg-container {
   margin: 20px;
   background: rgb(255, 255, 255);
   padding: 5px 5px 15px 5px;
@@ -128,21 +138,22 @@ ul {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-@media screen and (min-width: 480px) and (max-width: 767px){
-  .reg-container{
+@media screen and (min-width: 480px) and (max-width: 767px) {
+  .reg-container {
     width: 80%;
     height: 80% !important;
     border-radius: 2rem;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     padding-bottom: 0px !important;
   }
-  h1{
+
+  h1 {
     font-size: 16px !important;
     width: 100% !important;
   }
 }
 
-h1{
+h1 {
   font-size: 20px;
   margin: 0 auto;
   /* text-align: center; */
@@ -150,8 +161,8 @@ h1{
   font-weight: bold;
 }
 
-@media screen and (max-width: 479px){
-  .reg-container{
+@media screen and (max-width: 479px) {
+  .reg-container {
     width: 85%;
     height: 400px !important;
     display: flex;
@@ -162,38 +173,41 @@ h1{
     border: 0px solid black;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
-  h1{
+
+  h1 {
     font-size: 12px !important;
     width: 94% !important;
   }
 }
 
-@media screen and (min-width:769px) and (max-width:1159px){
-  .card-view-scroll{
+@media screen and (min-width:769px) and (max-width:1159px) {
+  .card-view-scroll {
     overflow: scroll !important;
-    height:300px !important;
+    height: 300px !important;
     display: flex;
   }
-  .card-edit-form2{
+
+  .card-edit-form2 {
     width: 60%;
   }
+
   .button-container2 .submit-button {
     display: flex;
     justify-content: center;
     margin: 10px 10px;
-}
+  }
 }
 
-@media screen and (min-width:480px) and (max-width:768px){
-  .table-container .search-filter{
+@media screen and (min-width:480px) and (max-width:768px) {
+  .table-container .search-filter {
     display: flex !important;
     justify-content: space-around !important;
   }
 
 }
 
-@media screen and (max-width:480px){
-  .table-container .search-filter{
+@media screen and (max-width:480px) {
+  .table-container .search-filter {
     display: flex !important;
     flex-direction: column;
     justify-content: space-around !important;
@@ -207,40 +221,47 @@ h1{
   background: #eceff1;
   height: auto;
   width: 100%;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 .dashboard-container {
   background: #eceff1;
   padding: 30px 30px;
   width: 100%;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 /* Hide the scrollbar */
 .table-container::-webkit-scrollbar {
   width: 0px;
-  background: transparent; /* Optional: makes the scrollbar area transparent */
+  background: transparent;
+  /* Optional: makes the scrollbar area transparent */
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .table-container {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 
 .resume-link {
-  color: #00B4D2; /* Change the color to the desired color */
-  text-decoration: none; /* Remove underline */
+  color: #00B4D2;
+  /* Change the color to the desired color */
+  text-decoration: none;
+  /* Remove underline */
 }
+
 .resume-link:hover {
-  text-decoration: underline; /* Underline on hover */
+  text-decoration: underline;
+  /* Underline on hover */
 }
 
 
 
-.search-filter button{
+.search-filter button {
   margin-top: 5px;
   height: 27px;
   width: 30px;
@@ -250,45 +271,48 @@ h1{
   border-bottom-right-radius: 16px;
   border-top-right-radius: 16px;
 }
+
 .send-button {
   /* visible state */
-  background: linear-gradient( #15f7f7 0%, rgb(8,8,68));
+  background: linear-gradient(#15f7f7 0%, rgb(8, 8, 68));
   color: rgb(0, 0, 0);
   cursor: pointer;
   border-radius: 2rem;
   font-weight: bold;
   border: none;
 }
+
 .send-button[disabled] {
   /* disabled state */
   background: linear-gradient(to bottom, #98a3b5 0%, #dae0eb 100%);
   color: rgb(9, 9, 9);
   cursor: not-allowed;
 }
-.submit-button{
+
+.submit-button {
   font-size: 14px;
-  padding:  5px 25px 20px 25px;
+  padding: 5px 25px 20px 25px;
   width: 85px;
   height: 25px;
   border-radius: 2rem;
   margin-top: 4px;
   float: center;
-  background-image: linear-gradient( #15f7f7, rgb(38, 39, 130));
+  background-image: linear-gradient(#15f7f7, rgb(38, 39, 130));
   cursor: pointer;
   display: flex;
   text-align: center;
   color: white;
   border: none;
-  }
-  
-  .submit-button:hover{
-      font-weight: bold;
-      background: linear-gradient(to right, #0e1286d6 0%, #b010a3 100%);
-      color: white;
-      box-shadow: 0px 8px 8px 0 rgb(14, 218, 229);
-  }
+}
 
-.submit-button:disabled{
+.submit-button:hover {
+  font-weight: bold;
+  background: linear-gradient(to right, #0e1286d6 0%, #b010a3 100%);
+  color: white;
+  box-shadow: 0px 8px 8px 0 rgb(14, 218, 229);
+}
+
+.submit-button:disabled {
   visibility: hidden;
 }
 
@@ -303,35 +327,35 @@ h1{
     width: 96%;
     /* margin: 45px -13px; */
   }
-  
- 
 
-  .total-applicants{
+
+
+  .total-applicants {
     width: 90% !important;
     font-size: 12px !important;
     margin-left: 12px !important;
   }
-  
+
   .search-filter .submit-button1 {
     margin-top: 10px;
   }
-  
+
   /* .main-container {
     border-radius: 0;
   }
    */
- 
+
 }
 
 /* Tablet View */
-@media (min-width: 480px) and (max-width: 768px){
-  
+@media (min-width: 480px) and (max-width: 768px) {
+
   .table-container {
     width: 100%;
     margin: 25px 25px 35px 0px;
   }
- 
-  .total-applicants{
+
+  .total-applicants {
     width: 90% !important;
     font-size: 12px !important;
     margin-left: 14px !important;
@@ -340,18 +364,18 @@ h1{
 }
 
 
-.total-applicants{
-  width: 20% ;
+.total-applicants {
+  width: 20%;
   font-size: 12px !important;
   margin-left: 14px !important;
 }
 
 
-.require{
+.require {
   color: #b20303;
 }
 
-button .submit-button:disabled{
+button .submit-button:disabled {
   visibility: visible;
   cursor: none;
 }
@@ -395,7 +419,7 @@ button .submit-button:disabled{
   display: flex;
 }
 
-.modal-content ol li{
+.modal-content ol li {
   padding: 5px 5px 5px 5px;
   margin: 5px 10px 5px 10px;
 }
@@ -428,19 +452,20 @@ button .submit-button:disabled{
   background-color: #eaf2f8;
 }
 
-.error h1{
+.error h1 {
   margin: 0 auto;
   padding-top: 150px;
   font-size: 30px;
   color: red;
 }
-.modal-content .head img{
+
+.modal-content .head img {
   width: 15% !important;
 }
 
-.topContainer{
+.topContainer {
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
   background-color: #ffff;
   /* margin-left: 20px; */
   margin-top: 50px;
@@ -448,50 +473,50 @@ button .submit-button:disabled{
   height: 40px;
   padding: 5px;
   box-shadow: 0px 1px 2px rgb(38, 39, 130);
-  
+
 }
 
-.topContainer2{
+.topContainer2 {
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
   background-color: #ffff;
   margin: 2px 0px 0px 20px;
   /* width:  !important; */
   height: 45px;
-  
+
   box-shadow: '0px 2px 4px rgb(38, 39, 130)';
-  
+
 }
 
-.ant-searchIn{
-  height:30px;
-   width: 300px;
-    border: 1px dotted #00B4D2;
-     margin-left:200px;
-      margin-top:5px;
+.ant-searchIn {
+  height: 30px;
+  width: 300px;
+  border: 1px dotted #00B4D2;
+  margin-left: 200px;
+  margin-top: 5px;
 }
 
-.ant-picker-input{
+.ant-picker-input {
   border: 1px dotted #00B4D2;
 }
 
-.ant-searchIn:hover{
+.ant-searchIn:hover {
   border: 1px solid #00B4D2;
 }
-c
-.ant-drawer-body{
+
+c .ant-drawer-body {
   color: #00B4D2;
 }
 
-.search-cont input{
+.search-cont input {
   float: left;
   width: 50%;
   border: 1px solid #00B4D2;
   border-radius: 6px;
-  
+
 }
 
-.table-btn{
+.table-btn {
   background-color: #00B4D2;
   border-radius: 50px;
   border: none;
@@ -500,7 +525,7 @@ c
   cursor: pointer;
 }
 
-.table-btn:hover{
+.table-btn:hover {
   background-color: #1a2763;
   box-shadow: #060448;
   color: #ffff;
@@ -508,7 +533,7 @@ c
 
 .statistics-container {
   display: flex;
- flex-wrap: wrap;
+  flex-wrap: wrap;
   align-items: center;
 }
 
@@ -521,15 +546,21 @@ c
 
 .charts-container {
   display: flex;
-  justify-content: space-around; /* Adjust spacing between chart items */
-  flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
-  margin-top: 20px; /* Add some ssmargin at the top of the charts */
+  justify-content: space-around;
+  /* Adjust spacing between chart items */
+  flex-wrap: wrap;
+  /* Allow items to wrap to the next line if needed */
+  margin-top: 20px;
+  /* Add some ssmargin at the top of the charts */
 }
 
 .chart-item {
-  flex: 1; /* Each chart item takes equal space */
-  max-width: 300px; /* Limit the maximum width of each chart item */
-  margin: 10px; /* Add margin around each chart item */
+  flex: 1;
+  /* Each chart item takes equal space */
+  max-width: 300px;
+  /* Limit the maximum width of each chart item */
+  margin: 10px;
+  /* Add margin around each chart item */
 }
 
 
@@ -539,23 +570,25 @@ c
   align-items: Left;
   font-size: 25px;
   font-weight: bold;
-  color:red;
+  color: red;
   text-align: left;
-  
+
 }
 
 .vacancies {
   font-size: 24px;
   color: rgb(38, 39, 130);
-  font-weight: bold; /* Customize the color as desired */
+  font-weight: bold;
+  /* Customize the color as desired */
 }
 
 .toggle-button Button {
   color: #00B4D2;
-  margin-top: 5px; /* Change to the desired hover color */
+  margin-top: 5px;
+  /* Change to the desired hover color */
 }
 
-.toggle-button .active-button{
+.toggle-button .active-button {
   color: #fff;
   background-color: #00B4D2;
 }
@@ -568,7 +601,7 @@ c
   box-sizing: border-box;
 
   margin: 10px 0px 10px 20px;
-  }
+}
 
 
 .stat-repo-dashboard {
@@ -579,8 +612,8 @@ c
   box-sizing: border-box;
   margin: 10px 0;
 }
-  
- 
+
+
 
 .search-dept {
   flex-grow: 1;
@@ -603,17 +636,17 @@ c
   color: #ffff;
 }
 
-.add-button{
-  
+.add-button {
+
   cursor: pointer;
   background-color: #00B4D2;
-  margin:5px;
+  margin: 5px;
   border-radius: 5px;
   border: none;
   color: #ffff;
 }
 
-.add-button:hover{
+.add-button:hover {
   font-weight: bold;
   background-color: #00B4D2;
 }
@@ -634,22 +667,22 @@ c
   color: #555;
 }
 
-.input-container input:focus + label,
-.input-container input:not(:placeholder-shown) + label {
+.input-container input:focus+label,
+.input-container input:not(:placeholder-shown)+label {
   top: -12px;
   font-size: 12px;
   color: #00B4D2;
 }
 
-.card-details p{
- padding: 2px;
+.card-details p {
+  padding: 2px;
 }
 
-.ant-picker-input{
+.ant-picker-input {
   border: #00B4D2;
 }
 
-.hotpicks{
+.hotpicks {
   display: flex;
   flex-direction: column;
   height: auto;
@@ -668,16 +701,16 @@ c
 /* Add this to your CSS file, e.g., Hotpicks.css */
 .card-hover {
   transition: transform 0.3s, box-shadow 0.3s;
-  
+
 }
 
 .card-hover:hover {
   transform: scale(1.05);
   box-shadow: 0px 2px 4px rgb(38, 39, 130)
-  /* box-shadow: 0px 4px 6px rgb(38, 39, 130); */
+    /* box-shadow: 0px 4px 6px rgb(38, 39, 130); */
 }
 
-.pie-chart{
+.pie-chart {
   width: 100%;
   position: relative;
   background: #fff;
@@ -695,10 +728,10 @@ chart-details {
 }
 
 .recharts-legend-wrapper {
-  bottom: -10px!important;
+  bottom: -10px !important;
 }
 
-.job-progress{
+.job-progress {
   height: auto;
   width: 95%;
   background-color: #fff;
@@ -709,12 +742,13 @@ chart-details {
 
 .role-boxes {
   display: flex;
- 
-  max-width: 100%; /* Adjust the maximum width of the role boxes container */
+
+  max-width: 100%;
+  /* Adjust the maximum width of the role boxes container */
 }
 
 .role-box {
-  
+
   margin: 8px;
   box-shadow: 0px 2px 4px rgb(38, 39, 130);
   border: none;
@@ -725,46 +759,46 @@ chart-details {
   width: 100%;
 }
 
-.role-box h1{
+.role-box h1 {
   float: left;
   color: #FFFF;
   font-weight: 300;
   font-size: 21px;
 }
 
-.role-box h2{
+.role-box h2 {
   float: right;
   font-size: 28px;
 }
 
-h2{
+h2 {
   font-weight: bold;
   font-size: 18px;
-  color:#00B4D2;
+  color: #00B4D2;
   display: block;
- 
+
   width: max-content;
   position: absolute;
   margin-bottom: 10px;
 }
 
-h2::after{
-  content:'';
+h2::after {
+  content: '';
   background: linear-gradient(to right, rgb(223, 30, 143), #00B4D2, #060448);
   height: 4px;
-  width:100%;
-  position:absolute;
+  width: 100%;
+  position: absolute;
   bottom: 0;
-  left:0;
+  left: 0;
   margin-bottom: -5px;
 }
 
 .gsuded {
-  padding: 20px 0!important;
-  border-top: 1px solid #ccc!important;
+  padding: 20px 0 !important;
+  border-top: 1px solid #ccc !important;
 }
 
-.fetch-table{
+.fetch-table {
   width: 100%;
   margin: 10px 0px;
   padding: 10px;
@@ -782,7 +816,7 @@ h2::after{
   background-color: #FFFFFF;
 }
 
-.stat-container{
+.stat-container {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -791,7 +825,7 @@ h2::after{
   justify-content: space-between;
 }
 
-.stat-repo1{
+.stat-repo1 {
   background-color: #fff;
   margin-right: 30px;
   width: 35%;
@@ -800,7 +834,7 @@ h2::after{
   box-shadow: 0px 2px 4px rgb(38, 39, 130)
 }
 
-.stat-repo2{
+.stat-repo2 {
   background-color: #fff;
   width: 59%;
   height: 500px;
@@ -809,17 +843,17 @@ h2::after{
   overflow: auto;
 }
 
-.search-cont{
-  padding-top:10px;
+.search-cont {
+  padding-top: 10px;
   height: 50px;
   background-color: #fff;
 }
 
-.search-cont label{
-  padding:0;
+.search-cont label {
+  padding: 0;
 }
 
-.two-btns{
+.two-btns {
   align-content: space-around !important;
   display: flex;
   flex-direction: row;
@@ -831,10 +865,12 @@ h2::after{
 /* Panelist.css */
 /* Panelist.css */
 .modalContent {
-  height: 100%; /* Ensures modal content is never taller than 80% of the viewport height */
-  
-  padding: 10px; 
-  width: 100%;/* Adds some padding around the content */
+  height: 100%;
+  /* Ensures modal content is never taller than 80% of the viewport height */
+
+  padding: 10px;
+  width: 100%;
+  /* Adds some padding around the content */
 }
 
 .panelistTable {
@@ -851,30 +887,32 @@ h2::after{
 .ratingWrapper .bi {
   cursor: pointer;
   font-size: 24px;
-  color: #ffd700; /* Gold color for stars */
+  color: #ffd700;
+  /* Gold color for stars */
 }
 
 .ratingWrapper .bi-star {
-  color: #d3d3d3; /* Light gray color for empty stars */
+  color: #d3d3d3;
+  /* Light gray color for empty stars */
 }
 
-.ant-input{
+.ant-input {
   border: 1px solid #00B4D2;
   max-width: 75%;
 }
 
-.ant-select{
+.ant-select {
   border-radius: 5px;
   max-width: 100%;
 }
 
-.custom-label{
+.custom-label {
   color: #00B4D2 !important;
 }
 
 /* 
 //Statistic page  20/6/2024 */
-.vh-page{
+.vh-page {
   background: #eceff1;
   padding: 30px 30px;
   width: 100%;
@@ -883,37 +921,38 @@ h2::after{
   margin: 40px 0px;
 }
 
-.fetch-page{
+.fetch-page {
   margin: 50px 15px 2px 200px !important;
   background: #eceff1;
- 
+
   padding: 15px 10px;
- height: 70%;
+  height: 70%;
   width: 77.5vw;
   position: fixed;
 }
 
-.applicant-page{
+.applicant-page {
   margin: 50px 15px 2px 220px !important;
   background: #eceeef;
   display: flex;
   padding: 15px 10px;
- height: 100%;
+  height: 100%;
   width: 77.5vw;
   position: fixed;
   flex-direction: row;
 }
-.list-applicants{
+
+.list-applicants {
   background: #fff;
   width: 100%;
   float: left;
   height: auto;
   box-sizing: border-box;
   margin: 10px 0;
-/*   
+  /*   
   overflow-y: auto; */
   box-shadow: 0px 1px 2px rgb(38, 39, 130);
-  position:relative;
+  position: relative;
   /* background: #fff;
   width: 60%;
   height: 100% !important;
@@ -925,30 +964,35 @@ h2::after{
   text-transform: capitalize;
   box-shadow: 0px 2px 4px rgb(38, 39, 130); */
   /* position:relative; */
-  
+
 }
 
-.list-onboarded{
+.list-onboarded {
   background: #fff;
   float: right;
   height: auto;
   margin: 10px 0 0 0;
   overflow: auto;
   box-shadow: 0px 1px 2px rgb(38, 39, 130);
-  position:relative;
+  position: relative;
 }
 
 .list-container {
   padding: 10px 20px;
 }
 
-.ant-typography{
-  position: sticky; /* Make the Title sticky */
-  
-  z-index: 1; /* Set a higher z-index to ensure it's above other content */
-  background-color: #00B4D2; /* Background color for the Title */
-  padding: 10px; /* Add padding to the Title */
-  font-weight: bold; /* Optionally set font weight to bold */
+.ant-typography {
+  position: sticky;
+  /* Make the Title sticky */
+
+  z-index: 1;
+  /* Set a higher z-index to ensure it's above other content */
+  background-color: #00B4D2;
+  /* Background color for the Title */
+  padding: 10px;
+  /* Add padding to the Title */
+  font-weight: bold;
+  /* Optionally set font weight to bold */
   color: #FFF;
 }
 
@@ -961,7 +1005,7 @@ h2::after{
   bottom: 0;
 }
 
-.form-btn{
+.form-btn {
   color: #ffff;
   background-color: #A60808;
   align-items: center;
@@ -1002,7 +1046,7 @@ h2::after{
   transform: rotateY(180deg);
 }
 
-.bg{
+.bg {
   position: absolute;
   display: flex;
   justify-content: center;
@@ -1015,21 +1059,22 @@ h2::after{
   height: 100vh;
 }
 
-.job-details h2{
-  color:#fff;
+.job-details h2 {
+  color: #fff;
   font-size: 25px;
 }
-.job-details{
+
+.job-details {
   margin: 50px auto;
   width: 70%;
   height: max-content;
- padding: 10px;
-background: rgba(255, 255, 255, 0.63);
-border-radius: 16px;
-box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-backdrop-filter: blur(5px);
--webkit-backdrop-filter: blur(5px);
-border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.63);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .job-details p {
@@ -1049,7 +1094,8 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .job-details button {
-  background-color: #170659; /* Green button */
+  background-color: #170659;
+  /* Green button */
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -1062,7 +1108,8 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 .job-details button:hover {
   background-color: #6bd9f1;
   box-shadow: 1px 1px solid #fff;
-  color:#060448 /* Darker shade on hover */
+  color: #060448
+    /* Darker shade on hover */
 }
 
 .btn-divider {
@@ -1071,11 +1118,11 @@ border: 1px solid rgba(255, 255, 255, 0.3);
 
 
 /* for Tablet 768 x 1024 */
-@media (min-width: 768px) and (max-width: 1024px){ 
+@media (min-width: 768px) and (max-width: 1024px) {
 
   .topContainer {
     display: flex;
-    justify-content:space-between;
+    justify-content: space-between;
     background-color: #ffff;
     margin-top: 50px;
     max-width: 100%;
@@ -1085,11 +1132,11 @@ border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .ant-searchIn {
-    height:30px;
+    height: 30px;
     width: 120px;
     border: 1px dotted #00B4D2;
-    margin-left:10px;
-    margin-top:5px;
+    margin-left: 10px;
+    margin-top: 5px;
   }
 
   .fetch-cards {
@@ -1117,3 +1164,32 @@ border: 1px solid rgba(255, 255, 255, 0.3);
   color: rgb(245, 28, 21);
 }
 
+
+/* Css for auto complete admin page for update candidate */
+
+.autocomplete-container {
+  position: relative;
+  width: 300px;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.suggestions-list li {
+  padding: 10px;
+  cursor: pointer;
+  list-style-type: none;
+}
+
+.suggestions-list li:hover {
+  background-color: #f0f0f0;
+}
