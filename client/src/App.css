@@ -1,0 +1,1113 @@
+*{font-family: Helvetica, Sans-Serif;
+  font-weight: 500;
+  font-display: calc(transition);
+  font-style:initial;
+   font-variant-east-asian: simplified;
+   font-size: 14px; 
+}
+  .buttn-container{
+    margin: 30px 0px 0px 50px;
+  }
+
+
+  .logout{
+    font-weight: bold;
+  }
+  
+  p{
+    color: #9f9f9f;
+  }
+  .profile-container-img{
+    border-radius: 50%;
+  }
+  .heading-timer{
+    background: #28325A;
+    border-radius: 2rem;
+  }
+
+  .heading-timer p{
+    color: white;
+    font-weight: bold;
+  }
+  .heading-timer h1{
+    color: white;
+    font-weight: bolder;
+    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
+  }
+ 
+.card-info h2 {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #28325A;
+  text-transform: capitalize;
+  text-align: center;
+}
+.card-info p {
+  margin-bottom: 5px;
+  color: black;
+  text-align: center;
+}
+
+hr{
+  background-color: #00B4D2 !important;
+}
+.button-hr{
+  margin: 7px;
+  padding: 7px;
+  width: auto;
+  background: transparent;
+  border-radius: 50px;
+  border: none;
+  box-shadow: 2rem grey;
+  cursor: pointer;
+}
+.button-edit{
+  margin: 5px;
+  padding: 10px;
+  width: auto;
+  background-color: #18aee0;
+  border-radius: 2rem white;
+  cursor: pointer;
+}
+.button-dlt{
+  margin: 5px;
+  padding: 10px;
+  width: auto;
+  background-color: #de0b0b;
+  border-radius: 2rem white;
+  cursor: pointer;
+}
+
+
+.search-container {
+  display: flex;
+  align-items: center;
+  width: 70%;
+}
+
+
+.submitbutton{
+  font-size: 20px;
+  padding: 8px 20px 13px 30px;
+    width: 170px;
+    height: 40px;
+    border-radius: 2rem;
+    float: center;
+    margin: 3px;
+    background: linear-gradient(to right, #0a6ca9ce 0%, #18d6e0 100%);
+    cursor: pointer;
+    /* display: flex; */
+    text-align: center;
+}
+.submitbutton:hover{
+    font-weight: bold;
+    background: linear-gradient(to right, #0e1286d6 0%, #b010a3 100%);
+    color: white;
+    box-shadow: 0px 8px 8px 0 rgb(14, 218, 229);
+}
+
+@media screen and (min-width: 768px) {
+  .form-group {
+    width: 48%;
+  }
+}
+.reg-container{
+  margin: 20px;
+  background: rgb(255, 255, 255);
+  padding: 5px 5px 15px 5px;
+  display: flex;
+  height: auto;
+  /* flex-direction: column; */
+  width: 84%;
+  border-radius: 2rem;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+@media screen and (min-width: 480px) and (max-width: 767px){
+  .reg-container{
+    width: 80%;
+    height: 80% !important;
+    border-radius: 2rem;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding-bottom: 0px !important;
+  }
+  h1{
+    font-size: 16px !important;
+    width: 100% !important;
+  }
+}
+
+h1{
+  font-size: 20px;
+  margin: 0 auto;
+  /* text-align: center; */
+  color: #1a2763;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 479px){
+  .reg-container{
+    width: 85%;
+    height: 400px !important;
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    /* overflow-x: none; */
+    border-radius: 2rem;
+    border: 0px solid black;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+  h1{
+    font-size: 12px !important;
+    width: 94% !important;
+  }
+}
+
+@media screen and (min-width:769px) and (max-width:1159px){
+  .card-view-scroll{
+    overflow: scroll !important;
+    height:300px !important;
+    display: flex;
+  }
+  .card-edit-form2{
+    width: 60%;
+  }
+  .button-container2 .submit-button {
+    display: flex;
+    justify-content: center;
+    margin: 10px 10px;
+}
+}
+
+@media screen and (min-width:480px) and (max-width:768px){
+  .table-container .search-filter{
+    display: flex !important;
+    justify-content: space-around !important;
+  }
+
+}
+
+@media screen and (max-width:480px){
+  .table-container .search-filter{
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-around !important;
+    align-items: center;
+  }
+
+}
+
+.table-container {
+  padding: 30px 30px;
+  background: #eceff1;
+  height: auto;
+  width: 100%;
+  box-sizing: border-box; 
+}
+
+.dashboard-container {
+  background: #eceff1;
+  padding: 30px 30px;
+  width: 100%;
+  box-sizing: border-box; 
+}
+
+/* Hide the scrollbar */
+.table-container::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* Optional: makes the scrollbar area transparent */
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.table-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+.resume-link {
+  color: #00B4D2; /* Change the color to the desired color */
+  text-decoration: none; /* Remove underline */
+}
+.resume-link:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+
+
+.search-filter button{
+  margin-top: 5px;
+  height: 27px;
+  width: 30px;
+  border: none;
+  background: linear-gradient(to bottom, #98a3b5 0%, #dae0eb 100%);
+  color: rgb(14, 157, 157);
+  border-bottom-right-radius: 16px;
+  border-top-right-radius: 16px;
+}
+.send-button {
+  /* visible state */
+  background: linear-gradient( #15f7f7 0%, rgb(8,8,68));
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  border-radius: 2rem;
+  font-weight: bold;
+  border: none;
+}
+.send-button[disabled] {
+  /* disabled state */
+  background: linear-gradient(to bottom, #98a3b5 0%, #dae0eb 100%);
+  color: rgb(9, 9, 9);
+  cursor: not-allowed;
+}
+.submit-button{
+  font-size: 14px;
+  padding:  5px 25px 20px 25px;
+  width: 85px;
+  height: 25px;
+  border-radius: 2rem;
+  margin-top: 4px;
+  float: center;
+  background-image: linear-gradient( #15f7f7, rgb(38, 39, 130));
+  cursor: pointer;
+  display: flex;
+  text-align: center;
+  color: white;
+  border: none;
+  }
+  
+  .submit-button:hover{
+      font-weight: bold;
+      background: linear-gradient(to right, #0e1286d6 0%, #b010a3 100%);
+      color: white;
+      box-shadow: 0px 8px 8px 0 rgb(14, 218, 229);
+  }
+
+.submit-button:disabled{
+  visibility: hidden;
+}
+
+
+
+
+
+@media (max-width: 480px) {
+
+  .table-container {
+    margin: 45px 25px 35px 0px;
+    width: 96%;
+    /* margin: 45px -13px; */
+  }
+  
+ 
+
+  .total-applicants{
+    width: 90% !important;
+    font-size: 12px !important;
+    margin-left: 12px !important;
+  }
+  
+  .search-filter .submit-button1 {
+    margin-top: 10px;
+  }
+  
+  /* .main-container {
+    border-radius: 0;
+  }
+   */
+ 
+}
+
+/* Tablet View */
+@media (min-width: 480px) and (max-width: 768px){
+  
+  .table-container {
+    width: 80%;
+    /* margin: 30px 20px; */
+    margin: 25px 25px 35px 0px;
+  }
+ 
+  .total-applicants{
+    width: 90% !important;
+    font-size: 12px !important;
+    margin-left: 14px !important;
+  }
+
+}
+
+
+.total-applicants{
+  width: 20% ;
+  font-size: 12px !important;
+  margin-left: 14px !important;
+}
+
+
+.require{
+  color: #b20303;
+}
+
+button .submit-button:disabled{
+  visibility: visible;
+  cursor: none;
+}
+
+/* CSS for the modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  align-items: center;
+}
+
+.modal-content h2 {
+  margin-bottom: 10px;
+}
+
+.modal-content p {
+  margin-bottom: 20px;
+}
+
+.modal-content button {
+  background-color: #00B4D2;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 45%;
+  display: flex;
+}
+
+.modal-content ol li{
+  padding: 5px 5px 5px 5px;
+  margin: 5px 10px 5px 10px;
+}
+
+.modal-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.modal-content th,
+.modal-content td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.modal-content th {
+  background-color: #28325A;
+  color: #F2F2F2;
+  font-weight: bold;
+}
+
+.modal-content tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+  align-items: center;
+}
+
+.modal-content tbody tr:hover {
+  background-color: #eaf2f8;
+}
+
+.error h1{
+  margin: 0 auto;
+  padding-top: 150px;
+  font-size: 30px;
+  color: red;
+}
+.modal-content .head img{
+  width: 15% !important;
+}
+
+.topContainer{
+  display: flex;
+  justify-content:space-between;
+  background-color: #ffff;
+  /* margin-left: 20px; */
+  margin-top: 50px;
+  max-width: 100%;
+  height: 40px;
+  padding: 5px;
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
+  
+}
+
+.topContainer2{
+  display: flex;
+  justify-content:space-between;
+  background-color: #ffff;
+  margin: 2px 0px 0px 20px;
+  /* width:  !important; */
+  height: 45px;
+  
+  box-shadow: '0px 2px 4px rgb(38, 39, 130)';
+  
+}
+
+.ant-searchIn{
+  height:30px;
+   width: 300px;
+    border: 1px dotted #00B4D2;
+     margin-left:200px;
+      margin-top:5px;
+}
+
+.ant-picker-input{
+  border: 1px dotted #00B4D2;
+}
+
+.ant-searchIn:hover{
+  border: 1px solid #00B4D2;
+}
+c
+.ant-drawer-body{
+  color: #00B4D2;
+}
+
+.search-cont input{
+  float: left;
+  width: 50%;
+  border: 1px solid #00B4D2;
+  border-radius: 2px;
+  
+}
+
+.table-btn{
+  background-color: #00B4D2;
+  border-radius: 50px;
+  border: none;
+  margin-left: 8px;
+  padding: 2px 12px 0px 12px;
+  cursor: pointer;
+}
+
+.table-btn:hover{
+  background-color: #1a2763;
+  box-shadow: #060448;
+  color: #ffff;
+}
+
+.statistics-container {
+  display: flex;
+ flex-wrap: wrap;
+  align-items: center;
+}
+
+.users-by-role-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.charts-container {
+  display: flex;
+  justify-content: space-around; /* Adjust spacing between chart items */
+  flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
+  margin-top: 20px; /* Add some ssmargin at the top of the charts */
+}
+
+.chart-item {
+  flex: 1; /* Each chart item takes equal space */
+  max-width: 300px; /* Limit the maximum width of each chart item */
+  margin: 10px; /* Add margin around each chart item */
+}
+
+
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: Left;
+  font-size: 25px;
+  font-weight: bold;
+  color:red;
+  text-align: left;
+  
+}
+
+.vacancies {
+  font-size: 24px;
+  color: rgb(38, 39, 130);
+  font-weight: bold; /* Customize the color as desired */
+}
+
+.toggle-button Button {
+  color: #00B4D2;
+  margin-top: 5px; /* Change to the desired hover color */
+}
+
+.toggle-button .active-button{
+  color: #fff;
+  background-color: #00B4D2;
+}
+
+.stat-repo {
+  width: 100% !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+
+  margin: 10px 0px 10px 20px;
+  }
+
+
+.stat-repo-dashboard {
+  width: 100% !important;
+  display: block;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 10px 0;
+}
+  
+ 
+
+.search-dept {
+  flex-grow: 1;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  padding: 20px 40px;
+  float: right;
+}
+
+.buttons button {
+  padding: 10px !important;
+  cursor: pointer;
+  background-color: #A60808;
+  margin: 10px;
+  border-radius: 7px;
+  border: none;
+  color: #ffff;
+}
+
+.add-button{
+  
+  cursor: pointer;
+  background-color: #00B4D2;
+  margin:5px;
+  border-radius: 5px;
+  border: none;
+  color: #ffff;
+}
+
+.add-button:hover{
+  font-weight: bold;
+  background-color: #00B4D2;
+}
+
+
+/* Floating Label Styles */
+.input-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-container label {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  transition: all 0.3s ease-in-out;
+  pointer-events: none;
+  color: #555;
+}
+
+.input-container input:focus + label,
+.input-container input:not(:placeholder-shown) + label {
+  top: -12px;
+  font-size: 12px;
+  color: #00B4D2;
+}
+
+.card-details p{
+ padding: 2px;
+}
+
+.ant-picker-input{
+  border: #00B4D2;
+}
+
+.hotpicks{
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 20px 0;
+  padding: 10px 0;
+  background-color: #FFF;
+  align-content: space-between;
+  color: white;
+  text-align: left;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  position: relative;
+}
+
+/* Add this to your CSS file, e.g., Hotpicks.css */
+.card-hover {
+  transition: transform 0.3s, box-shadow 0.3s;
+  
+}
+
+.card-hover:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 2px 4px rgb(38, 39, 130)
+  /* box-shadow: 0px 4px 6px rgb(38, 39, 130); */
+}
+
+.pie-chart{
+  width: 100%;
+  position: relative;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130)
+}
+
+chart-details {
+  padding: 10px;
+  border: 1px solid #f2f2f2;
+}
+
+.recharts-legend-wrapper {
+  bottom: -10px!important;
+}
+
+.job-progress{
+  height: auto;
+  width: 95%;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130)
+}
+
+
+.role-boxes {
+  display: flex;
+ 
+  max-width: 100%; /* Adjust the maximum width of the role boxes container */
+}
+
+.role-box {
+  
+  margin: 8px;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  border: none;
+  padding: 20px;
+  color: #fff;
+  /* background-color: #fff; */
+  border-radius: 2px;
+  width: 100%;
+}
+
+.role-box h1{
+  float: left;
+  color: #FFFF;
+  font-weight: 300;
+  font-size: 21px;
+}
+
+.role-box h2{
+  float: right;
+  font-size: 28px;
+}
+
+h2{
+  font-weight: bold;
+  font-size: 18px;
+  color:#00B4D2;
+  display: block;
+ 
+  width: max-content;
+  position: absolute;
+  margin-bottom: 10px;
+}
+
+h2::after{
+  content:'';
+  background: linear-gradient(to right, rgb(223, 30, 143), #00B4D2, #060448);
+  height: 4px;
+  width:100%;
+  position:absolute;
+  bottom: 0;
+  left:0;
+  margin-bottom: -5px;
+}
+
+
+.fetch-table{
+  width: 100%;
+  margin: 10px 0px;
+  padding: 10px;
+  box-sizing: border-box;
+  box-shadow: 0px 1px 2px rgb(38, 39, 130);
+  background-color: #FFFFFF;
+}
+
+.stat-container{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 20px 0px 20px 0px;
+  align-items: flex-start;
+}
+
+.stat-repo1{
+  background-color: #fff;
+  margin-right: 30px;
+  width: 35%;
+  height: 30vw !important;
+  padding: 10px;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130)
+}
+
+.stat-repo2{
+  background-color: #fff;
+  width: 59%;
+  height: 30vw !important;
+  padding: 10px;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  overflow: auto;
+}
+
+.search-cont{
+  padding-top:10px;
+  height: 50px;
+  background-color: #fff;
+}
+
+.search-cont label{
+  padding:0;
+}
+
+.two-btns{
+  align-content: space-around !important;
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  /* background-color: #00B4D2; */
+  margin: 0 auto;
+}
+
+/* Panelist.css */
+/* Panelist.css */
+.modalContent {
+  height: 100%; /* Ensures modal content is never taller than 80% of the viewport height */
+  
+  padding: 10px; 
+  width: 100%;/* Adds some padding around the content */
+}
+
+.panelistTable {
+  width: 95%;
+  margin-bottom: 20px;
+}
+
+.two-btns {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ratingWrapper .bi {
+  cursor: pointer;
+  font-size: 24px;
+  color: #ffd700; /* Gold color for stars */
+}
+
+.ratingWrapper .bi-star {
+  color: #d3d3d3; /* Light gray color for empty stars */
+}
+
+.ant-input{
+  border: 1px solid #00B4D2;
+  max-width: 75%;
+}
+
+.ant-select{
+  border: 1px solid #00B4D2;
+  border-radius: 5px;
+  max-width: 100%;
+}
+
+.custom-label{
+  color: #00B4D2 !important;
+}
+
+/* 
+//Statistic page  20/6/2024 */
+.vh-page{
+  background: #eceff1;
+  padding: 30px 30px;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  margin: 40px 0px;
+}
+
+.fetch-page{
+  margin: 50px 15px 2px 200px !important;
+  background: #eceff1;
+ 
+  padding: 15px 10px;
+ height: 70%;
+  width: 77.5vw;
+  position: fixed;
+}
+
+.applicant-page{
+  margin: 50px 15px 2px 220px !important;
+  background: #eceeef;
+  display: flex;
+  padding: 15px 10px;
+ height: 100%;
+  width: 77.5vw;
+  position: fixed;
+  flex-direction: row;
+}
+.list-applicants{
+
+  background: #fff;
+  width: 100%;
+  float: left;
+  height: auto;
+  box-sizing: border-box;
+  margin: 10px 0;
+/*   
+  overflow-y: auto; */
+  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  position:relative;
+  /* background: #fff;
+  width: 60%;
+  height: 100% !important;
+  float: left;
+  margin-right: 10px;
+  margin-left: 10px;
+  overflow-y: auto;
+  padding: 8px;
+  text-transform: capitalize;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130); */
+  /* position:relative; */
+  
+}
+
+.list-onboarded{
+  background: #fff;
+  width: 33.5%;
+  float: right;
+  height: auto;
+  padding: 8px;
+  margin: 10px 0 0 0;
+  overflow: auto;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+  position:relative;
+}
+
+.list-container {
+  padding: 10px 20px;
+}
+
+.ant-typography{
+  position: sticky; /* Make the Title sticky */
+  
+  z-index: 1; /* Set a higher z-index to ensure it's above other content */
+  background-color: #00B4D2; /* Background color for the Title */
+  padding: 10px; /* Add padding to the Title */
+  font-weight: bold; /* Optionally set font weight to bold */
+  color: #FFF;
+}
+
+.ant-pagination {
+  padding: 5px 0;
+}
+
+.form-btn{
+  color: #ffff;
+  background-color: #A60808;
+  align-items: center;
+}
+
+.card-container {
+  perspective: 1000px;
+}
+
+.card-flip {
+  position: relative;
+  width: 225px;
+  height: 180px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-flip .card-front,
+.card-flip .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 1px;
+  box-shadow: 0px 2px 4px rgb(38, 39, 130);
+}
+
+.card-flip .card-front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.card-flip .card-back {
+  transform: rotateY(180deg);
+}
+
+.card-container:hover .card-flip {
+  transform: rotateY(180deg);
+}
+
+.bg{
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('./Assests/ADMIN_BG.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100vh;
+}
+
+.job-details h2{
+  color:#fff;
+  font-size: 25px;
+}
+.job-details{
+  margin: 50px auto;
+  width: 70%;
+  height: max-content;
+ padding: 10px;
+background: rgba(255, 255, 255, 0.63);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.job-details p {
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 8px;
+  color: #170659;
+}
+
+.job-details strong {
+  font-weight: bold;
+}
+
+.job-details .button-container {
+  margin: 20px 0px 10px 0px;
+  text-align: center;
+}
+
+.job-details button {
+  background-color: #170659; /* Green button */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.job-details button:hover {
+  background-color: #6bd9f1;
+  box-shadow: 1px 1px solid #fff;
+  color:#060448 /* Darker shade on hover */
+}
+
+.btn-divider {
+  padding: 0 10px;
+}
+/* CSS For dashboard Jobs sent for Approval */
+.approval-pending-row {
+  color: #00B4D2;
+}
+
+.denied-row {
+  color: rgb(245, 28, 21);
+}
+
+.animated-copy-button {
+  /* Hover effect: Button grows slightly */
+  &:hover {
+    transform: scale(1.05);  /* Slightly increase the size */
+    background-color: #40f2ff;  /* Change to a lighter blue */
+  }
+
+  /* Click animation: Button shrinks briefly */
+  &:active {
+    transform: scale(0.100);  /* Slightly decrease the size */
+  }
+}
+
+/* src/components/ImageCarousel.css */
+.image-carousel {
+  width: 80%;
+  max-width: 800px;
+  margin: auto;
+}
+
+.carousel-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.image-carousel .slick-dots li button {
+  background-color: #FF5733; /* Change this to your desired color */
+}
+
+.image-carousel .slick-dots li.slick-active button {
+  background-color: #FFC300; /* Color for the active dot */
+}
+
+.image-carousel .slick-dots li {
+  margin: 0 5px; /* Adjust space between dots if needed */
+}
+
+.image-carousel .slick-dots {
+  bottom: 10px; /* Adjust vertical position of the dots */
+}
+
+.welcome-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(to bottom, #000834, #00B4D2, #000834);
+  color: white;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+}
