@@ -17,10 +17,12 @@ import useAuth from "../hooks/useAuth";
 
 const { Option } = Select;
 const URL = process.env.REACT_APP_API_URL;
-const JobPositionPieChart = () => {
+
+const JobPositionPieChart = ({department}) => {
+  const { auth, setAuth } = useAuth();
   const [vacanciesData, setVacanciesData] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState("Adobe_Team");
-  const [clickedPosition, setClickedPosition] = useState("Java Developer");
+  const [selectedDepartment, setSelectedDepartment] = useState(department || '');
+  const [clickedPosition, setClickedPosition] = useState();
   const [jobLocation, setJobLocation] = useState(null);
   const [positionData, setPositionData] = useState([]);
   const [onboardedCounts, setOnboardedCounts] = useState({});
@@ -53,6 +55,9 @@ const JobPositionPieChart = () => {
     const fetchVacanciesData = async () => {
       try {
         if (selectedDepartment) {
+          console.log("fetchVacanciesData: ");
+          console.log(selectedDepartment);
+          
           const response = await axios.get(
             `${URL}/positions-with-vacancies/${selectedDepartment}`,
             {
@@ -190,9 +195,9 @@ const JobPositionPieChart = () => {
 
   const filteredVacanciesData = selectedDepartment
     ? vacanciesData.map((pos) => ({
-        name: pos.position,
-        value: pos.vacancies,
-      }))
+      name: pos.position,
+      value: pos.vacancies,
+    }))
     : [];
 
   const colors = [
@@ -226,19 +231,43 @@ const JobPositionPieChart = () => {
           boxShadow: "0px 1px 2px rgb(38, 39, 130)",
         }}
       >
-        <Select
-          placeholder="Select Department"
-          style={{ width: 240 }}
-          value={selectedDepartment}
-          onChange={handleDepartmentChange}
-          allowClear
-        >
-          {deptList.map((dept) => (
-            <Option key={dept} value={dept}>
-              {dept}
-            </Option>
-          ))}
-        </Select>
+
+        {
+          auth.role === "Hiring-Manager" && (
+            <Select
+              placeholder="Select Department"
+              style={{ width: 240 }}
+              value={selectedDepartment}
+              onChange={handleDepartmentChange}
+              disabled={true}
+              // defaultValue={selectedDepartment}
+            // allowClear
+            >
+              {selectedDepartment}
+              {/* {deptList.map((dept) => (
+                <Option key={dept} value={dept}>
+                  {dept}
+                </Option>
+              ))} */}
+            </Select>
+          )}
+
+        {(auth.role === "Admin" || auth.role === "HR") && (
+          <Select
+            placeholder="Select Department"
+            style={{ width: 240 }}
+            value={selectedDepartment}
+            onChange={handleDepartmentChange}
+            // disabled={true}
+            allowClear
+          >
+            {deptList.map((dept) => (
+              <Option key={dept} value={dept}>
+                {dept}
+              </Option>
+            ))}
+          </Select>
+        )}
         <Button
           className="add-button"
           style={{ background: "#A60808" }}
@@ -250,99 +279,99 @@ const JobPositionPieChart = () => {
       </div>
       <br />
       <div
-  style={{
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    width: "98%",
-    background:"white",
-    padding:"10px",
-    boxShadow: "0px 2px 4px rgb(38, 39, 130)"
-  }}
->
-  {/* Pie Chart Section */}
-  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
-    <div style={{ textAlign: "center", marginBottom: "10px" }}>
-      <h1>Job Vacancies by Position</h1>
-      <p>Click on a segment to see detailed information about the position's status.</p>
-    </div>
-    {filteredVacanciesData && filteredVacanciesData.length > 0 ? (
-      <PieChart width={400} height={400} cursor="pointer">
-        <Pie
-          dataKey="value"
-          data={filteredVacanciesData}
-          cx="50%"
-          cy="50%"
-          outerRadius={150}
-          fill="#8884d8"
-          label
-          onClick={handleClick}
-          style={{ outline: "none" }}
-        >
-          {filteredVacanciesData.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={colors[index % colors.length]}
-              border="none"
-              strokeWidth={0}
-            />
-          ))}
-        </Pie>
-        <Tooltip />
-      </PieChart>
-    ) : (
-      <div>No data available for the selected department</div>
-    )}
-  </div>
-
-  {/* Bar Chart Section */}
-  <div style={{ flex: 1, marginLeft: "20px" }}>
-    {clickedPosition ? (
-      positionData.length > 0 && Object.keys(positionData[0]).length > 0 ? (
-        <>
-          <div
-            style={{
-              marginBottom: "10px",
-              padding: "5px",
-              background: "#f9f9f9",
-              textAlign: "center",
-              fontWeight: "bold",
-              border: "1px solid #cccccc",
-            }}
-          >
-            {clickedPosition}
-            {jobLocation && `, ${jobLocation}`}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          width: "98%",
+          background: "white",
+          padding: "10px",
+          boxShadow: "0px 2px 4px rgb(38, 39, 130)"
+        }}
+      >
+        {/* Pie Chart Section */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
+          <div style={{ textAlign: "center", marginBottom: "10px" }}>
+            <h1>Job Vacancies by Position</h1>
+            <p>Click on a segment to see detailed information about the position's status.</p>
           </div>
-          <BarChart width={500} height={350} data={positionData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <BarTooltip />
-            <BarLegend />
-            {Object.keys(vacancyStatusColors).map((status, index) => (
-              <Bar
-                key={index}
-                dataKey={status}
-                fill={vacancyStatusColors[status]}
-              />
-            ))}
-          </BarChart>
-        </>
-      ) : (
-        <div
-          style={{
-            alignItems: "center",
-            margin: "180px 0px 0px 30px",
-            color: "red",
-          }}
-        >
-          No Applicant registered for {clickedPosition} yet
+          {filteredVacanciesData && filteredVacanciesData.length > 0 ? (
+            <PieChart width={400} height={400} cursor="pointer">
+              <Pie
+                dataKey="value"
+                data={filteredVacanciesData}
+                cx="50%"
+                cy="50%"
+                outerRadius={150}
+                fill="#8884d8"
+                label
+                onClick={handleClick}
+                style={{ outline: "none" }}
+              >
+                {filteredVacanciesData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={colors[index % colors.length]}
+                    border="none"
+                    strokeWidth={0}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          ) : (
+            <div>No data available for the selected department</div>
+          )}
         </div>
-      )
-    ) : null}
-  </div>
-</div>
+
+        {/* Bar Chart Section */}
+        <div style={{ flex: 1, marginLeft: "20px" }}>
+          {clickedPosition ? (
+            positionData.length > 0 && Object.keys(positionData[0]).length > 0 ? (
+              <>
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    padding: "5px",
+                    background: "#f9f9f9",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    border: "1px solid #cccccc",
+                  }}
+                >
+                  {clickedPosition}
+                  {jobLocation && `, ${jobLocation}`}
+                </div>
+                <BarChart width={500} height={350} data={positionData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <BarTooltip />
+                  <BarLegend />
+                  {Object.keys(vacancyStatusColors).map((status, index) => (
+                    <Bar
+                      key={index}
+                      dataKey={status}
+                      fill={vacancyStatusColors[status]}
+                    />
+                  ))}
+                </BarChart>
+              </>
+            ) : (
+              <div
+                style={{
+                  alignItems: "center",
+                  margin: "180px 0px 0px 30px",
+                  color: "red",
+                }}
+              >
+                No Applicant registered for {clickedPosition} yet
+              </div>
+            )
+          ) : null}
+        </div>
+      </div>
 
     </div>
   );

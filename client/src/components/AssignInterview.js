@@ -1,9 +1,7 @@
 
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Drawer, Form, Button, Select, message, DatePicker,Modal, Radio, Input, Checkbox } from 'antd'; // Added Checkbox import
+import { Drawer, Form, Button, Select, message, DatePicker, Modal, Radio, Input, Checkbox } from 'antd'; // Added Checkbox import
 import PanelistDropdown from './PanelistDropdown';
 import useAuth from '../hooks/useAuth';
 import moment from 'moment';
@@ -13,7 +11,17 @@ const { TextArea } = Input;
 const URL = process.env.REACT_APP_API_URL;
 
 const AssignInterview = ({ open, onClose, candidateId, auth }) => {
-  const defaultSkills = ['Communication', 'Teamwork', 'Problem Solving']; // Default static skills
+  const defaultSkills = ['Educational Background – Does the candidate have the appropriate educational qualifications or training for this position?',
+    'Prior Work Experience – Has the candidate acquired similar skills or qualifications through past work experiences?',
+    'Technical Qualifications/Experience – Does the candidate have the technical skills necessary for this position?',
+    "Verbal Communication – How were the candidate’s communication skills during the interview?",
+    "Job rotation/Flexibility – Is the candidate flexible with Job rotation (if required), willing to take up additional responsibilities?",
+    "Candidate Interest – How much interest did the candidate show in the position and the organisation?",
+    "Knowledge of Organisation – Did the candidate research the organisation prior to the interview?",
+    "Initiative – Did the candidate demonstrate, through their answers, a high degree of initiative?",
+    "Team building/Interpersonal Skills – Did the candidate demonstrate, through their answers, good team building/interpersonal skills?",
+    "Time Management – Did the candidate demonstrate, through their answers, good time management skills?",
+  ]; // Default static skills
   const [candidateData, setCandidateData] = useState({});
   const [formData, setFormData] = useState({
     round: {
@@ -21,12 +29,11 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
       panelistName: '',
       interviewDate: null,
       feedbackProvided: false,
-      meetingURL:'',
+      meetingURL: '',
       skills: [...defaultSkills.map(skill => ({ name: skill, rating: 0, comments: 'No comments' }))], // Initialize with default skills
       bookedSlot: '', // To store selected slot
     },
     note: '',
-    
   });
   const [jobData, setJobData] = useState([]);
   const [childrenDrawer, setChildrenDrawer] = useState(false);
@@ -51,11 +58,11 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
       const updatedSkills = checked
         ? [...prevData.round.skills, { name: subskill, rating: 0, comments: 'No comments' }]
         : prevData.round.skills.filter((skill) => skill.name !== subskill);
-      
+
       // Ensure default skills are always included
       const skillsWithDefaults = [...new Set([...defaultSkills, ...updatedSkills.map(skill => skill.name)])]
         .map(name => updatedSkills.find(skill => skill.name === name) || { name, rating: 0, comments: 'No comments' });
-  
+
       return {
         ...prevData,
         round: {
@@ -65,7 +72,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
       };
     });
   };
-  
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${URL}/candidate/profile/${candidateId}`, {
@@ -82,7 +89,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
           fullName: fullName || '',
           position,
         }));
-  
+
         // Check if any round is already assigned
         if (rounds && rounds.length > 0) {
           const assignedRounds = rounds.map(round => round.roundName);
@@ -95,72 +102,72 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
       console.error('Error fetching candidate data:', error);
     }
   };
-  
+
   useEffect(() => {
     if (open && candidateId) {
       fetchData();
     }
   }, [open, candidateId, token]);
-  
-
-    const [assignedRounds, setAssignedRounds] = useState([]);
 
 
-    const handleRoundChange = (value) => {
-      // Ensure candidateData is available and rounds exist
-      if (candidateData && Array.isArray(candidateData.round)) {
-        const roundAlreadyAssigned = candidateData.round.find((round) => round.roundName === value);
-    
-        if (roundAlreadyAssigned) {
-          // Show confirmation modal with round and panelist details
-          Modal.confirm({
-            title: 'Round Already Assigned',
-            content: `${value} is already assigned with ${roundAlreadyAssigned.panelistName}. Do you want to reassign it to someone else?`,
-            onOk: () => {
-              console.log('Proceeding to reassign the round...');
-              // Allow round reassignment
-              setFormData((prevData) => ({
-                ...prevData,
-                round: { ...prevData.round, roundName: value },
-              }));
-              setIsHRRound(value === 'HR'); // Check if HR round is selected
-            },
-            onCancel() {
-              console.log('Round assignment canceled');
-              handleDrawerClose();
-              // Optionally reset the roundName if the user cancels
-              setFormData((prevData) => ({
-                ...prevData,
-                round: { ...prevData.round, roundName: 'L1' }, // Reset to a default value or previous round
-              }));
-            },
-            okButtonProps: {
-              style: { backgroundColor: '#00B4D2', borderColor: '#52c41a', color: 'white' }, // Custom OK button color
-            },
-            cancelButtonProps: {
-              style: { backgroundColor: '#f5222d', borderColor: '#f5222d', color: 'white' }, // Custom Cancel button color
-            },
-          });
-        } else {
-          // No conflict, proceed as usual
-          setFormData((prevData) => ({
-            ...prevData,
-            round: { ...prevData.round, roundName: value },
-          }));
-          setIsHRRound(value === 'HR'); // Check if HR round is selected
-        }
-      } else {
-        console.error("Rounds data is not available or not an array");
-        // Optionally, handle the case when rounds are not loaded
-        Modal.error({
-          title: 'Error',
-          content: 'Rounds data is not available. Please try again later.',
+  const [assignedRounds, setAssignedRounds] = useState([]);
+
+
+  const handleRoundChange = (value) => {
+    // Ensure candidateData is available and rounds exist
+    if (candidateData && Array.isArray(candidateData.round)) {
+      const roundAlreadyAssigned = candidateData.round.find((round) => round.roundName === value);
+
+      if (roundAlreadyAssigned) {
+        // Show confirmation modal with round and panelist details
+        Modal.confirm({
+          title: 'Round Already Assigned',
+          content: `${value} is already assigned with ${roundAlreadyAssigned.panelistName}. Do you want to reassign it to someone else?`,
+          onOk: () => {
+            console.log('Proceeding to reassign the round...');
+            // Allow round reassignment
+            setFormData((prevData) => ({
+              ...prevData,
+              round: { ...prevData.round, roundName: value },
+            }));
+            setIsHRRound(value === 'HR'); // Check if HR round is selected
+          },
+          onCancel() {
+            console.log('Round assignment canceled');
+            handleDrawerClose();
+            // Optionally reset the roundName if the user cancels
+            setFormData((prevData) => ({
+              ...prevData,
+              round: { ...prevData.round, roundName: 'L1' }, // Reset to a default value or previous round
+            }));
+          },
+          okButtonProps: {
+            style: { backgroundColor: '#00B4D2', borderColor: '#52c41a', color: 'white' }, // Custom OK button color
+          },
+          cancelButtonProps: {
+            style: { backgroundColor: '#f5222d', borderColor: '#f5222d', color: 'white' }, // Custom Cancel button color
+          },
         });
+      } else {
+        // No conflict, proceed as usual
+        setFormData((prevData) => ({
+          ...prevData,
+          round: { ...prevData.round, roundName: value },
+        }));
+        setIsHRRound(value === 'HR'); // Check if HR round is selected
       }
-    };
-    
-    
-    
+    } else {
+      console.error("Rounds data is not available or not an array");
+      // Optionally, handle the case when rounds are not loaded
+      Modal.error({
+        title: 'Error',
+        content: 'Rounds data is not available. Please try again later.',
+      });
+    }
+  };
+
+
+
 
 
   const handleDrawerClose = () => {
@@ -208,16 +215,16 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
     setChildrenDrawer(true);
   };
 
-  const handleSlotSelect = (slot) => { 
+  const handleSlotSelect = (slot) => {
     // Format the date as "On 13th, September, 2024"
     const formattedDate = `On ${moment(slot.date).format('Do, MMMM, YYYY')}`;
-  
+
     // Format the slot time as "3:00 PM - 4:00 PM"
     const formattedSlot = `from ${moment(slot.fromTime).format('h:mm A')} - ${moment(slot.toTime).format('h:mm A')}`;
-    
+
     // Combine the formatted date and time
     const formattedInterviewDetails = `${formattedDate} ${formattedSlot}`;
-  
+
     // Update the formData to include the formatted slot and interview details
     setFormData((prevData) => ({
       ...prevData,
@@ -228,9 +235,9 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
       },
     }));
   };
-  
-  
-const sendEmailToPanelist = async (emailDetails) => {
+
+
+  const sendEmailToPanelist = async (emailDetails) => {
     try {
       await axios.post(`${URL}/interview-slot-booked`, emailDetails, {
         headers: {
@@ -269,20 +276,20 @@ const sendEmailToPanelist = async (emailDetails) => {
         updatedAt: new Date(),
         note: historyNote,
       };
-  
-      const requestBody = { 
-        round, 
-        status, 
-        history: [historyUpdate], 
+
+      const requestBody = {
+        round,
+        status,
+        history: [historyUpdate],
       };
-  
+
       // First, update the candidate details
       const candidateResponse = await axios.put(`${URL}/evaluate/${candidateId}`, requestBody, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       // Only proceed with slot booking if it's not an HR round and bookedSlot exists
       if (candidateResponse.status === 200 && round.roundName !== 'HR' && formData.round.bookedSlot) {
         // Book the slot
@@ -294,14 +301,14 @@ const sendEmailToPanelist = async (emailDetails) => {
             Authorization: `Bearer ${token}`,
           }
         });
-  
+
         message.success('Interview assigned and slot booked successfully');
       } else {
         message.success('Interview assigned without slot booking');
       }
-  
+
       onClose();
-  
+
       const emailDetails = {
         candidateName: candidateData.fullName,
         candidateEmail: candidateData.email,
@@ -314,7 +321,7 @@ const sendEmailToPanelist = async (emailDetails) => {
         hrEmail: auth.email,
         meetingURL: round.meetingURL,
       };
-  
+
       // Send email to both panelist and candidate
       sendEmailToPanelist(emailDetails);
       sendEmailToCandidate(emailDetails);
@@ -323,7 +330,7 @@ const sendEmailToPanelist = async (emailDetails) => {
       message.error(error.message || 'Failed to assign interview. Please try again later.');
     }
   };
-  
+
 
   const handleNoteChange = (e) => {
     setFormData((prevData) => ({
@@ -354,7 +361,7 @@ const sendEmailToPanelist = async (emailDetails) => {
     };
     fetchData();
   }, []);
-  
+
 
   const getCandidateSkills = () => {
     const candidateJob = jobData.find((job) => job.position === candidateData.position);
@@ -365,44 +372,44 @@ const sendEmailToPanelist = async (emailDetails) => {
     }
     return [];
   };
-  
+
 
   return (
     <Drawer title="Assign Interview" open={open} onClose={handleDrawerClose} width={400}>
       <div>
-        <h2>Full Name: {candidateData.fullName}</h2><br/><br/>
+        <h2>Full Name: {candidateData.fullName}</h2><br /><br />
         <h4>Position: {candidateData.position}</h4>
         <h4 style={{ color: candidateData.assessmentDone ? 'green' : 'red' }}>
-  Assessment - {candidateData.assessmentDone ? 'Completed' : 'Pending'}
-</h4>
+          Assessment - {candidateData.assessmentDone ? 'Completed' : 'Pending'}
+        </h4>
 
-    
-    {/* Display Failed Subjects Only */}
-    <div>
-     {candidateData ? (
-        <ul>
-          {Object.entries(candidateData)
-            .filter(
-              ([key, value]) =>
-                value?.status === 'Fail' &&
-                ['vocabulary', 'accounts', 'excel', 'quantitative', 'java', 'psychometric'].includes(key)
-            )
-            .map(([subject, details], index) => (
-              <li key={index}>
-                <strong>{subject.charAt(0).toUpperCase() + subject.slice(1)}:</strong>
-                <span style={{ color: 'red' }}> Failed</span>
-              </li>
-            ))}
-        </ul>
-      ) : (
-        <p>No failed subjects found.</p>
-      )}
-    </div>
+
+        {/* Display Failed Subjects Only */}
+        <div>
+          {candidateData ? (
+            <ul>
+              {Object.entries(candidateData)
+                .filter(
+                  ([key, value]) =>
+                    value?.status === 'Fail' &&
+                    ['vocabulary', 'accounts', 'excel', 'quantitative', 'java', 'psychometric'].includes(key)
+                )
+                .map(([subject, details], index) => (
+                  <li key={index}>
+                    <strong>{subject.charAt(0).toUpperCase() + subject.slice(1)}:</strong>
+                    <span style={{ color: 'red' }}> Failed</span>
+                  </li>
+                ))}
+            </ul>
+          ) : (
+            <p>No failed subjects found.</p>
+          )}
+        </div>
       </div>
-      <br/>
-      <br/>
+      <br />
+      <br />
       <Form layout="vertical" onFinish={handleSubmit}>
-        
+
         <Form.Item label="Round" name="round">
           <Select onChange={handleRoundChange} value={formData.round.roundName}>
             <Option value="L1">L1 Round</Option>
@@ -411,12 +418,12 @@ const sendEmailToPanelist = async (emailDetails) => {
           </Select>
         </Form.Item>
         <PanelistDropdown onSelect={handlePanelistSelect} />
-        <br/>
-      {formData.round.bookedSlot && (
-        <Form.Item label="Selected Slot as Interview Date">
-          <Input value={moment(formData.round.bookedSlot).format('MMMM Do YYYY, h:mm:ss a')} disabled />
-        </Form.Item>
-      )}
+        <br />
+        {formData.round.bookedSlot && (
+          <Form.Item label="Selected Slot as Interview Date">
+            <Input value={moment(formData.round.bookedSlot).format('MMMM Do YYYY, h:mm:ss a')} disabled />
+          </Form.Item>
+        )}
         {isHRRound && (
           <Form.Item label="Note" name="note">
             <TextArea
@@ -426,25 +433,25 @@ const sendEmailToPanelist = async (emailDetails) => {
             />
           </Form.Item>
         )}
-        <br/>
+        <br />
         {!isHRRound && (
-        <Form.Item label="Meeting Link" name="meetingURL">
-  <Input
-    type="text"
-    name="meetingURL"
-    value={formData.round.meetingURL}
-    onChange={(e) =>
-      setFormData((prevData) => ({
-        ...prevData,
-        round: {
-          ...prevData.round,
-          meetingURL: e.target.value, // Update meetingURL in round data
-        },
-      }))
-    }
-    placeholder="Paste Meeting Link Here"
-  />
-</Form.Item> )}
+          <Form.Item label="Meeting Link" name="meetingURL">
+            <Input
+              type="text"
+              name="meetingURL"
+              value={formData.round.meetingURL}
+              onChange={(e) =>
+                setFormData((prevData) => ({
+                  ...prevData,
+                  round: {
+                    ...prevData.round,
+                    meetingURL: e.target.value, // Update meetingURL in round data
+                  },
+                }))
+              }
+              placeholder="Paste Meeting Link Here"
+            />
+          </Form.Item>)}
         <Button type="primary" style={{ backgroundColor: '#00B4D2', borderColor: '#fff' }} htmlType="submit">
           Assign Interview
         </Button>
@@ -452,58 +459,58 @@ const sendEmailToPanelist = async (emailDetails) => {
           + Skills
         </Button>
         <Drawer title="Choose Skills" width={320} closable={false} onClose={onSkillsDrawerClose} open={isSkillsDrawerOpen}>
-  <div>
-    <h4>Select Skills:</h4>
-    {getCandidateSkills().length > 0 ? (
-      getCandidateSkills().map((skill, index) => (
-        <Checkbox
-          key={index}
-          checked={formData.round.skills.some((s) => s.name === skill)}
-          onChange={(e) => handleSkillChange(skill, e.target.checked)}
-          disabled={defaultSkills.includes(skill)} // Disable default skills
-        >
-          {skill}
-        </Checkbox>
-      ))
-    ) : (
-      <p>No skills available for this candidate.</p>
-    )}
-  </div>
-  <div style={{ marginTop: 16 }}>
-    <Button type="primary" style={{ background: '#00B4D2' }} onClick={onSkillsDrawerClose}>
-      Submit
-    </Button>
-  </div>
-</Drawer>
+          <div>
+            <h4>Select Skills:</h4>
+            {getCandidateSkills().length > 0 ? (
+              getCandidateSkills().map((skill, index) => (
+                <Checkbox
+                  key={index}
+                  checked={formData.round.skills.some((s) => s.name === skill)}
+                  onChange={(e) => handleSkillChange(skill, e.target.checked)}
+                  disabled={defaultSkills.includes(skill)} // Disable default skills
+                >
+                  {skill}
+                </Checkbox>
+              ))
+            ) : (
+              <p>No skills available for this candidate.</p>
+            )}
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <Button type="primary" style={{ background: '#00B4D2' }} onClick={onSkillsDrawerClose}>
+              Submit
+            </Button>
+          </div>
+        </Drawer>
 
-      <Drawer title="Select Slot" width={350} closable={false} onClose={onChildrenDrawerClose} open={childrenDrawer}>
-      <div>
-        <h4>Select an Available Slot:</h4>
-        <Radio.Group value={formData.round.bookedSlot} onChange={(e) => handleSlotSelect(e.target.value)}>
-        {panelistSlots
-          .filter(slot => !slot.booked) // Filter out already booked slots
-          .slice(0, 6) // Limit to the first 6 available slots
-          .map((slot) => (
-            <Radio.Button key={slot._id} value={slot}>
-              {moment(slot.fromTime).format('MMMM Do YYYY, h:mm a')} - {moment(slot.toTime).format('h:mm a')}
-            </Radio.Button>
-          ))}
-      </Radio.Group>
+        <Drawer title="Select Slot" width={350} closable={false} onClose={onChildrenDrawerClose} open={childrenDrawer}>
+          <div>
+            <h4>Select an Available Slot:</h4>
+            <Radio.Group value={formData.round.bookedSlot} onChange={(e) => handleSlotSelect(e.target.value)}>
+              {panelistSlots
+                .filter(slot => !slot.booked) // Filter out already booked slots
+                .slice(0, 6) // Limit to the first 6 available slots
+                .map((slot) => (
+                  <Radio.Button key={slot._id} value={slot}>
+                    {moment(slot.fromTime).format('MMMM Do YYYY, h:mm a')} - {moment(slot.toTime).format('h:mm a')}
+                  </Radio.Button>
+                ))}
+            </Radio.Group>
 
-     
-      </div>
-      <div style={{ marginTop: 16 }}>
-        <Button type="primary" style={{background:'#00B4D2'}} onClick={onChildrenDrawerClose}>
-          Submit
-        </Button>
-      </div>
-    </Drawer>
 
-    <div>
-  
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <Button type="primary" style={{ background: '#00B4D2' }} onClick={onChildrenDrawerClose}>
+              Submit
+            </Button>
+          </div>
+        </Drawer>
 
-    </div>
-    
+        <div>
+
+
+        </div>
+
       </Form>
     </Drawer>
   );

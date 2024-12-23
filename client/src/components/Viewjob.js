@@ -68,8 +68,8 @@ const Viewjob = ({ auth }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setJobs(response.data);
-        setFilteredJobs(response.data);
+        setJobs(response.data.reverse());
+        setFilteredJobs(response.data.reverse());
       } catch (error) {
         console.error("Error fetching jobs:", error);
       }
@@ -77,6 +77,17 @@ const Viewjob = ({ auth }) => {
 
     fetchJobs();
   }, [auth.role, auth.fullName, token]);
+
+  useEffect(() => {
+    console.log("Filtered Jobs for Sahil Grid View: ");
+    console.log(filteredJobs);
+
+    console.log("Jobs for Sahil Grid View: ");
+    console.log(jobs);
+
+    console.log(auth);
+
+  }, [filteredJobs, jobs]);
 
   const handleDateChange = (date, dateString) => {
     if (date && date.isBefore(moment(), "day")) {
@@ -143,16 +154,16 @@ const Viewjob = ({ auth }) => {
               <TiEyeOutline />
             </button>
           </Tooltip>
-          {auth.role === "Admin"  &&(
-          <Tooltip title="Delete Job" color="cyan">
-            <button
-              className="table-btn"
-              name="delete"
-              onClick={() => showConfirmModal(row._id)}
-            >
-              <AiOutlineDelete />
-            </button>
-          </Tooltip>
+          {auth.role === "Admin" && (
+            <Tooltip title="Delete Job" color="cyan">
+              <button
+                className="table-btn"
+                name="delete"
+                onClick={() => showConfirmModal(row._id)}
+              >
+                <AiOutlineDelete />
+              </button>
+            </Tooltip>
           )}
         </>
       ),
@@ -233,7 +244,7 @@ const Viewjob = ({ auth }) => {
       if (response.status === 200) {
         const updatedJobs = jobs.filter((job) => job._id !== jobToDelete);
         setJobs(updatedJobs);
-        setFilteredJobs(updatedJobs);
+        // setFilteredJobs(updatedJobs);
         message.success("Job deleted successfully!");
       } else {
         message.error(
@@ -270,21 +281,21 @@ const Viewjob = ({ auth }) => {
           changes.push({ field: key, oldValue: selectedJob[key], newValue: editFields[key] });
         }
       });
-  
+
       // Create history entry
       const historyEntry = {
         date: new Date(),
         updatedBy: auth.fullName,
         note: `Updated fields: ${changes.map(change => `${change.field} (from "${change.oldValue}" to "${change.newValue}")`).join(", ")}. Note: ${editFields.note}`,
       };
-  
+
       const updatedJob = {
         ...editFields,
         updatedAt: new Date(),
         updatedBy: auth.fullName,
         history: [...(selectedJob.history || []), historyEntry],
       };
-  
+
       // Update job in backend
       await axios.put(
         `${URL}/job-posts/${selectedJob._id}`,
@@ -295,14 +306,14 @@ const Viewjob = ({ auth }) => {
           },
         }
       );
-  
+
       // Update job list locally
       const updatedJobs = jobs.map((job) =>
         job._id === selectedJob._id ? updatedJob : job
       );
       setJobs(updatedJobs);
-      setFilteredJobs(updatedJobs);
-  
+      // setFilteredJobs(updatedJobs);
+
       setIsModalVisible(false);
       setIsEditClicked(false);
     } catch (error) {
@@ -311,7 +322,7 @@ const Viewjob = ({ auth }) => {
       setLoading(false);
     }
   };
-  
+
 
 
   const handleInputChange = (e) => {
@@ -353,415 +364,831 @@ const Viewjob = ({ auth }) => {
 
   return (
     <div>
-      <Fetchtable
-        url={`${URL}/viewjobs`}
-        columns={userColumns}
-        filteredData={filteredJobs}
-      />
-      <Modal
-        title={`This position ends in ${daysRemaining} days`}
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={800}
-      >
-        {loading ? (
-          <Spin />
-        ) : selectedJob ? (
-          <>
-            <div
-              style={{ justifyContent: "space-between", alignItems: "center" }}
-            >
-              <h2
-                style={{
-                  fontWeight: "bold",
-                  marginRight: "auto",
-                  fontSize: "20px",
-                  color: "#00B4D2",
-                }}
-              >
-                Job Title:{" "}
-                {isEditClicked ? (
-                  <Input
-                    name="position"
-                    value={editFields.position}
-                    onChange={handleInputChange}
-                  />
-                ) : (
-                  selectedJob.position
-                )}
-              </h2>
-           
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <div style={{ textTransform: 'capitalize', padding:'5px'}}>
-                {renderResumeLink(selectedJob)}
-              </div>
-                <Button
-                  style={{ marginRight: "10px" }}
-                  onClick={() => handleHistoryClick(selectedJob)}
-                >
-                  History
-                </Button>
-                <h1
-                  style={{
-                    fontWeight: "bold",
-                    color: colors[selectedJob.status],
-                    width: "100px",
-                    margin: 0,
-                  }}
-                >
-                  {isEditClicked ? (
-                    <Select
-                      style={{ width: "100px" }}
-                      key="status"
-                      value={editFields.status}
-                      onChange={(value) =>
-                        setEditFields((prevFields) => ({
-                          ...prevFields,
-                          status: value,
-                        }))
-                      }
-                    >
-                      <Option value="Hold">Hold</Option>
-                      <Option value="Active">Active</Option>
-                      <Option value="Closed">Closed</Option>
-                    </Select>
-                  ) : (
-                    selectedJob.status
-                  )}
-                </h1>
-                <Tooltip title="Edit" color="cyan">
-                  <button
-                    className="table-btn"
-                    name="edit"
-                    onClick={() => setIsEditClicked(true)}
-                  >
-                    <CiEdit />
-                  </button>
-                </Tooltip>
-                {isEditClicked && (
-                  <Tooltip title="Save" color="cyan">
-                    <button
-                      className="table-btn"
-                      name="save"
-                      onClick={handleSaveChanges}
-                    >
-                      <AiOutlineCheckCircle />
-                    </button>
-                  </Tooltip>
-                )}
-              </div>
-            </div>
-            <Row gutter={16} style={{ marginTop: "30px" }}>
-              <Col span={24}>
-                <Row gutter={16}>
-                  <Col span={8}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        Department:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <Input
-                            name="department"
-                            value={editFields.department}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          selectedJob.department
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                  <Col span={8}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        Location:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <Input
-                            name="jobLocation"
-                            value={editFields.jobLocation}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          selectedJob.jobLocation
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                  <Col span={8}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        Experience:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <Input
-                            name="experience"
-                            value={editFields.experience}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          selectedJob.experience
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col span={8}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        Vacancies:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <Input
-                            name="vacancies"
-                            value={editFields.vacancies}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          selectedJob.vacancies
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                  <Col span={8}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        Posted By:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <Input
-                            name="postedBy"
-                            value={editFields.postedBy}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          selectedJob.postedBy
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                  <Col span={8}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        FullfilledBy:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <DatePicker
-                            name="fullfilledBy"
-                            value={
-                              editFields.fullfilledBy ? moment(editFields.fullfilledBy) : null
-                            }
-                             onChange={handleDateChange}
-                             format="YYYY-MM-DD"
-                             disabledDate={disabledDate}
-                          />
-                        ) : (
-                          selectedJob.fullfilledBy ? moment(selectedJob.fullfilledBy).format('DD-MM-YYYY') : 'N/A'
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col span={8}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        Primary Skills:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <Input
-                            name="primarySkills"
-                            value={editFields.primarySkills}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          selectedJob.primarySkills
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                  <Col span={8}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        Secondary Skills:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <Input
-                            name="secondarySkills"
-                            value={editFields.secondarySkills}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          selectedJob.secondarySkills
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                </Row>
-                
-                <Row gutter={16}>
-                  <Col span={24}>
-                    <div>
-                      <h3
-                        style={{
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                          margin: "5px 0",
-                          color:'#000834',
-                        }}
-                      >
-                        Description:
-                      </h3>
-                      <p>
-                        {isEditClicked ? (
-                          <TextArea
-                            name="description"
-                            value={editFields.description}
-                            onChange={handleInputChange}
-                          />
-                        ) : (
-                          selectedJob.description
-                        )}
-                      </p>
-                    </div>
-                  </Col>
-                </Row>
-                {isEditClicked && (
-                  <Row gutter={16}>
-                    <Col span={24}>
-                      <div>
-                        <h3
-                          style={{
-                            fontWeight: "bold",
-                            fontSize: "16px",
-                            margin: "5px 0",
-                            color: "red",
-                          }}
-                        >
-                          Reason For This Update:
-                        </h3>
-                        <TextArea
-                          name="note"
-                          value={editFields.note}
-                          placeHolder="Please mention reason for update & what is updated"
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </Col>
-                  </Row>
-                )}
-              </Col>
-            </Row>
-          </>
-        ) : (
-          <p>No job selected</p>
-        )}
-      </Modal>
-      <Modal
-        title="Confirm Delete"
-        open={isConfirmModalVisible}
-        onOk={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-      >
-        <p>Are you sure you want to delete this job?</p>
-      </Modal>
-      <Drawer
-        title="History Data"
-        placement="left"
-        closable={true}
-        onClose={handleDrawerClose}
-        open={isDrawerVisible}
-        width={400}
-      >
-        {historyData.length > 0 ? (
-          <List
-            dataSource={historyData}
-            renderItem={(item, index) => (
-              <List.Item key={index}>
-                <List.Item.Meta
-                  title={`Date: ${moment(item.date).format(
-                    "DD MMMM YYYY, HH:mm"
-                  )}`}
-                  description={
-                    <>
-                      <p>Comments: {item.note}</p>
-                      <p>Updated By: {item.updatedBy}</p>
-                    </>
-                  }
-                />
-              </List.Item>
-            )}
+      {auth.role === "Hiring-Manager" ? (
+        <div>
+          <Fetchtable
+            url={`${URL}/viewjobs?mgrRole=Hiring-Manager&fullName=${auth.fullName}`}
+            columns={userColumns}
+            filteredData={filteredJobs}
           />
-        ) : (
-          <p>No history available</p>
-        )}
-      </Drawer>
+          <Modal
+            title={`This position ends in ${daysRemaining} days`}
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={null}
+            width={800}
+          >
+            {loading ? (
+              <Spin />
+            ) : selectedJob ? (
+              <>
+                <div
+                  style={{ justifyContent: "space-between", alignItems: "center" }}
+                >
+                  <h2
+                    style={{
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                      fontSize: "20px",
+                      color: "#00B4D2",
+                    }}
+                  >
+                    Job Title:{" "}
+                    {isEditClicked ? (
+                      <Input
+                        name="position"
+                        value={editFields.position}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      selectedJob.position
+                    )}
+                  </h2>
+
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <div style={{ textTransform: 'capitalize', padding: '5px' }}>
+                      {renderResumeLink(selectedJob)}
+                    </div>
+                    <Button
+                      style={{ marginRight: "10px" }}
+                      onClick={() => handleHistoryClick(selectedJob)}
+                    >
+                      History
+                    </Button>
+                    <h1
+                      style={{
+                        fontWeight: "bold",
+                        color: colors[selectedJob.status],
+                        width: "100px",
+                        margin: 0,
+                      }}
+                    >
+                      {isEditClicked ? (
+                        <Select
+                          style={{ width: "100px" }}
+                          key="status"
+                          value={editFields.status}
+                          onChange={(value) =>
+                            setEditFields((prevFields) => ({
+                              ...prevFields,
+                              status: value,
+                            }))
+                          }
+                        >
+                          <Option value="Hold">Hold</Option>
+                          <Option value="Active">Active</Option>
+                          <Option value="Closed">Closed</Option>
+                        </Select>
+                      ) : (
+                        selectedJob.status
+                      )}
+                    </h1>
+                    <Tooltip title="Edit" color="cyan">
+                      <button
+                        className="table-btn"
+                        name="edit"
+                        onClick={() => setIsEditClicked(true)}
+                      >
+                        <CiEdit />
+                      </button>
+                    </Tooltip>
+                    {isEditClicked && (
+                      <Tooltip title="Save" color="cyan">
+                        <button
+                          className="table-btn"
+                          name="save"
+                          onClick={handleSaveChanges}
+                        >
+                          <AiOutlineCheckCircle />
+                        </button>
+                      </Tooltip>
+                    )}
+                  </div>
+                </div>
+                <Row gutter={16} style={{ marginTop: "30px" }}>
+                  <Col span={24}>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Department:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="department"
+                                value={editFields.department}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.department
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Location:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="jobLocation"
+                                value={editFields.jobLocation}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.jobLocation
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Experience:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="experience"
+                                value={editFields.experience}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.experience
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Vacancies:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="vacancies"
+                                value={editFields.vacancies}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.vacancies
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Posted By:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="postedBy"
+                                value={editFields.postedBy}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.postedBy
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            FullfilledBy:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <DatePicker
+                                name="fullfilledBy"
+                                value={
+                                  editFields.fullfilledBy ? moment(editFields.fullfilledBy) : null
+                                }
+                                onChange={handleDateChange}
+                                format="YYYY-MM-DD"
+                                disabledDate={disabledDate}
+                              />
+                            ) : (
+                              selectedJob.fullfilledBy ? moment(selectedJob.fullfilledBy).format('DD-MM-YYYY') : 'N/A'
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Primary Skills:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="primarySkills"
+                                value={editFields.primarySkills}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.primarySkills
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Secondary Skills:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="secondarySkills"
+                                value={editFields.secondarySkills}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.secondarySkills
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+
+                    <Row gutter={16}>
+                      <Col span={24}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Description:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <TextArea
+                                name="description"
+                                value={editFields.description}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.description
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+                    {isEditClicked && (
+                      <Row gutter={16}>
+                        <Col span={24}>
+                          <div>
+                            <h3
+                              style={{
+                                fontWeight: "bold",
+                                fontSize: "16px",
+                                margin: "5px 0",
+                                color: "red",
+                              }}
+                            >
+                              Reason For This Update:
+                            </h3>
+                            <TextArea
+                              name="note"
+                              value={editFields.note}
+                              placeHolder="Please mention reason for update & what is updated"
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
+                  </Col>
+                </Row>
+              </>
+            ) : (
+              <p>No job selected</p>
+            )}
+          </Modal>
+          <Modal
+            title="Confirm Delete"
+            open={isConfirmModalVisible}
+            onOk={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+          >
+            <p>Are you sure you want to delete this job?</p>
+          </Modal>
+          <Drawer
+            title="History Data"
+            placement="left"
+            closable={true}
+            onClose={handleDrawerClose}
+            open={isDrawerVisible}
+            width={400}
+          >
+            {historyData.length > 0 ? (
+              <List
+                dataSource={historyData}
+                renderItem={(item, index) => (
+                  <List.Item key={index}>
+                    <List.Item.Meta
+                      title={`Date: ${moment(item.date).format(
+                        "DD MMMM YYYY, HH:mm"
+                      )}`}
+                      description={
+                        <>
+                          <p>Comments: {item.note}</p>
+                          <p>Updated By: {item.updatedBy}</p>
+                        </>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <p>No history available</p>
+            )}
+          </Drawer>
+        </div>
+      ) : (
+        <div>
+          <Fetchtable
+            url={`${URL}/viewjobs`}
+            columns={userColumns}
+            filteredData={filteredJobs}
+          />
+          <Modal
+            title={`This position ends in ${daysRemaining} days`}
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={null}
+            width={800}
+          >
+            {loading ? (
+              <Spin />
+            ) : selectedJob ? (
+              <>
+                <div
+                  style={{ justifyContent: "space-between", alignItems: "center" }}
+                >
+                  <h2
+                    style={{
+                      fontWeight: "bold",
+                      marginRight: "auto",
+                      fontSize: "20px",
+                      color: "#00B4D2",
+                    }}
+                  >
+                    Job Title:{" "}
+                    {isEditClicked ? (
+                      <Input
+                        name="position"
+                        value={editFields.position}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      selectedJob.position
+                    )}
+                  </h2>
+
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <div style={{ textTransform: 'capitalize', padding: '5px' }}>
+                      {renderResumeLink(selectedJob)}
+                    </div>
+                    <Button
+                      style={{ marginRight: "10px" }}
+                      onClick={() => handleHistoryClick(selectedJob)}
+                    >
+                      History
+                    </Button>
+                    <h1
+                      style={{
+                        fontWeight: "bold",
+                        color: colors[selectedJob.status],
+                        width: "100px",
+                        margin: 0,
+                      }}
+                    >
+                      {isEditClicked ? (
+                        <Select
+                          style={{ width: "100px" }}
+                          key="status"
+                          value={editFields.status}
+                          onChange={(value) =>
+                            setEditFields((prevFields) => ({
+                              ...prevFields,
+                              status: value,
+                            }))
+                          }
+                        >
+                          <Option value="Hold">Hold</Option>
+                          <Option value="Active">Active</Option>
+                          <Option value="Closed">Closed</Option>
+                        </Select>
+                      ) : (
+                        selectedJob.status
+                      )}
+                    </h1>
+                    <Tooltip title="Edit" color="cyan">
+                      <button
+                        className="table-btn"
+                        name="edit"
+                        onClick={() => setIsEditClicked(true)}
+                      >
+                        <CiEdit />
+                      </button>
+                    </Tooltip>
+                    {isEditClicked && (
+                      <Tooltip title="Save" color="cyan">
+                        <button
+                          className="table-btn"
+                          name="save"
+                          onClick={handleSaveChanges}
+                        >
+                          <AiOutlineCheckCircle />
+                        </button>
+                      </Tooltip>
+                    )}
+                  </div>
+                </div>
+                <Row gutter={16} style={{ marginTop: "30px" }}>
+                  <Col span={24}>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Department:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="department"
+                                value={editFields.department}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.department
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Location:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="jobLocation"
+                                value={editFields.jobLocation}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.jobLocation
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Experience:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="experience"
+                                value={editFields.experience}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.experience
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Vacancies:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="vacancies"
+                                value={editFields.vacancies}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.vacancies
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Posted By:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="postedBy"
+                                value={editFields.postedBy}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.postedBy
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            FullfilledBy:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <DatePicker
+                                name="fullfilledBy"
+                                value={
+                                  editFields.fullfilledBy ? moment(editFields.fullfilledBy) : null
+                                }
+                                onChange={handleDateChange}
+                                format="YYYY-MM-DD"
+                                disabledDate={disabledDate}
+                              />
+                            ) : (
+                              selectedJob.fullfilledBy ? moment(selectedJob.fullfilledBy).format('DD-MM-YYYY') : 'N/A'
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Primary Skills:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="primarySkills"
+                                value={editFields.primarySkills}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.primarySkills
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                      <Col span={8}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Secondary Skills:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <Input
+                                name="secondarySkills"
+                                value={editFields.secondarySkills}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.secondarySkills
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+
+                    <Row gutter={16}>
+                      <Col span={24}>
+                        <div>
+                          <h3
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              margin: "5px 0",
+                              color: '#000834',
+                            }}
+                          >
+                            Description:
+                          </h3>
+                          <p>
+                            {isEditClicked ? (
+                              <TextArea
+                                name="description"
+                                value={editFields.description}
+                                onChange={handleInputChange}
+                              />
+                            ) : (
+                              selectedJob.description
+                            )}
+                          </p>
+                        </div>
+                      </Col>
+                    </Row>
+                    {isEditClicked && (
+                      <Row gutter={16}>
+                        <Col span={24}>
+                          <div>
+                            <h3
+                              style={{
+                                fontWeight: "bold",
+                                fontSize: "16px",
+                                margin: "5px 0",
+                                color: "red",
+                              }}
+                            >
+                              Reason For This Update:
+                            </h3>
+                            <TextArea
+                              name="note"
+                              value={editFields.note}
+                              placeHolder="Please mention reason for update & what is updated"
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
+                  </Col>
+                </Row>
+              </>
+            ) : (
+              <p>No job selected</p>
+            )}
+          </Modal>
+          <Modal
+            title="Confirm Delete"
+            open={isConfirmModalVisible}
+            onOk={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+          >
+            <p>Are you sure you want to delete this job?</p>
+          </Modal>
+          <Drawer
+            title="History Data"
+            placement="left"
+            closable={true}
+            onClose={handleDrawerClose}
+            open={isDrawerVisible}
+            width={400}
+          >
+            {historyData.length > 0 ? (
+              <List
+                dataSource={historyData}
+                renderItem={(item, index) => (
+                  <List.Item key={index}>
+                    <List.Item.Meta
+                      title={`Date: ${moment(item.date).format(
+                        "DD MMMM YYYY, HH:mm"
+                      )}`}
+                      description={
+                        <>
+                          <p>Comments: {item.note}</p>
+                          <p>Updated By: {item.updatedBy}</p>
+                        </>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <p>No history available</p>
+            )}
+          </Drawer>
+        </div>
+      )}
     </div>
   );
 };

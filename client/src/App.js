@@ -94,6 +94,8 @@ const App = () => {
               <Route path="/editProfile" element={<Sidebar><ProfilePage /></Sidebar>} />
               <Route path="/panelist/:id" element={<Sidebar><Panelist /></Sidebar>} />
               <Route path="/applicants" element={<Sidebar><Applicant /></Sidebar>} />
+
+              <Route path='/provideFeedback/:id' element={<Sidebar><Panelist /></Sidebar>} />
             </Route>
             
           </Routes>

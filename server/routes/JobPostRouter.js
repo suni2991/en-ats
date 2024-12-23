@@ -79,12 +79,18 @@ jobRouter.get(
         jobs = await Job.find({
           status: { $nin: ["Approval Pending", "Denied"] },
         });
-      } else if (mgrRole === "HiringManager") {
-        const fullNameRegex = new RegExp(fullName, "i");
+      } else if (mgrRole === "Hiring-Manager") {
+        // const fullNameRegex = new RegExp(fullName, "i");
+        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "Hiring-Manager" });
+        console.log("hiringManager department: ");
+        console.log(hiringManager.department);
         jobs = await Job.find({
-          updateBy: fullNameRegex,
+          department: hiringManager.department,
+          // updateBy: fullNameRegex,
           status: { $nin: ["Approval Pending", "Denied"] },
         });
+        console.log("jobs: ");
+        console.log(jobs);
       } else {
         const fullNameRegex = new RegExp(fullName, "i");
         jobs = await Job.find({
@@ -112,12 +118,25 @@ jobRouter.get(
         jobPosts = await Job.find({
           status: { $in: ["Approval Pending", "Denied"] },
         });
-      } else if (mgrRole === "HiringManager") {
-        const fullNameRegex = new RegExp(fullName, "i");
-        jobPosts = await Job.find({
-          updateBy: fullNameRegex,
-          status: { $in: ["Approval Pending", "Denied"] },
+      } else if (mgrRole === "Hiring-Manager") {
+
+        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "Hiring-Manager" });
+        console.log("hiringManager department: ");
+        console.log(hiringManager.department);
+        jobs = await Job.find({
+          department: hiringManager.department,
+          // updateBy: fullNameRegex,
+          status: { $nin: ["Approval Pending", "Denied"] },
         });
+        console.log("jobs: ");
+        console.log(jobs);
+
+
+        // const fullNameRegex = new RegExp(fullName, "i");
+        // jobPosts = await Job.find({
+        //   updateBy: fullNameRegex,
+        //   status: { $in: ["Approval Pending", "Denied"] },
+        // });
       } else {
         const fullNameRegex = new RegExp(fullName, "i");
         jobPosts = await Job.find({
@@ -296,6 +315,8 @@ jobRouter.get(
           },
         },
       ]);
+      // console.log("vacancyStatusCounts:");
+      // console.log(vacancyStatusCounts);
       res.json(vacancyStatusCounts);
     } catch (err) {
       console.error(err);
@@ -304,53 +325,53 @@ jobRouter.get(
   }
 );
 
-jobRouter.put("/job-posts/:id", 
-	// authenticate,
-	// checkPermission("update_job_post_by_id"),
+jobRouter.put("/job-posts/:id",
+  // authenticate,
+  // checkPermission("update_job_post_by_id"),
   async (req, res) => {
-  const jobId = req.params.id;
-  const {
-    position,
-    department,
-    jobLocation,
-    experience,
-    vacancies,
-    postedBy,
-    status,
-    description,
-    responsibilities,
-    history,
-    fullfilledBy,
-  } = req.body;
+    const jobId = req.params.id;
+    const {
+      position,
+      department,
+      jobLocation,
+      experience,
+      vacancies,
+      postedBy,
+      status,
+      description,
+      responsibilities,
+      history,
+      fullfilledBy,
+    } = req.body;
 
-  try {
-    const job = await Job.findById(jobId);
-    if (!job) {
-      return res.status(404).json({ message: "Job not found" });
+    try {
+      const job = await Job.findById(jobId);
+      if (!job) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+
+      if (history && history.length > 0) {
+        job.history.push(history[history.length - 1]);
+      }
+
+      job.position = position;
+      job.department = department;
+      job.jobLocation = jobLocation;
+      job.experience = experience;
+      job.vacancies = vacancies;
+      job.postedBy = postedBy;
+      job.status = status;
+      job.description = description;
+      job.responsibilities = responsibilities;
+      job.fullfilledBy = fullfilledBy;
+
+      const updatedJob = await job.save();
+
+      res.status(200).json(updatedJob);
+    } catch (error) {
+      console.error("Error updating job details:", error);
+      res.status(500).json({ message: "Server error" });
     }
-
-    if (history && history.length > 0) {
-      job.history.push(history[history.length - 1]);
-    }
-
-    job.position = position;
-    job.department = department;
-    job.jobLocation = jobLocation;
-    job.experience = experience;
-    job.vacancies = vacancies;
-    job.postedBy = postedBy;
-    job.status = status;
-    job.description = description;
-    job.responsibilities = responsibilities;
-    job.fullfilledBy = fullfilledBy;
-
-    const updatedJob = await job.save();
-
-    res.status(200).json(updatedJob);
-  } catch (error) {
-    console.error("Error updating job details:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+  });
 
 module.exports = jobRouter;

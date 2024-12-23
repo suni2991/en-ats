@@ -813,15 +813,33 @@ h2::after{
 /* Panelist.css */
 /* Panelist.css */
 .modalContent {
-  height: 100%; /* Ensures modal content is never taller than 80% of the viewport height */
+  /* height: 100%; Ensures modal content is never taller than 80% of the viewport height */
   
-  padding: 10px; 
-  width: 100%;/* Adds some padding around the content */
+  padding: 70px 20px; 
+  /* width: 100%;Adds some padding around the content */
 }
 
 .panelistTable {
-  width: 95%;
+  /* padding: 20px; */
+  /* background-color: 'ffff'; */
+  width: 99%;
   margin-bottom: 20px;
+}
+
+.panelistTable thead th {
+  font-weight: bold;
+  font-size: large;
+}
+
+/* .panelistTable tbody, tr{
+  padding: 15px;
+} */
+
+.panelistTable thead th,
+.panelistTable tbody th,
+.panelistTable tbody, td{
+  padding: 15px;
+  background-color: white;
 }
 
 .two-btns {

@@ -38,7 +38,7 @@ function Home() {
           switch (response.data.role) {
             case "Admin":
             case "HR":
-            case "HiringManager":
+            case "Hiring-Manager":
               navigate("/dashboard");
               break;
             case "Applicant":

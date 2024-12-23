@@ -87,7 +87,7 @@ const candidateSchema = new mongoose.Schema({
   confirmPassword: { type: String },
   role: {
     type: String,
-    enum: ["Applicant", "HR", "Admin", "Enfusian", "Panelist", "HiringManager"],
+    enum: ["Applicant", "HR", "Admin", "Enfusian", "Panelist", "Hiring-Manager"],
     default: "Applicant",
   },
   roleId: {

@@ -9,7 +9,6 @@ import Viewjob from "../components/Viewjob";
 import Postjob from "../components/Postjob";
 import JobPositionPieChart from "../components/JobPosition";
 
-
 const URL = process.env.REACT_APP_API_URL;
 const Dashboard = () => {
   const { auth } = useAuth();
@@ -32,7 +31,7 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-       
+
         setJobs(response.data.reverse());
       } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -164,7 +163,7 @@ const Dashboard = () => {
             className={view === "tile" ? "active-button" : ""}
           >
             Tile View
-          </Button> 
+          </Button>
           <span classname='btn-divider'>&nbsp; | &nbsp;</span>
           <Button onClick={toggleView} type='text' icon={<FaTableList />} className={view === 'table' ? 'active-button' : ''}>
 
@@ -181,13 +180,19 @@ const Dashboard = () => {
         )}
       </div>
 
+      {auth.role === 'Hiring-Manager' ?
+        (
+          <div className='stat-repo-dashboard'>
+            <JobPositionPieChart department={auth.department}/>
+          </div>
+        ) :
+        (
+          <div className='stat-repo-dashboard'>
+            <JobPositionPieChart />
+          </div>
+        )
+      }
 
-      {auth.role !== 'HiringManager' && (
-        <div className='stat-repo-dashboard'>
-
-          <JobPositionPieChart />
-        </div>
-      )}
       <div
         className="list-applicants"
         style={{ width: "99.5%", marginLeft: "5px", height: "auto" }}

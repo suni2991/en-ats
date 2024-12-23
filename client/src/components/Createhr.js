@@ -6,6 +6,20 @@ import useAuth from "../hooks/useAuth";
 
 const URL = process.env.REACT_APP_API_URL;
 const Createhr = ({ closeModal }) => {
+
+  const deptList = [
+    'Data and Digital-DND',
+    'PACS',
+    'EdTech & Catalog Operations (ECO)',
+    'Analytics & Insights',
+    'Adobe_Team',
+    'Software Services',
+    'Business Development',
+    'Human Resources',
+    'Administration',
+    'IT & Governance'
+  ];
+
   const { token } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -21,6 +35,14 @@ const Createhr = ({ closeModal }) => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handleDepartmentChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      department: value,
     }));
   };
 
@@ -47,7 +69,7 @@ const Createhr = ({ closeModal }) => {
 
     try {
       const response = await axios.post(
-`${URL}/register/candidate`,
+        `${URL}/register/candidate`,
         {
           ...formData,
           password: password,
@@ -60,22 +82,22 @@ const Createhr = ({ closeModal }) => {
       if (response.status === 201) {
         const data = response.data;
 
-        const emailData = {
-          role: data.role,
-          confirmPassword: data.confirmPassword,
-          email: data.email,
-          fullName: data.fullName,
-        };
+        // const emailData = {
+        //   role: data.role,
+        //   confirmPassword: data.confirmPassword,
+        //   email: data.email,
+        //   fullName: data.fullName,
+        // };
 
-        const emailResponse = await axios.post(
-          `${URL}/user/credentials`,
-          emailData,
-          {
-              headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        // const emailResponse = await axios.post(
+        //   `${URL}/user/credentials`,
+        //   emailData,
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${token}`,
+        //     },
+        //   }
+        // );
 
         message.success("User Created Successfully");
         setFormData({
@@ -157,7 +179,22 @@ const Createhr = ({ closeModal }) => {
             <div>
               <label htmlFor="department">Department:</label>
               <br />
-              <input
+              <select
+                id="department"
+                name="department"
+                value={formData.department}
+                onChange={handleDepartmentChange}
+                required
+              > 
+                <option>Choose Department</option>
+                {deptList.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
+              </select>
+
+              {/* <input
                 type="text"
                 id="department"
                 name="department"
@@ -165,7 +202,7 @@ const Createhr = ({ closeModal }) => {
                 value={formData.department}
                 onChange={handleChange}
                 required
-              />
+              /> */}
             </div>
             <div>
               <label htmlFor="role">Role:</label>
@@ -180,7 +217,7 @@ const Createhr = ({ closeModal }) => {
                 <option value="HR">HR</option>
                 <option value="Admin">Admin</option>
                 <option value="Panelist">Panelist</option>
-                <option value="HiringManager">HiringManager</option>
+                <option value="Hiring-Manager">Hiring-Manager</option>
               </select>
             </div>
           </div>

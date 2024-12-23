@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Rate, Input, Tabs, Table,message } from 'antd';
+import { useNavigate, useLocation } from "react-router-dom";
+import { Tooltip, Button, Rate, Input, Tabs, Table, message } from 'antd';
 import Swal from 'sweetalert2';
+import { MdComputer, MdGraphicEq, MdGrading, MdGrade } from "react-icons/md";
 import axios from 'axios';
 import useAuth from '../hooks/useAuth';
 
 const { TabPane } = Tabs;
 const URL = process.env.REACT_APP_API_URL;
 
-const Panelist = ({ candidateData, auth, onClose }) => {
+const Panelist = () => {
   const [rounds, setRounds] = useState([]);
   const [rating, setRating] = useState({});
   const [categoryScores, setCategoryScores] = useState([]);
@@ -23,6 +25,16 @@ const Panelist = ({ candidateData, auth, onClose }) => {
   const [isFeedbackGiven, setIsFeedbackGiven] = useState(false);
   const { token } = useAuth();
 
+  const navigateTo = useNavigate();
+  const location = useLocation();
+  const auth = location.state.auth;
+  const candidateData = location.state.passCandidate;
+
+  const handleBackButton = (e) => {
+    // e.preventDefault();
+    navigateTo("/feedbacks")
+  }
+
   useEffect(() => {
     if (candidateData) {
       setFormData((prevData) => ({
@@ -34,18 +46,22 @@ const Panelist = ({ candidateData, auth, onClose }) => {
         panelistName: candidateData.panelistName || '',
         feedback: '',
       }));
-  
+
       // Get the latest round for each of L1, L2, and HR
       const roundNames = ['L1', 'L2', 'HR'];
       const filteredRounds = roundNames.map(roundName => {
         const latestRound = candidateData.round
           .filter(round => round.roundName === roundName)
           .sort((a, b) => new Date(b.interviewDate) - new Date(a.interviewDate))[0]; // sort by date and get latest
+        console.log("Latest Round: ");
+        console.log(latestRound);
         return latestRound;
       }).filter(Boolean); // Filter out undefined values
-  
+      console.log("Filtered Rounds:");
+      console.log(filteredRounds);
+
       setRounds(filteredRounds);
-  
+
       // Initialize skill ratings
       const skillsData = filteredRounds.reduce((acc, round) => {
         round.skills.forEach(skill => {
@@ -53,16 +69,18 @@ const Panelist = ({ candidateData, auth, onClose }) => {
         });
         return acc;
       }, {});
+      console.log("Skills Data: ");
+      console.log(skillsData);
       setRating(skillsData);
-  
+
       // Check if feedback is already given for all rounds
       if (candidateData.status === 'Selected' || candidateData.status === 'Rejected' || filteredRounds.some(round => round.feedbackProvided)) {
         setIsFeedbackGiven(true);
       }
     }
   }, [candidateData]);
-  
-  
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,31 +92,31 @@ const Panelist = ({ candidateData, auth, onClose }) => {
 
   const sendRejectionEmail = async (emailDetails) => {
     try {
-        await axios.post(`${URL}/send-rejection-email`, emailDetails, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        message.success('Rejection email sent successfully');
+      await axios.post(`${URL}/send-rejection-email`, emailDetails, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success('Rejection email sent successfully');
     } catch (error) {
-        console.error('Error sending rejection email:', error);
-        message.error('Failed to send rejection email. Please try again later.');
+      console.error('Error sending rejection email:', error);
+      message.error('Failed to send rejection email. Please try again later.');
     }
-};
+  };
 
-const sendSelectionEmail = async (emailDetails) => {
+  const sendSelectionEmail = async (emailDetails) => {
     try {
-        await axios.post(`${URL}/send-selection-email`, emailDetails, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        message.success('Selection email sent successfully');
+      await axios.post(`${URL}/send-selection-email`, emailDetails, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success('Selection email sent successfully');
     } catch (error) {
-        console.error('Error sending selection email:', error);
-        message.error('Failed to send selection email. Please try again later.');
+      console.error('Error sending selection email:', error);
+      message.error('Failed to send selection email. Please try again later.');
     }
-};
+  };
 
 
   const sendEmail = async (emailDetails) => {
@@ -117,7 +135,7 @@ const sendSelectionEmail = async (emailDetails) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!candidateData || !candidateData._id) {
       Swal.fire({
         title: "Error",
@@ -127,9 +145,9 @@ const sendSelectionEmail = async (emailDetails) => {
       });
       return;
     }
-  
+
     const { feedback, panelistName } = formData;
-  
+
     if (!feedback) {
       Swal.fire({
         title: "Error",
@@ -139,7 +157,7 @@ const sendSelectionEmail = async (emailDetails) => {
       });
       return;
     }
-  
+
     const updatedRounds = rounds.map((round, index) => {
       if (index === rounds.length - 1) {
         return {
@@ -157,7 +175,7 @@ const sendSelectionEmail = async (emailDetails) => {
       }
       return round;
     });
-  
+
     const roundIndex = rounds.length - 1;
     const requestBody = {
       roundIndex: roundIndex,
@@ -172,7 +190,7 @@ const sendSelectionEmail = async (emailDetails) => {
         skills: updatedRounds[roundIndex].skills, // Include updated skills with ratings and comments
       },
     };
-  
+
     try {
       // Update feedback and round details
       const response = await axios.put(`${URL}/update-feedback/${candidateData._id}`, requestBody, {
@@ -180,7 +198,7 @@ const sendSelectionEmail = async (emailDetails) => {
           Authorization: `Bearer ${token}`
         }
       });
-  
+
       if (response.status === 200) {
         let newStatus;
         switch (feedback) {
@@ -188,11 +206,11 @@ const sendSelectionEmail = async (emailDetails) => {
             newStatus = 'L1 Interview Cleared';
             break;
           case 'L2 Interview Cleared':
-              newStatus = 'L2 Interview Cleared';
-              break;
+            newStatus = 'L2 Interview Cleared';
+            break;
           case 'L1 Interview Rejected':
-                newStatus = 'L1 Interview Rejected';
-                break;
+            newStatus = 'L1 Interview Rejected';
+            break;
           case 'L2 Interview Rejected':
             newStatus = 'L2 Interview Rejected';
             break;
@@ -205,25 +223,25 @@ const sendSelectionEmail = async (emailDetails) => {
           default:
             newStatus = 'Processing';
         }
-  
+
         const historyUpdate = {
           updatedBy: auth.fullName,
           updatedAt: new Date(),
           note: `Status updated to ${newStatus} based on ${feedback} feedback.`
         };
-  
+
         const statusUpdate = {
           status: newStatus,
           historyUpdate: historyUpdate
         };
-  
+
         // Update candidate status
         await axios.put(`${URL}/candidates/${candidateData._id}`, statusUpdate, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-  
+
         // Create emailDetails for sending feedback details to HR
         const emailDetails = {
           candidateName: candidateData.fullName,
@@ -240,10 +258,10 @@ const sendSelectionEmail = async (emailDetails) => {
           })),
           postedBy: auth.fullName,
           hrEmail: candidateData.mgrEmail,
-          hrName : candidateData.mgrName,
+          hrName: candidateData.mgrName,
           status: newStatus,
         };
-  
+
         Swal.fire({
           title: "Success",
           text: "Interview feedback updated successfully.",
@@ -252,16 +270,16 @@ const sendSelectionEmail = async (emailDetails) => {
         }).then(() => {
           setIsFeedbackGiven(true);
           sendEmail(emailDetails);  // Send the email with feedback details
-          onClose();  // Close the modal
+          // onClose();  // Close the modal
         });
 
         if (feedback.includes('Rejected')) {
           // Send Rejection email if the feedback includes 'Rejected'
           await sendRejectionEmail(emailDetails);
-      } else if (feedback.includes('Cleared')) {
+        } else if (feedback.includes('Cleared')) {
           // Send Selection email if the feedback includes 'Cleared'
           await sendSelectionEmail(emailDetails);
-      }
+        }
       } else {
         throw new Error("Failed to update feedback. Please try again later.");
       }
@@ -294,7 +312,7 @@ const sendSelectionEmail = async (emailDetails) => {
     { name: 'Accounts', score: candidateData.accounts === -1 ? 0 : candidateData.accounts },
     { name: 'Vocabulary', score: candidateData.vocabulary === -1 ? 0 : candidateData.vocabulary },
   ];
-  
+
   const scoreColumns = [
     {
       title: 'Test Name',
@@ -307,19 +325,21 @@ const sendSelectionEmail = async (emailDetails) => {
       key: 'score',
     },
   ];
-  
+
 
   return (
     <div className='modalContent'>
       {candidateData && (
         <>
-          <p style={{ fontWeight: 'bold', color: '#00B4D2' }}>Candidate Name: {candidateData.fullName} for the role {candidateData.position}</p>
-          <p>Total Experience: {candidateData.totalExperience}</p>
-          <p>Availability / Notice Period: {candidateData.noticePeriod}</p>
+          <strong>
+            <p style={{ fontWeight: 'bold', fontSize: 18, color: '#00B4D2' }}>Candidate Name: {candidateData.fullName} for the role {candidateData.position}</p><br/>
+            <p style={{ fontWeight: 'bold', fontSize: 16}}>Total Experience: {candidateData.totalExperience}</p>
+            <p style={{ fontWeight: 'bold', fontSize: 16}}>Availability / Notice Period: {candidateData.noticePeriod}</p><br/>
+          </strong>
         </>
       )}
-      <Tabs>
-       <TabPane tab="Scores" key="scores">
+      <Tabs style={{backgroundColor: 'white', padding: '10px', borderRadius: '8px'}}>
+        <TabPane tab="Scores" key="scores">
           <Table
             columns={scoreColumns}
             dataSource={scoreData}
@@ -329,18 +349,37 @@ const sendSelectionEmail = async (emailDetails) => {
         </TabPane>
         {rounds.map((round, index) => (
           <TabPane tab={round.roundName} key={index}>
-            <p>Interviewed by {round.panelistName} on {new Date(round.interviewDate).toLocaleDateString()}</p>
-
-            {round.feedbackProvided && (
-              <p style={{ color: 'red', marginTop: '10px' }}>Feedback is already given for this round</p>
-            )}
-
-            <p>Feedback Provided: {round.feedbackProvided ? 'Yes' : 'Not yet'}</p>
+            {/* <div style={{ display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'space-between' }}> */}
+              <p style={{ fontWeight: 'bold', fontSize: 14}}>Interviewed by {round.panelistName} on {new Date(round.interviewDate).toLocaleDateString()}</p>
+              {/* <center>
+                <Tooltip title="Technical Skills" color="cyan">
+                  <button className='table-btn'
+                    style={{
+                      //   background: "#13c2c2",
+                      marginRight: "30px",
+                      //   color: "#FFF",
+                      float: "right",
+                    }}
+                    onClick={() => console.log("Technical Skills Logged.")}
+                  // disabled={!data.length} // Disable if there's no data to download
+                  >
+                    <MdGrading />
+                  </button>
+                </Tooltip>
+              </center> */}
+            {/* </div> */}
+            {
+              round.feedbackProvided && (
+                <p style={{ color: 'red', fontWeight: 'bold', fontSize: 14 }}>Feedback is already given for this round</p>
+              )
+            }
+            <p style={{ fontWeight: 'bold', fontSize: 14}}> Feedback Provided: {round.feedbackProvided ? 'Yes' : 'Not yet'}</p>
+            <br/>
 
             <table className='panelistTable'>
               <thead>
                 <tr>
-                  <th>Skills</th>
+                  <th>Questions</th>
                   <th>Rating out of 5</th>
                   <th>Feedback</th>
                 </tr>
@@ -389,14 +428,20 @@ const sendSelectionEmail = async (emailDetails) => {
             )}
 
             {index === rounds.length - 1 && !round.feedbackProvided && (
-              <div id='panelistbtn' onClick={handleSubmit}>
-                <center><Button style={{ background: '#A50707' }} className='add-button'>Submit</Button></center>
+              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                <div id='panelistbtn' onClick={handleBackButton}>
+                  <center><Button type='button' style={{ background: '#A50707' }} className='add-button'>Back</Button></center>
+                </div>
+                <div id='panelistbtn' onClick={handleSubmit}>
+                  <center><Button style={{ background: '#1677ff', marginLeft: 30 }} className='add-button'>Submit</Button></center>
+                </div>
               </div>
             )}
           </TabPane>
-        ))}
-      </Tabs>
-    </div>
+        ))
+        }
+      </Tabs >
+    </div >
   );
 };
 
