@@ -52,18 +52,7 @@ const JobDashboard = ({ jobs }) => {
 
     fetchCandidateCounts();
   }, [jobs, token]);
-
-  // const copyJobLink = (positionId) => {
-  //   const frontendURL = `${window.location.origin}/register-job/${positionId}`;
-  //   navigator.clipboard.writeText(frontendURL)
-  //     .then(() => {
-  //       message.success("Link copied to clipboard!");
-  //     })
-  //     .catch((err) => {
-  //       console.error("Error copying link: ", err);
-  //       message.error("Failed to copy link.");
-  //     });
-  // };
+ 
   function copyJobLink(jobId) {
     const jobURL = `${window.location.origin}/register-job/${jobId}`;
   

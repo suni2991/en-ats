@@ -13,7 +13,17 @@ const { TextArea } = Input;
 const URL = process.env.REACT_APP_API_URL;
 
 const AssignInterview = ({ open, onClose, candidateId, auth }) => {
-  const defaultSkills = ['Communication', 'Teamwork', 'Problem Solving']; // Default static skills
+  const defaultSkills = ['Educational Background – Does the candidate have the appropriate educational qualifications or training for this position?',
+    'Prior Work Experience – Has the candidate acquired similar skills or qualifications through past work experiences?',
+    'Technical Qualifications/Experience – Does the candidate have the technical skills necessary for this position?',
+    "Verbal Communication – How were the candidate’s communication skills during the interview?",
+    "Job rotation/Flexibility – Is the candidate flexible with Job rotation (if required), willing to take up additional responsibilities?",
+    "Candidate Interest – How much interest did the candidate show in the position and the organisation?",
+    "Knowledge of Organisation – Did the candidate research the organisation prior to the interview?",
+    "Initiative – Did the candidate demonstrate, through their answers, a high degree of initiative?",
+    "Team building/Interpersonal Skills – Did the candidate demonstrate, through their answers, good team building/interpersonal skills?",
+    "Time Management – Did the candidate demonstrate, through their answers, good time management skills?",
+  ]; // Default static skills
   const [candidateData, setCandidateData] = useState({});
   const [formData, setFormData] = useState({
     round: {

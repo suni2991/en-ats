@@ -4,6 +4,7 @@ import useAuth from "../hooks/useAuth";
 import { Tooltip, DatePicker, Form, Button, Modal, Select, Input, message } from "antd";
 import axios from "axios";
 import { MdUpdate } from "react-icons/md";
+import { useNavigate} from "react-router-dom";
 import { VscFeedback } from "react-icons/vsc";
 import Panelist from "../components/Panelist";
 import moment from "moment";
@@ -26,6 +27,8 @@ const Feedback = () => {
   const [startDate, setStartDate] = useState(null);
   const [deadline, setDeadline] = useState(null);
   const [reloadData, setReloadData] = useState(false);
+
+  const navigateTo = useNavigate();
 
   // Fetch candidates based on the role
   const fetchCandidates = async () => {
@@ -68,7 +71,7 @@ const Feedback = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         message.success("Status updated successfully.");
-        setReloadData(true); 
+        setReloadData(true);
         // Refresh the candidate data
         await fetchCandidates();
 
@@ -106,10 +109,30 @@ const Feedback = () => {
     return "Resume not available";
   };
 
+  const provideFeedback = (row) => {
+    console.log("row:");
+    console.log(row);
+    setSelectedCandidate(row);
+    const passCandidate = row;
+    console.log("passCandidate:");
+    console.log(passCandidate);
+    if (passCandidate) {
+      navigateTo("/provideFeedback/"+auth._id, {state: {passCandidate: {...passCandidate}, auth: {...auth}}});  
+    }
+    
+  }
+
   const showModal = (row) => {
     setSelectedCandidate(row);
+    console.log("selectedCandidate: ");
+    console.log(selectedCandidate);
     setIsModalVisible(true);
   };
+
+  // useEffect(()=>{
+  //   console.log("useEffect SelectedCandidate:");
+  //   console.log(selectedCandidate);
+  // }, [selectedCandidate]);
 
   const closeModal = () => {
     setIsModalVisible(false);
@@ -151,11 +174,12 @@ const Feedback = () => {
       cell: (row) => (
         <div>
           {auth.role !== "Admin" && (
-           <center> <Tooltip title="Give Feedback" color="cyan">
-              <button className="table-btn" onClick={() => showModal(row)}>
-                <VscFeedback />
-              </button>
-            </Tooltip>
+            <center>
+              <Tooltip title="Give Feedback" color="cyan">
+                <button className="table-btn" onClick={() => provideFeedback(row)}>
+                  <VscFeedback />
+                </button>
+              </Tooltip>
             </center>
           )}
           {auth.role === "Admin" && (
@@ -179,9 +203,9 @@ const Feedback = () => {
         columns={userColumns}
         reloadData={reloadData}
       />
-      <Modal open={isModalVisible} onCancel={closeModal} width={700} footer={null}>
+      {/* <Modal open={isModalVisible} onCancel={closeModal} width={1250} footer={null}>
         {selectedCandidate && <Panelist candidateData={selectedCandidate} auth={auth} onClose={closeModal} />}
-      </Modal>
+      </Modal> */}
       <Modal
         title="Update Status / Joining Date / Offered CTC"
         open={isJoiningDateModalVisible}

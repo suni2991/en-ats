@@ -1,0 +1,79 @@
+/* Floating chat icon */
+.chat-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #00B4D2;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  /* Chat box window */
+  .chat-box {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    width: 350px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Chat box header */
+  .chat-header {
+    background-color: #00B4D2;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Down arrow */
+  .down-arrow {
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
+  /* Chat messages area */
+  .chat-messages {
+    padding: 10px;
+    height: 250px;
+    overflow-y: auto;
+  }
+  
+  .bot-message {
+    background-color: #f0f0f0;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .user-message {
+    background-color: #e6f7ff;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    text-align: right;
+  }
+  
+  /* Chat input area */
+  .chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #eee;
+  }
+  
+  .chat-input .ant-input {
+    flex: 1;
+    margin-right: 10px;
+  }
+  
