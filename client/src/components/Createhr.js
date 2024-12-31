@@ -217,7 +217,7 @@ const Createhr = ({ closeModal }) => {
                 <option value="HR">HR</option>
                 <option value="Admin">Admin</option>
                 <option value="Panelist">Panelist</option>
-                <option value="Hiring-Manager">Hiring-Manager</option>
+                <option value="HiringManager">HiringManager</option>
               </select>
             </div>
           </div>
