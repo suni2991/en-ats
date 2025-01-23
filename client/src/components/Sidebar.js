@@ -11,8 +11,8 @@ import "../styles/Sidebar.css";
 import logo from "../Assests/enfuse-logo.png";
 import { Tooltip, Button, Modal } from "antd";
 import ProfilePage from "./ProfilePage";
-import { VscFeedback } from "react-icons/vsc";
-import {message} from 'antd';
+import { VscFeedback, VscFolderLibrary } from "react-icons/vsc";
+import { message } from 'antd';
 import { SlCalender } from "react-icons/sl";
 import ImageCarousel from './ImageCarousel';
 
@@ -98,6 +98,11 @@ const Sidebar = ({ children }) => {
       name: "Feedback",
       icon: <VscFeedback />,
     },
+    {
+      path: "/bulkupload",
+      name: "Bulk Upload",
+      icon: <VscFolderLibrary />
+    },
   ];
 
   if (!auth.role) {
@@ -106,7 +111,7 @@ const Sidebar = ({ children }) => {
 
   return (
     <><div className="container">
-      <div style={{ width: isOpen ? "180px" : "25px" }} className="sidebar">
+      <div style={{ width: isOpen ? "180px" : "25px", height: '100vh', overflowY: 'auto', overflowX: 'hidden'}} className="sidebar">
         <div className="top-section">
           <button
             style={{ background: "none", border: "none", float: "left" }}
@@ -140,7 +145,8 @@ const Sidebar = ({ children }) => {
                 item.name === "ATS" ||
                 item.name === "Dashboard" ||
                 item.name === "Feedback" ||
-                item.name === "Schedule" 
+                item.name === "Schedule" ||
+                item.name === "Bulk Upload"
               ) && (
                 <NavLink
                   to={item.path}
@@ -161,7 +167,8 @@ const Sidebar = ({ children }) => {
                 item.name === "Statistics" ||
                 item.name === "Feedback" ||
                 item.name === "My Slot" ||
-                item.name === "Schedule" 
+                item.name === "Schedule" ||
+                item.name === "Bulk Upload"
               ) && (
                 <NavLink
                   to={item.path}
@@ -176,7 +183,7 @@ const Sidebar = ({ children }) => {
             );
           } else if (auth.role === "Panelist") {
             return (
-              item.name === "Feedback" ||  item.name === "My Slot") && (
+              item.name === "Feedback" || item.name === "My Slot") && (
                 <NavLink
                   to={item.path}
                   key={index}
@@ -187,7 +194,7 @@ const Sidebar = ({ children }) => {
                   <div className="link-text">{item.name}</div>
                 </NavLink>
               )
-            } else if (auth.role === "Hiring-Manager") {
+          } else if (auth.role === "Hiring-Manager") {
             return (
               (item.name === "Dashboard" || item.name === "Feedback" || item.name === "My Slot") && (
                 <NavLink
@@ -206,18 +213,18 @@ const Sidebar = ({ children }) => {
           }
         })}
 
-<div className="help-icon">
-{(auth.role === "HR" || auth.role === "Admin") && ( 
-          <Tooltip title="Process">
-            <Button
-              type="text"
-              onClick={showModal}
-              style={{ color: "#00B4D2", margin: "5px 5px 15px 50px", padding:'10px', borderRadius:'30px' }}
-            >
-              <BiSitemap size={30}/> 
-            </Button>
-          </Tooltip>
-)}
+        <div className="help-icon">
+          {(auth.role === "HR" || auth.role === "Admin") && (
+            <Tooltip title="Process">
+              <Button
+                type="text"
+                onClick={showModal}
+                style={{ color: "#00B4D2", margin: "5px 5px 15px 50px", padding: '10px', borderRadius: '30px' }}
+              >
+                <BiSitemap size={30} />
+              </Button>
+            </Tooltip>
+          )}
         </div>
       </div>
 
@@ -233,7 +240,7 @@ const Sidebar = ({ children }) => {
       </Modal>
 
 
-      </div>
+    </div>
       <div className="main-container">
         <main>
           <div>
@@ -241,33 +248,33 @@ const Sidebar = ({ children }) => {
               auth.role === "Admin" ||
               auth.role === "Panelist" ||
               auth.role === "Hiring-Manager") && (
-              <nav className="navbar">
-                <div className="navbar-right">
+                <nav className="navbar">
+                  <div className="navbar-right">
 
-                  <Tooltip title="View & Update Profile" color="cyan">
-                    <Button
-                      type="text"
-                      onClick={() => setProfileVisible(true)}
-                      style={{ color: "#00B4D2" }}
-                    >
-                      Welcome, {auth.fullName} |
+                    <Tooltip title="View & Update Profile" color="cyan">
+                      <Button
+                        type="text"
+                        onClick={() => setProfileVisible(true)}
+                        style={{ color: "#00B4D2" }}
+                      >
+                        Welcome, {auth.fullName} |
 
-                    </Button>
-                  </Tooltip>
-                </div>
+                      </Button>
+                    </Tooltip>
+                  </div>
 
-                {auth.role && (
-                  <button className="logout-button" onClick={logout}>
-                    <span className="icon-container">
-                      <MdLogout />
-                    </span>{" "}
-                  
-                    <span className="text">Logout</span>
+                  {auth.role && (
+                    <button className="logout-button" onClick={logout}>
+                      <span className="icon-container">
+                        <MdLogout />
+                      </span>{" "}
 
-                  </button>
-                )}
-              </nav>
-            )}
+                      <span className="text">Logout</span>
+
+                    </button>
+                  )}
+                </nav>
+              )}
             {auth && (
               <ProfilePage
                 open={profileVisible}
@@ -278,8 +285,8 @@ const Sidebar = ({ children }) => {
             )}
           </div>
           <div className="main-content">
-         
-          {children}</div>
+
+            {children}</div>
 
           {auth.role && (
             <div className="footer">
@@ -289,7 +296,7 @@ const Sidebar = ({ children }) => {
         </main>
       </div>
     </>
-  
+
   );
 };
 

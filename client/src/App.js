@@ -39,6 +39,8 @@ import Schedule from "./pages/Schedule.js";
 import Availability from "./pages/Availability.js";
 import ImageCarousel from "./components/ImageCarousel.js";
 import JobRegistration from "./pages/JobRegistration.js";
+import BulkUpload from "./components/BulkUpload.js";
+import EditCandidate from "./pages/EditCandidate.js";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -60,46 +62,48 @@ const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-       
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/login" element={<Home />} />
-            <Route path="/job/:id" element={<ApproveJobDetails />} />
-            <Route path="/register-job/:positionId" element={<JobRegistration />} />
-            <Route element={<RequireAuth />}>
-              <Route path="/help" element={<ImageCarousel />} />
-              <Route path="/admins" element={<Sidebar><Admin /></Sidebar>} />
-              <Route path="/registration" element={<Sidebar><Registration /></Sidebar>} />
-              <Route path="/reports" element={<Sidebar><Reports /></Sidebar>} />
-              <Route path="/candidate/candidate" element={<Candidate />} />
-              <Route path="/assessment/psychometric" element={<PsychometricTest />}  />
-              <Route path="/assessment/quantitative" element={<QuantitativeTest />}/>
-              <Route
-                path="/assessment/vocabulary" element={<VocabularyTest />} />
-              <Route path="/assessment/java" element={<JavaTest />} />
-              <Route path="/assessment/accounts" element={<Accounts />} />
-              <Route path="/assessment/excel" element={<Excel />} />
 
-              <Route path="/hr" element={<Sidebar><HR /></Sidebar>} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/login" element={<Home />} />
+          <Route path="/job/:id" element={<ApproveJobDetails />} />
+          <Route path="/register-job/:positionId" element={<JobRegistration />} />
+          {/* <Route path="/bulkupload" element={<BulkUpload />}/> */}
 
-              <Route path="/thankyou" element={<Thankyou />} />
-              <Route path="/statistics" element={<Statistics />} />
-              <Route path="/dashboard" element={<Sidebar><Dashboard /></Sidebar>} />
-              <Route path="/schedule" element={<Sidebar><Schedule /></Sidebar>} />
-              <Route path="/postjob" element={<Sidebar><Postjob /></Sidebar>} />
-              <Route path="/create-hr" element={<Sidebar><Createhr /></Sidebar>} />
-              <Route path="/feedbacks" element={<Sidebar><Feedback /></Sidebar>} />
-              <Route path="/slots" element={<Sidebar><Availability /></Sidebar>} />
-              <Route path="/editProfile" element={<Sidebar><ProfilePage /></Sidebar>} />
-              <Route path="/panelist/:id" element={<Sidebar><Panelist /></Sidebar>} />
-              <Route path="/applicants" element={<Sidebar><Applicant /></Sidebar>} />
 
-              <Route path='/provideFeedback/:id' element={<Sidebar><Panelist /></Sidebar>} />
-            </Route>
-            
-          </Routes>
-       
+          <Route element={<RequireAuth />}>
+            <Route path="/editCandidate" element={<Sidebar><EditCandidate /></Sidebar>} />
+            <Route path="/help" element={<ImageCarousel />} />
+            <Route path="/admins" element={<Sidebar><Admin /></Sidebar>} />
+            <Route path="/registration" element={<Sidebar><Registration /></Sidebar>} />
+            <Route path="/reports" element={<Sidebar><Reports /></Sidebar>} />
+            <Route path="/candidate/candidate" element={<Candidate />} />
+            <Route path="/assessment/psychometric" element={<PsychometricTest />} />
+            <Route path="/assessment/quantitative" element={<QuantitativeTest />} />
+            <Route path="/assessment/vocabulary" element={<VocabularyTest />} />
+            <Route path="/assessment/java" element={<JavaTest />} />
+            <Route path="/assessment/accounts" element={<Accounts />} />
+            <Route path="/assessment/excel" element={<Excel />} />
+            <Route path="/hr" element={<Sidebar><HR /></Sidebar>} />
+            <Route path="/thankyou" element={<Thankyou />} />
+            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/dashboard" element={<Sidebar><Dashboard /></Sidebar>} />
+            <Route path="/schedule" element={<Sidebar><Schedule /></Sidebar>} />
+            <Route path="/postjob" element={<Sidebar><Postjob /></Sidebar>} />
+            <Route path="/create-hr" element={<Sidebar><Createhr /></Sidebar>} />
+            <Route path="/feedbacks" element={<Sidebar><Feedback /></Sidebar>} />
+            <Route path="/slots" element={<Sidebar><Availability /></Sidebar>} />
+            <Route path="/editProfile" element={<Sidebar><ProfilePage /></Sidebar>} />
+            <Route path="/panelist/:id" element={<Sidebar><Panelist /></Sidebar>} />
+            <Route path="/applicants" element={<Sidebar><Applicant /></Sidebar>} />
+            <Route path='/provideFeedback/:id' element={<Sidebar><Panelist /></Sidebar>} />
+            <Route path="/bulkupload" element={<Sidebar><BulkUpload /></Sidebar>} />
+
+          </Route>
+          {/* <Route path="/editCandidate" element={<EditCandidate />}/> */}
+        </Routes>
+
       </AuthProvider>
     </BrowserRouter>
   );

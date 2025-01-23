@@ -81,7 +81,7 @@ const Hr = () => {
             className={view === "tile" ? "active-button" : ""}
           >
             Tile View
-          </Button> 
+          </Button>
           <span classname='btn-divider'>&nbsp; | &nbsp;</span>
           <Button onClick={toggleView} type='text' icon={<FaTableList />} className={view === 'table' ? 'active-button' : ''}>
             Grid View

@@ -19,20 +19,20 @@ const roundSchema = new Schema({
   roundName: { type: String, required: false },
   panelistName: { type: String },
   interviewDate: { type: Date },
-  interviewDt:{type: String},
+  interviewDt: { type: String },
   feedbackProvided: { type: Boolean, default: false },
   skills: [skillSchema],
   feedback: { type: String },
-  meetingURL:{type: String},
+  meetingURL: { type: String },
 });
 
 const availabilitySchema = new Schema({
-  requestedDateRange:{type: [Date]},
-  createAt:{type:Date, default: Date.now },
-  fromTime:{type: Date},
-  toTime: {type: Date},
-  availableDate:{type: Date},
-  booked:{type:Boolean, default: false},
+  requestedDateRange: { type: [Date] },
+  createAt: { type: Date, default: Date.now },
+  fromTime: { type: Date },
+  toTime: { type: Date },
+  availableDate: { type: Date },
+  booked: { type: Boolean, default: false },
 })
 
 const notificationSchema = new mongoose.Schema({
@@ -47,12 +47,13 @@ const candidateSchema = new mongoose.Schema({
   firstName: { type: String },
   lastName: { type: String },
   fullName: { type: String, required: true },
+  organisation: { type: String },
   qualification: { type: String },
   totalExperience: { type: Number },
   relevantExperience: { type: Number },
   noticePeriod: { type: String },
   contact: { type: Number },
-  email: { type: String, unique: true },
+  email: { type: String, unique: false },
   position: { type: String },
   currentLocation: { type: String },
   image: { type: String, default: "" },
@@ -60,34 +61,38 @@ const candidateSchema = new mongoose.Schema({
   status: { type: String, default: "CV Sourced" },
   empCount: { type: Number, default: 0 },
   psychometric: {
-    score: { type: Number, default: -1},
-    status: { type: String, enum: ['Pass', 'Fail']},
+    score: { type: Number, default: -1 },
+    status: { type: String, enum: ['Pass', 'Fail'] },
   },
   quantitative: {
-    score: { type: Number,  default: -1},
-    status: { type: String, enum: ['Pass', 'Fail']},
+    score: { type: Number, default: -1 },
+    status: { type: String, enum: ['Pass', 'Fail'] },
   },
   vocabulary: {
-    score: { type: Number, default: -1},
-    status: { type: String, enum: ['Pass', 'Fail']},
+    score: { type: Number, default: -1 },
+    status: { type: String, enum: ['Pass', 'Fail'] },
   },
   java: {
-    score: { type: Number, default: -1},
-    status: { type: String, enum: ['Pass', 'Fail']},
+    score: { type: Number, default: -1 },
+    status: { type: String, enum: ['Pass', 'Fail'] },
   },
   accounts: {
     score: { type: Number, default: -1 },
-    status: { type: String, enum: ['Pass', 'Fail']},
+    status: { type: String, enum: ['Pass', 'Fail'] },
   },
   excel: {
-    score: { type: Number, default: -1},
-    status: { type: String, enum: ['Pass', 'Fail']},
+    score: { type: Number, default: -1 },
+    status: { type: String, enum: ['Pass', 'Fail'] },
+  },
+  totalScores: {
+    score: { type: String },
+    status: { type: String },
   },
   password: { type: String },
   confirmPassword: { type: String },
   role: {
     type: String,
-    enum: ["Applicant", "HR", "Admin", "Enfusian", "Panelist", "Hiring-Manager"],
+    enum: ["Applicant", "HR", "Admin", "Enfusian", "Panelist", "HiringManager"],
     default: "Applicant",
   },
   roleId: {
@@ -102,7 +107,7 @@ const candidateSchema = new mongoose.Schema({
   joiningDate: { type: Date },
   district: { type: String },
   city: { type: String },
-  selectedCategory: { type: String, enum:["Technical" , "Non-Technical"] },
+  selectedCategory: { type: String, enum: ["Technical", "Non-Technical"] },
   mgrName: { type: String },
   mgrEmail: { type: String },
   notes: { type: String },
@@ -113,10 +118,13 @@ const candidateSchema = new mongoose.Schema({
   meetingDate: { type: Date },
   history: [historySchema],
   reference: { type: String },
-  source:{type: String},
-  availableSlots:[availabilitySchema],
-  notification:[notificationSchema],
-  assessmentDone: {type: Boolean, default: false},
+  source: { type: String },
+  availableSlots: [availabilitySchema],
+  notification: [notificationSchema],
+  assessmentDone: { type: Boolean, default: false },
+  salary: { type: String },
+  expectedSalary: { type: String },
+  preferedLocation: { type: String }
 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);

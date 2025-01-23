@@ -1,6 +1,10 @@
 const userRouter = require("express").Router();
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
+
+const xlsx = require('xlsx');
+const multer = require("multer");
+
 const Candidate = require("../model/CandidateModel");
 const {
   authenticate,
@@ -212,6 +216,56 @@ userRouter.get("/hrs/candidate-count", async (req, res) => {
   }
 });
 
+userRouter.get("/getCandidateById/:id", authenticate, checkPermission("view_candidates_report"),
+  async (req, res) => {
+
+    try {
+
+      const { id } = req.params;
+      console.log('Candidate id: ', id);
+
+      const candidateData = await Candidate.findOne({ _id: id });
+      console.log('candidateData', candidateData);
+
+      res.status(200).json(candidateData);
+
+    } catch (error) {
+      console.log('Error updating candidate: ', error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+userRouter.patch("/updateCandidateData/:id", authenticate, checkPermission("view_candidates_report"),
+  async (req, res) => {
+
+    try {
+
+      const _id = req.params.id;
+      console.log('Candidate id: ', _id);
+
+      const updatedCandidate = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
+      console.log('updatedCandidate: ', updatedCandidate);
+
+      if (!updatedCandidate) {
+        res.json({
+          status: 'Fail',
+          message: 'Candidate data did not update.'
+        })
+      } else {
+        res.json({
+          status: 'Success',
+          message: 'Candidate data updated successfully.',
+          data: updatedCandidate
+        })
+      }
+
+      // res.status(200).json(candidateData);
+
+    } catch (error) {
+      console.log('Error updating candidate: ', error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
 
 userRouter.get(
   "/candidatesreport",
@@ -256,7 +310,7 @@ userRouter.get(
         Onboarded: 0,
         Rejected: 0,
         Processing: 0,
-        Selected:0,     
+        Selected: 0,
       };
 
       candidatesByStatus.forEach((candidate) => {
@@ -586,7 +640,7 @@ userRouter.put(
       mgrName,
       city,
       totalExperience,
-      
+
     } = req.body;
 
     try {
@@ -894,5 +948,316 @@ userRouter.delete('/candidate/slot/:slotId', async (req, res) => {
     });
   }
 });
+
+
+const storageCV = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/bulk");
+  },
+  filename: function (req, file, cb) {
+    const originalName = file.originalname;
+    const fileExtension = originalName.slice(
+      originalName.lastIndexOf("."),
+      originalName.length
+    );
+    timeValue = Date.now();
+    fileName = `${file.fieldname}-${timeValue}${fileExtension}`;
+    cb(null, fileName);
+  },
+});
+
+
+const fileFilter = (req, file, cb) => {
+  let filename = file.originalname;
+  let fileExtension = filename.slice(
+    filename.lastIndexOf("."),
+    filename.length
+  );
+  if (
+    fileExtension === ".xlsx"
+  ) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error(
+        "file format not supported. Supported file types are xlsx"
+      ),
+      false
+    );
+  }
+};
+
+const bulkUpload = multer({
+  storage: storageCV,
+  fileFilter: fileFilter,
+}).single("file");
+const validateAndFormatDriveLink = (link) => {
+  if (!link) return null;
+
+  // Common Google Drive link patterns
+  // /\((.*?)\)/
+  const drivePatterns = [
+    /https:\/\/drive\.google\.com\/file\/d\/(.*?)\/view/,
+    /https:\/\/drive\.google\.com\/open\?id=(.*)/,
+    /https:\/\/docs\.google\.com\/spreadsheets\/d\/(.*?)(\/?|\/edit.*$)/
+  ];
+
+  for (const pattern of drivePatterns) {
+    const match = link.match(pattern);
+    if (match) {
+      return {
+        originalLink: link,
+        fileId: match[1],
+        isValid: true
+      };
+    }
+  }
+
+  return {
+    originalLink: link,
+    isValid: false
+  };
+};
+
+userRouter.post("/bulk-upload", bulkUpload, async (req, res) => {
+  try {
+    const workbook = xlsx.readFile(req.file.path);
+    const sheetName = workbook.SheetNames[0]; // Assuming you want to read the first sheet
+    const worksheet = workbook.Sheets[sheetName];
+
+    try {
+      // const data = xlsx.utils.sheet_to_json(worksheet);
+      // console.log("data", data)
+      const processedLinks = [];
+      const invalidLinks = [];
+      const extractedUrls = [];
+
+      const hyperlinks = [];
+      const data = [];
+      // const sheetNames = workbook.SheetNames;s
+      // Loop through each sheet
+      const range = xlsx.utils.decode_range(worksheet['!ref']); // Get the range of the sheet
+
+      // Loop through each cell in the range
+      for (let row = range.s.r + 1; row <= range.e.r; row++) { // Start from row 2
+        const rowData = { totalScores: {}, round: [] };
+        let roundNameHeader1;
+        let panelistName1;
+        let feedback1;
+        let roundNameHeader2;
+        let panelistName2;
+        let feedback2;
+        let roundNameHeader3;
+        let panelistName3;
+        let feedback3;
+        for (let col = range.s.c; col <= range.e.c; col++) {
+          const cellAddress = xlsx.utils.encode_cell({ r: row, c: col });
+          const cell = worksheet[cellAddress];
+
+          const headerRow = range.s.r;
+
+          if (cell) {
+            const headerCellAddress = xlsx.utils.encode_cell({ r: headerRow, c: col });
+            const headerCell = worksheet[headerCellAddress];
+            const headerName = headerCell ? headerCell.v : null;
+
+            if (headerName === "Candidate Name") {
+              rowData.fullName = cell.v; // Name
+              const nameParts = cell.v.trim().split(' ');
+
+              // Assuming the first part is the first name and the last part is the last name
+              const firstName = nameParts[0];
+              const lastName = nameParts[nameParts.length - 1];
+              rowData.firstName = firstName;
+              rowData.lastName = lastName;
+            }
+
+            else if (headerName === "Organisation") {
+              rowData.organisation = cell.v;
+            }
+
+            else if (headerName === "Email ID") {
+              rowData.email = cell.v; // Email
+            }
+            else if (headerName === "Mobile Number") {
+              rowData.contact = cell.v; // Mobile Number
+            }
+            else if (headerName === "Organisation") {
+              rowData.organisation = cell.v; // Sr No
+            }
+            else if (headerName === "Role/Designation") {
+              rowData.position = cell.v; // Role/Designation
+            }
+            else if (headerName === "Total Years of Experience") {
+              rowData.totalExperience = convertYearsToNumber(cell.v); // totalExperience
+            }
+            else if (headerName === "Relevant Experience") {
+              rowData.relevantExperience = convertYearsToNumber(cell.v); // relevantExperience
+            }
+            else if (headerName === "Education") {
+              rowData.qualification = cell.v; // qualification
+            }
+            else if (headerName === "Salary") {
+              rowData.salary = cell.v; // salary
+            }
+            else if (headerName === "Expected Salary") {
+              rowData.expectedSalary = cell.v; // expectedSalary
+            }
+            else if (headerName === "Notice Period/ LWD") {
+              rowData.noticePeriod = cell.v; // noticePeriod
+            }
+            else if (headerName === "Current Location") {
+              rowData.currentLocation = cell.v; // currentLocation
+            }
+            else if (headerName === "Prefered Location") {
+              rowData.preferedLocation = cell.v; // preferedLocation
+            }
+            else if (headerName === "Resume Status") {
+              rowData.status = cell.v; // resume status
+            }
+            else if (headerName === "Test Applicabiilty") {
+              rowData.testApplicability = cell.v; // testApplicability(No)
+            }
+            else if (headerName === "Test Status") {
+              console.warn("psychometric.status", cell.v);
+              if (cell.v === "-") {
+              }
+
+              else {
+                rowData.totalScores.status = cell.v; // test status
+              }
+
+              if (cell.v === "Shortlisted") {
+                rowData.assessmentDone = true;
+              }
+            }
+            else if (headerName === "Test Score") {
+              if (cell.v === "-") {
+              } else {
+                rowData.totalScores.score = cell.v; // Default to -1 if conversion fails
+              }
+            }
+            else if (headerName === "L1 Interviewer") {
+              // Get the header name for column 16
+              const headerCellAddress = xlsx.utils.encode_cell({ r: range.s.r, c: col }); // Column 16
+              const headerCell = worksheet[headerCellAddress];
+
+              roundNameHeader1 = headerCell ? headerCell.v : null; // Get the header value or null if it doesn't exist
+              panelistName1 = cell.v;
+            }
+            else if (headerName === "L1 Interview Status") {
+              feedback1 = cell.v;
+            }
+            else if (headerName === "L2 Interviewer") {
+              // Get the header name for column 18
+              const headerCellAddress = xlsx.utils.encode_cell({ r: range.s.r, c: col }); // Column 16
+              const headerCell = worksheet[headerCellAddress];
+
+              roundNameHeader2 = headerCell ? headerCell.v : null; // Get the header value or null if it doesn't exist
+              panelistName2 = cell.v;
+            }
+            else if (headerName === "L2 Interview Status") {
+              feedback2 = cell.v;
+            }
+
+            else if (headerName === "L3 Interviewer") {
+              // Get the header name for column 20
+              const headerCellAddress = xlsx.utils.encode_cell({ r: range.s.r, c: col }); // Column 16
+              const headerCell = worksheet[headerCellAddress];
+
+              roundNameHeader3 = headerCell ? headerCell.v : null; // Get the header value or null if it doesn't exist
+              panelistName3 = cell.v;
+            }
+            else if (headerName === "L3 Interview Status") {
+              feedback3 = cell.v;
+            }
+
+            else if (headerName === "Candidate Final Status") {
+              if (cell.v !== "-") {
+                rowData.status = cell.v;
+              }
+            }
+            // Candidate Final Status	HR Comments	HR Name
+            else if (headerName === "HR Comments") {
+              rowData.notes = cell.v;
+            }
+            else if (headerName === "HR Name") {
+              rowData.mgrName = cell.v;
+            }
+            else if (headerName === "Resume Link" && cell.l) {
+              rowData.hyperlinkText = cell.v; // Hyperlink Text
+              rowData.resume = cell.l.Target; // Hyperlink URL
+            }
+          }
+
+        }
+        if (roundNameHeader1 && panelistName1 && feedback1) {
+          rowData.round.push({ roundName: roundNameHeader1, panelistName: panelistName1, feedback: feedback1 });
+        }
+        if (roundNameHeader2 && panelistName2 && feedback2) {
+          rowData.round.push({ roundName: roundNameHeader2, panelistName: panelistName2, feedback: feedback2 });
+        }
+        if (roundNameHeader3 && panelistName3 && feedback3) {
+          rowData.round.push({ roundName: roundNameHeader3, panelistName: panelistName3, feedback: feedback3 });
+        }
+        if (rowData.fullName) {
+          // data.push(rowData);
+          // Check if candidate exists by email or mobile number
+          const existingCandidate = await Candidate.findOne({
+            $or: [
+              { email: rowData.email },
+              { contact: rowData.contact }
+            ]
+          });
+
+          if (existingCandidate) {
+            // Update existing candidate
+            await Candidate.updateOne({ _id: existingCandidate._id }, { $set: rowData });
+          } else {
+            // Insert new candidate
+            await Candidate.create(rowData);
+          }
+        }
+
+
+      }
+      // if (data.length > 0) {
+      //   await Candidate.insertMany(data);
+      // }
+
+
+      res.status(200).json({ message: "bulk upload done", data });
+    } catch (error) {
+      console.error('Error parsing Excel data:', error);
+      // Check for specific errors like "unexpected field"
+      if (error.message.includes('unexpected field')) {
+        return res.status(400).json({
+          status: 'ERROR',
+          message: 'The uploaded Excel file contains unexpected fields. Please check the file format and try again.',
+        });
+      } else {
+        // Handle other parsing errors
+        return res.status(500).json({
+          status: 'ERROR',
+          message: 'An error occurred while processing the Excel file.',
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error uploading excel file:', error);
+    return res.status(500).json({
+      status: 'ERROR',
+      message: 'An error occurred while uploading excel file.',
+    });
+  }
+});
+
+
+function convertYearsToNumber(yearsString) {
+  // Use a regular expression to extract the numeric part
+  const match = yearsString.match(/(\d+)/);
+  return match ? parseInt(match[0], 10) : null; // Return the number or null if not found
+}
+
 
 module.exports = userRouter;

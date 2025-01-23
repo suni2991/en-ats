@@ -21,9 +21,11 @@ function Home() {
 
   useEffect(() => {
     localStorage.removeItem('hasSeenModal');
-  }, []);
+    console.log(' useEffect token', token);
+  }, [token]);
 
   const onLogin = async (event) => {
+    console.log('token', token);
     event.preventDefault();
     const credentials = {
       email,
@@ -56,8 +58,6 @@ function Home() {
         }
         setToken(response.data.token);
         setAuth(response.data);
-        
-
       })
       .catch((error) => {
         setIsLoading(false);

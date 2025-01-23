@@ -113,6 +113,43 @@ const Fetchtable = ({
   
 
   const filterDataForExport = (dataToFilter) => {
+    
+    if (url.toLowerCase().includes('candidatesreport')) {
+      console.log(`includes('candidatesreport')`, url.toLowerCase().includes('candidatesreport') );
+
+      const flattenedData = dataToFilter.map((candidate, index) => ({
+        Sr_No: index+1,
+        Full_Name: candidate.fullName,
+        Mobile_Number: candidate.contact,
+        Email_ID: candidate.email,
+        Organisation: candidate.organisation,
+        Role_or_Designation: candidate.position,
+        Total_Years_of_Experience: candidate.totalExperience,
+        Relevant_Experience: candidate.relevantExperience,
+        Education: candidate.qualification,
+        Salary: candidate.salary,
+        Expected_Salary: candidate.expectedSalary,
+        Notice_Period: candidate.noticePeriod,
+        Current_Location: candidate.currentLocation,
+        Preferred_Location: candidate.preferedLocation,
+        Resume_Status: candidate.status,
+        Test_Applicability: candidate.testApplicability || '',
+        Test_Status: candidate.testStatus || '',
+        Test_Score: candidate.totalScore || '',
+        L1_Interviewer: candidate.round[0]?.panelistName || '',
+        L1_Interview_Status: candidate.round[0]?.feedback || '',
+        L2_Interviewer: candidate.round[1]?.panelistName || '',
+        L2_Interview_Status: candidate.round[1]?.feedback || '',
+        L3_Interviewer: candidate.round[2]?.panelistName || '',
+        L3_Interview_Status: candidate.round[2]?.feedback || '',
+        Candidate_Final_Status: candidate.status,
+        HR_Comments: candidate.notes,
+        HR_Name: candidate.mgrName,
+      }));
+      
+      return flattenedData;
+    }
+    
     const fieldsToExclude = [
       "empCount",
       "image",
@@ -127,6 +164,8 @@ const Fetchtable = ({
       "confirmPassword",
       "_v",
       "_id",
+      "__v",
+      "createdAt",
     ];
 
     return dataToFilter.map((item) => {
@@ -185,6 +224,8 @@ const Fetchtable = ({
       >
         <MdOutlineDownload /> 
         {searchQuery ? "Download Filtered Data" : "Download All Data"}
+        {/* {typeof url} */}
+        {/* {(url.toLowerCase().includes('candidatesreport').toString() === 'true').toString()} */}
       </Button>
       
       </div>

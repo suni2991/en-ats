@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { PieChart, Pie, Tooltip, Legend, Cell } from "recharts";
+import { PieChart, Pie, Tooltip, Legend, Cell, LineChart, Line } from "recharts";
 import {
   BarChart,
   Bar,
@@ -18,11 +18,11 @@ import useAuth from "../hooks/useAuth";
 const { Option } = Select;
 const URL = process.env.REACT_APP_API_URL;
 
-const JobPositionPieChart = ({department}) => {
+const JobPositionPieChart = ({ department }) => {
   const { auth, setAuth } = useAuth();
   const [vacanciesData, setVacanciesData] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(department || '');
-  const [clickedPosition, setClickedPosition] = useState();
+  const [clickedPosition, setClickedPosition] = useState([]);
   const [jobLocation, setJobLocation] = useState(null);
   const [positionData, setPositionData] = useState([]);
   const [onboardedCounts, setOnboardedCounts] = useState({});
@@ -44,20 +44,22 @@ const JobPositionPieChart = ({department}) => {
   const vacancyStatusColors = {
     Selected: "#82ca9d",
     Rejected: "#f26680",
-    L1: "#8884d8",
-    L2: "#83a6ed",
+    'Shortlist to HR': 'brown',
+    'L1 Assigned': "#8884d8",
+    'L2 Assigned': "#83a6ed",
     Onboarded: "#8dd1e1",
     HR: "#a4de6c",
     Processing: "grey",
+    'Screening Done': "violet",
   };
 
   useEffect(() => {
     const fetchVacanciesData = async () => {
       try {
         if (selectedDepartment) {
-          console.log("fetchVacanciesData: ");
-          console.log(selectedDepartment);
-          
+          // console.log("fetchVacanciesData: ");
+          // console.log(selectedDepartment);
+
           const response = await axios.get(
             `${URL}/positions-with-vacancies/${selectedDepartment}`,
             {
@@ -79,9 +81,14 @@ const JobPositionPieChart = ({department}) => {
                   },
                 }
               );
-              const onboardedCount = res.data
-                .filter((item) => item._id === "Onboarded")
-                .reduce((acc, item) => acc + item.count, 0);
+              const tempOnboardedCount = res.data.filter((item) => item._id === "Onboarded")
+              // console.log("tempOnboardedCount: ");
+              // console.log(tempOnboardedCount);
+
+              const onboardedCount = tempOnboardedCount.reduce((acc, item) => acc + item.count, 0);
+              // console.log("onboardedCount: ");
+              // console.log(onboardedCount);
+
               onboardedCounts[pos.position] = onboardedCount;
             })
           );
@@ -95,43 +102,117 @@ const JobPositionPieChart = ({department}) => {
     fetchVacanciesData();
   }, [selectedDepartment]);
 
-  useEffect(() => {
-    const fetchPositionData = async () => {
-      try {
-        if (clickedPosition) {
-          const response = await axios.get(
-            `${URL}/vacancy-status/${clickedPosition}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          const formattedData = response.data.reduce((acc, item) => {
-            acc[item._id] = item.count;
-            return acc;
-          }, {});
-          setPositionData([formattedData]);
-        }
-      } catch (error) {
-        console.error("Error fetching position data:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchPositionData = async () => {
+  //     try {
+  //       if (clickedPosition) {
+  //         const response = await axios.get(
+  //           `${URL}/vacancy-status/${clickedPosition[0]?.position}`,
+  //           {
+  //             headers: {
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //           }
+  //         );
+  //         console.log("response: ", response);
+  //         console.log("response.data: ", response.data);
+  //         const formattedData = response.data.reduce((acc, item, index) => {
+  //           // console.log(index+1, "item: ");
+  //           // console.log(item);
+  //           acc[item._id] = item.count;
+  //           // console.log("Result of "+(index+1)+" iteration:");
+  //           // console.log(acc);
+  //           return acc;
+  //         }, {});
+  //         console.log("formattedData: ");
+  //         console.log(formattedData);
+  //         setPositionData(prevData => {
+  //           prevData.push(formattedData);
+  //           return prevData;
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching position data:", error);
+  //     }
+  //   };
 
-    fetchPositionData();
-  }, [clickedPosition]);
+  //   fetchPositionData();
+  // }, [clickedPosition]);
 
   const handleDepartmentChange = (value) => {
     setSelectedDepartment(value);
-    setClickedPosition(null);
+    console.log("selectedDepartment:");
+    console.log(selectedDepartment);
+
+    setClickedPosition([]);
     setJobLocation(null);
     setPositionData([]);
   };
 
+
+  const fetchPositionData = async (positionToFetch) => {
+    try {
+      if (clickedPosition) {
+        const response = await axios.get(
+          `${URL}/vacancy-status/${positionToFetch}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("response: ", response);
+        console.log("response.data: ", response.data);
+
+        setPositionData(response.data);
+        // const formattedData = response.data.reduce((acc, item, index) => {
+        //   // console.log(index+1, "item: ");
+        //   // console.log(item);
+
+        //   if (!acc.interviewStatusData) {
+        //     acc.interviewstatusData = {};
+        //   }
+
+        //   acc.interviewStatusData[item._id] = item.count;
+        //   acc.vacancies = acc.vacancies + item.count;
+
+        //   // console.log("Result of "+(index+1)+" iteration:");
+        //   // console.log(acc);
+        //   return acc;
+        // }, { vacancies: 0, interviewStatusData: {}});
+        // console.log("formattedData: ");
+        // console.log(formattedData);
+        // setPositionData([formattedData]);
+      }
+    } catch (error) {
+      console.error("Error fetching position data:", error);
+    }
+  };
+
+  const lineForLineChart = positionData;
+  console.log("lineForLineChart: ", lineForLineChart);
+
+
   const handleClick = (data) => {
+    // console.log("handleClick data:");
+    // console.log(data);
+    const passingPosition = data.name;
     const position = vacanciesData.find((pos) => pos.position === data.name);
-    setClickedPosition(data.name);
+    console.log("position in handleClick: ");
+    console.log(position);
+
+    // setClickedPosition((prevData) => {
+    //   if (prevData.length === 0) {
+    //     prevData.push(position)
+    //     return prevData;
+    //   }
+    // });
+
+    setClickedPosition([position]);
+
     setJobLocation(position ? position.jobLocation : null);
+
+    fetchPositionData(passingPosition);
   };
 
   const handleDownloadReport = async () => {
@@ -193,12 +274,38 @@ const JobPositionPieChart = ({department}) => {
     }
   };
 
-  const filteredVacanciesData = selectedDepartment
-    ? vacanciesData.map((pos) => ({
-      name: pos.position,
-      value: pos.vacancies,
-    }))
-    : [];
+  const filteredVacanciesData = selectedDepartment ? vacanciesData.map((pos) => ({
+    name: pos.position,
+    value: pos.vacancies,
+  })) : [];
+
+  // let combinedVacanciesStatusData;
+
+  useEffect(() => {
+    // const objectClickedPosition = clickedPosition;
+    // console.log(typeof objectClickedPosition);
+    // console.log('objectClickedPosition: ');
+    // console.log(objectClickedPosition);
+    console.log('clickedPosition: ');
+    console.log(clickedPosition);
+
+    // if (clickedPosition && clickedPosition.length > 0) {
+    //   console.log('clickedPosition[0].position: ');
+    //   console.log(clickedPosition[0].position);
+    // }
+
+    // const objectPositionData = positionData;
+    // console.log(typeof objectPositionData);
+    // console.log('objectPositionData: ');
+    // console.log(objectPositionData);
+    console.log(' useEfect formattedData positionData: ');
+    console.log(positionData);
+
+    const combinedVacanciesStatusData = [...clickedPosition, ...positionData];
+    console.log("combinedVacanciesStatusData : ");
+    console.log(combinedVacanciesStatusData);
+
+  }, [clickedPosition, positionData, selectedDepartment]);
 
   const colors = [
     "#8884d8",
@@ -240,7 +347,7 @@ const JobPositionPieChart = ({department}) => {
               value={selectedDepartment}
               onChange={handleDepartmentChange}
               disabled={true}
-              // defaultValue={selectedDepartment}
+            // defaultValue={selectedDepartment}
             // allowClear
             >
               {selectedDepartment}
@@ -292,7 +399,7 @@ const JobPositionPieChart = ({department}) => {
       >
         {/* Pie Chart Section */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
-          <div style={{ textAlign: "center", marginBottom: "10px" }}>
+          <div style={{ textAlign: "center", marginBottom: "5px" }}>
             <h1>Job Vacancies by Position</h1>
             <p>Click on a segment to see detailed information about the position's status.</p>
           </div>
@@ -327,8 +434,8 @@ const JobPositionPieChart = ({department}) => {
 
         {/* Bar Chart Section */}
         <div style={{ flex: 1, marginLeft: "20px" }}>
-          {clickedPosition ? (
-            positionData.length > 0 && Object.keys(positionData[0]).length > 0 ? (
+          {clickedPosition && clickedPosition.length > 0 ? (
+            lineForLineChart.length > 0 && Object.keys(lineForLineChart[0]).length > 0 ? (
               <>
                 <div
                   style={{
@@ -340,13 +447,26 @@ const JobPositionPieChart = ({department}) => {
                     border: "1px solid #cccccc",
                   }}
                 >
-                  {clickedPosition}
+                  {clickedPosition[0].position}
                   {jobLocation && `, ${jobLocation}`}
                 </div>
-                <BarChart width={500} height={350} data={positionData}>
+
+                <div style={{ marginTop: '15px', paddingRight: '15px' }}>
+                  <LineChart width={800} height={400} data={lineForLineChart}>
+                    <XAxis dataKey="_id" />
+                    <YAxis dataKey="count" />
+                    <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="linear" dataKey="count" stroke="#8884d8" />
+                  </LineChart>
+                </div>
+
+
+                {/* <BarChart width={500} height={350} data={positionData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis dataKey="_id"/>
+                  <YAxis  />
                   <BarTooltip />
                   <BarLegend />
                   {Object.keys(vacancyStatusColors).map((status, index) => (
@@ -356,7 +476,7 @@ const JobPositionPieChart = ({department}) => {
                       fill={vacancyStatusColors[status]}
                     />
                   ))}
-                </BarChart>
+                </BarChart> */}
               </>
             ) : (
               <div
@@ -366,7 +486,7 @@ const JobPositionPieChart = ({department}) => {
                   color: "red",
                 }}
               >
-                No Applicant registered for {clickedPosition} yet
+                No Applicant registered for {clickedPosition[0].position} yet
               </div>
             )
           ) : null}

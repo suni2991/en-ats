@@ -227,7 +227,6 @@ const Postjob = () => {
       const response = await axios.post(
         `${URL}/createjob`,
         formData,
-        
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -10,6 +10,7 @@ import Postjob from "../components/Postjob";
 import JobPositionPieChart from "../components/JobPosition";
 
 const URL = process.env.REACT_APP_API_URL;
+
 const Dashboard = () => {
   const { auth } = useAuth();
   const [view, setView] = useState("tile");
@@ -21,10 +22,13 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
+        console.log('useEffect token: ', token);
+        
         // console.log("Parameters for fetching jobs:", {
         //   mgrRole: auth.role,
         //   fullName: auth.fullName,
         // });
+
         const response = await axios.get(`${URL}/viewjobs`, {
           params: { mgrRole: auth.role, fullName: auth.fullName },
           headers: {
@@ -100,6 +104,9 @@ const Dashboard = () => {
       dataIndex: "position",
       key: "position",
       render: (position) => capitalizeFirstLetter(position),
+      onCell: () => ({
+        style: { cursor: 'pointer' },
+      }),
     },
     {
       title: "Department",

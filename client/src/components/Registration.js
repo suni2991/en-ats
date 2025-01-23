@@ -13,7 +13,7 @@ import useAuth from "../hooks/useAuth";
 const URL = process.env.REACT_APP_API_URL;
 function Registration({ closeModal }) {
   const { token } = useAuth();
-  const {auth} = useAuth();
+  const { auth } = useAuth();
   const [positions, setPositions] = useState([]);
   const [customPosition, setCustomPosition] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -41,7 +41,7 @@ function Registration({ closeModal }) {
     district: "",
     city: "",
     reference: "",
-    source:"",
+    source: "",
   });
 
   const [selectedHrName, setSelectedHrName] = useState("");
@@ -67,7 +67,7 @@ function Registration({ closeModal }) {
         },
       });
       const jobData = response.data;
-  
+
       setFormData((prevState) => ({
         ...prevState,
         position: jobData.positionId,
@@ -85,7 +85,7 @@ function Registration({ closeModal }) {
       position: selectedPosition,  // Update position when selected manually
     }));
   };
-  
+
 
   const statesList = [
     "Andhra Pradesh",
@@ -141,7 +141,7 @@ function Registration({ closeModal }) {
       lwd: dateString,
     }));
   };
-  
+
   // Function to disable past dates and dates beyond 60 days
   const disabledDate = (current) => {
     // Disable dates before today and after 60 days from today
@@ -157,7 +157,7 @@ function Registration({ closeModal }) {
     //   message.error("Choose your Last Working Day")
     //   isValid= false;
     // }
-    
+
     if (!formData.firstName) {
       message.error("Enter First Name");
       isValid = false;
@@ -190,21 +190,21 @@ function Registration({ closeModal }) {
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  if (!formData.email || !emailRegex.test(formData.email)) {
-    message.warning("Enter Valid Email");
-    isValid = false;
-  } else if (formData.email.includes("@enfuse-solutions.com")) {
-    message.error("Emails from '@enfuse-solutions.com' are not allowed");
-    isValid = false;
-  }
-  
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      message.warning("Enter Valid Email");
+      isValid = false;
+    } else if (formData.email.includes("@enfuse-solutions.com")) {
+      message.error("Emails from '@enfuse-solutions.com' are not allowed");
+      isValid = false;
+    }
+
     if (!formData.resume) {
       message.warning("Please upload a valid Resume in .doc/.pdf format");
       isValid = false;
     } else if (formData.resume.name) {
       const allowedExtensions = ["doc", "pdf"];
       const fileExtension = formData.resume.name.split(".").pop().toLowerCase();
-  
+
       if (!allowedExtensions.includes(fileExtension)) {
         message.error("Resume must be in .doc or .pdf format");
         isValid = false;
@@ -225,7 +225,7 @@ function Registration({ closeModal }) {
       isValid = false;
     }
 
-   if (!formData.selectedCategory) {
+    if (!formData.selectedCategory) {
       message.error("Please Choose Category");
       isValid = false;
     }
@@ -268,7 +268,7 @@ function Registration({ closeModal }) {
     }
   };
 
-  
+
   const handleChange = async (e) => {
     e.preventDefault();
     if (e.target.name === "image" || e.target.name === "resume") {
@@ -328,7 +328,7 @@ function Registration({ closeModal }) {
             setCustomPosition(customValue);
           }
         }
-      }  else {
+      } else {
         setFormData((prevState) => ({
           ...prevState,
           [e.target.name]: value,
@@ -396,7 +396,7 @@ function Registration({ closeModal }) {
   //     setStateSuggestions(filteredStates.slice(0, 5)); // Show up to 5 suggestions
   //     setShowSuggestions(true);  // Show the suggestions
   //   }
-  
+
   //   setFormData((prevData) => ({
   //     ...prevData,
   //     [name]: value,  // Update the form field
@@ -415,24 +415,24 @@ function Registration({ closeModal }) {
 
     const historyNote = "Initial registration of an Applicant";
     const historyUpdate = {
-        updatedBy: auth.fullName || "Applicant",
-        updatedAt: new Date(),
-        note: historyNote,
+      updatedBy: auth.fullName || "Applicant",
+      updatedAt: new Date(),
+      note: historyNote,
     };
 
     const formDataWithFullName = {
-        ...formData,
-        fullName: fullName,
-        username: username,
-        password: password,
-        confirmPassword: password,
-        createdAt: createdAt,
-        mgrName: selectedHrName,
-        mgrEmail: selectedHrEmail,
-        reference: formData.reference,
-        currentLocation: formData.city,
-        history: [historyUpdate],
-        position: formData.position || positionId,
+      ...formData,
+      fullName: fullName,
+      username: username,
+      password: password,
+      confirmPassword: password,
+      createdAt: createdAt,
+      mgrName: selectedHrName,
+      mgrEmail: selectedHrEmail,
+      reference: formData.reference,
+      currentLocation: formData.city,
+      history: [historyUpdate],
+      position: formData.position || positionId,
     };
 
     console.log("Selected HR Name:", selectedHrName);
@@ -440,225 +440,225 @@ function Registration({ closeModal }) {
 
     const isValid = validateForm();
     if (!isValid) {
-        message.error("Something went wrong");
-        return;
+      message.error("Something went wrong");
+      return;
     }
 
     try {
-        // Show loading spinner
-        Swal.fire({
-            title: 'Submitting...',
-            text: 'Please wait while your application is being submitted.',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading(),
+      // Show loading spinner
+      Swal.fire({
+        title: 'Submitting...',
+        text: 'Please wait while your application is being submitted.',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      // Submit the main form
+      const response = await fetch(`${URL}/register/candidate`, {
+        method: "POST",
+        body: JSON.stringify(formDataWithFullName),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.status === 201) {
+        // Sending email to manager
+        const emailToManager = {
+          role: data.role,
+          email: data.email,
+          fullName: data.fullName,
+          mgrEmail: data.mgrEmail,
+          source: data.source,
+          position: data.position,
+          reference: data.reference,
+          lwd: data.lwd,
+          currentLocation: data.currentLocation,
+          selectedCategory: data.selectedCategory,
+        };
+
+        await axios.post(`${URL}/user/register`, emailToManager, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Submit the main form
-        const response = await fetch(`${URL}/register/candidate`, {
-            method: "POST",
-            body: JSON.stringify(formDataWithFullName),
-            headers: {
-                "Content-Type": "application/json",
-            },
+        await axios.post(`${URL}/user/acknowledgement`, emailToManager, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        const data = await response.json();
+        message.success("Applicant saved successfully");
+        await Swal.fire({
+          title: 'Application Submitted',
+          text: 'Your application has been submitted successfully. HR will get back to you shortly.',
+          icon: 'success',
+          confirmButtonText: 'Close',
+        });
 
-        if (response.status === 201) {
-            // Sending email to manager
-            const emailToManager = {
-                role: data.role,
-                email: data.email,
-                fullName: data.fullName,
-                mgrEmail: data.mgrEmail,
-                source: data.source,
-                position: data.position,
-                reference: data.reference,
-                lwd: data.lwd,
-                currentLocation: data.currentLocation,
-                selectedCategory: data.selectedCategory,
-            };
-
-            await axios.post(`${URL}/user/register`, emailToManager, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            await axios.post(`${URL}/user/acknowledgement`, emailToManager, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            message.success("Applicant saved successfully");
-            await Swal.fire({
-                title: 'Application Submitted',
-                text: 'Your application has been submitted successfully. HR will get back to you shortly.',
-                icon: 'success',
-                confirmButtonText: 'Close',
-            });
-
-            // Close the window or modal
-            // window.close();
-            closeModal();
-        } else if (response.status === 409) {
-            message.error("Email or Username already in use");
-        } else {
-            message.error("Registration Failed");
-        }
+        // Close the window or modal
+        // window.close();
+        closeModal();
+      } else if (response.status === 409) {
+        message.error("Email or Username already in use");
+      } else {
+        message.error("Registration Failed");
+      }
     } catch (error) {
-        console.error("Error during submission:", error);
-        Swal.fire({
-            title: 'Error',
-            text: 'An error occurred during submission. Please try again later.',
-            icon: 'error',
-        });
+      console.error("Error during submission:", error);
+      Swal.fire({
+        title: 'Error',
+        text: 'An error occurred during submission. Please try again later.',
+        icon: 'error',
+      });
     } finally {
-        // Close the loading spinner
-        Swal.close();
+      // Close the loading spinner
+      Swal.close();
     }
-};
+  };
 
 
 
   return (
     <div>
-    <form onSubmit={handleSubmit}>
-      <div className='formContainer' style={{ gap: '4rem' }}>
-        <div className='block' >
-          <div>
-            <label>First Name<span className='require'>*</span></label>
-            <input type="text" name="firstName" value={formData.firstName} required onChange={handleChange} placeholder="Enter Fullname"></input></div>
-          <div><label>Email<span className='require'>*</span></label>
-            <input type="text" name="email" value={formData.email} required onChange={handleChange} placeholder="Enter valid Mail Id "></input></div>
-          <div><label>Total Experience<span className='require'>*</span></label>
-            <input type="text" name="totalExperience" value={formData.totalExperience} onChange={handleChange} placeholder="Enter Number of years only "></input></div>
-          <div><label>Notice Period<span className='require'>*</span></label>
-            <select name="noticePeriod" style={{ width: '100%' }} value={formData.noticePeriod} onChange={handleChange}>
-              <option value="">Choose One</option>
-              <option value="Immediate">Immediate </option>
-              <option value="30days">Less than 30days</option>
-              <option value="45days">Less than 45days</option>
-              <option value="90days">More than 90days</option>
-            </select>
-          </div>
-          <div>
-            <label>City<span className='require'>*</span></label>
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              maxLength={20}
-              placeholder="Enter city"
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-  <label>State<span className='require'>*</span></label>
-  <select
-        name="state"
-        value={formData.state}  // Bind the select value to formData.state
-        onChange={handleChange}  // Handle state change on selection
-      >
-        <option value="">Select a state</option> {/* Default option */}
-        {statesList.map((state, index) => (
-          <option key={index} value={state}>
-            {state}
-          </option>
-        ))}
-      </select>
-</div>
+      <form onSubmit={handleSubmit}>
+        <div className='formContainer' style={{ gap: '4rem' }}>
+          <div className='block' >
+            <div>
+              <label>First Name<span className='require'>*</span></label>
+              <input type="text" name="firstName" value={formData.firstName} required onChange={handleChange} placeholder="Enter Fullname"></input></div>
+            <div><label>Email<span className='require'>*</span></label>
+              <input type="text" name="email" value={formData.email} required onChange={handleChange} placeholder="Enter valid Mail Id "></input></div>
+            <div><label>Total Experience<span className='require'>*</span></label>
+              <input type="text" name="totalExperience" value={formData.totalExperience} onChange={handleChange} placeholder="Enter Number of years only "></input></div>
+            <div><label>Notice Period<span className='require'>*</span></label>
+              <select name="noticePeriod" style={{ width: '100%' }} value={formData.noticePeriod} onChange={handleChange}>
+                <option value="">Choose One</option>
+                <option value="Immediate">Immediate </option>
+                <option value="30days">Less than 30days</option>
+                <option value="45days">Less than 45days</option>
+                <option value="90days">More than 90days</option>
+              </select>
+            </div>
+            <div>
+              <label>City<span className='require'>*</span></label>
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                maxLength={20}
+                placeholder="Enter city"
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label>State<span className='require'>*</span></label>
+              <select
+                name="state"
+                value={formData.state}  // Bind the select value to formData.state
+                onChange={handleChange}  // Handle state change on selection
+              >
+                <option value="">Select a state</option> {/* Default option */}
+                {statesList.map((state, index) => (
+                  <option key={index} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div>
+            <div>
               <label>Resume<span className='require'>*</span></label>
               <input type="file" name="resume" path={formData.resume} required onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
             </div>
-          <div>
-        <label>Reference</label>
-        <input type="text" name="reference" value={formData.reference} onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
-         
-        <div>
-        <label>Last Working Day</label>
-        <DatePicker
-      name="lwd"
-      required
-      value={formData.lwd ? moment(formData.lwd) : null}
-      onChange={handleDateChange}
-      placeholder="Choose Last Working Day"
-      style={{ width: '320px', border: '1px solid #00B4D2', padding: '5px 10px 0 10px' }}
-      // disabledDate={disabledDate} // Apply date restriction
-    />
-              </div>
-        
-        </div>
+            <div>
+              <label>Reference</label>
+              <input type="text" name="reference" value={formData.reference} onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
 
-       
+            <div>
+              <label>Last Working Day</label>
+              <DatePicker
+                name="lwd"
+                required
+                value={formData.lwd ? moment(formData.lwd) : null}
+                onChange={handleDateChange}
+                placeholder="Choose Last Working Day"
+                style={{ width: '320px', border: '1px solid #00B4D2', padding: '5px 10px 0 10px' }}
+              // disabledDate={disabledDate} // Apply date restriction
+              />
+            </div>
+
+          </div>
+
+
           <div className='block' style={{ float: 'right' }}>
             <div>
               <label>Last Name<span className='require'>*</span></label>
               <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange}></input>
-              </div>
+            </div>
 
             <div><label>Contact Number<span className='require'>*</span></label>
               <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No."></input>
-              </div>
-              <div><label>Relevant Experience<span className='require'>*</span></label>
-                <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="Enter Number of years only "></input>
-              </div>
-              <div><label>Qualification<span className='require'>*</span></label>
+            </div>
+            <div><label>Relevant Experience<span className='require'>*</span></label>
+              <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="Enter Number of years only "></input>
+            </div>
+            <div><label>Qualification<span className='require'>*</span></label>
               <input type="text" name="qualification" value={formData.qualification} onChange={handleChange} placeholder="Highest Qualification"></input>
-               
-              </div>
+
+            </div>
+            <div>
+              <label>District</label>
+              <input
+                type="text"
+                name="district"
+                value={formData.district}
+                maxLength={20}
+                placeholder="Enter district"
+                onChange={handleChange}
+              />
+            </div>
+            {!positionId && (
               <div>
-                <label>District</label>
-                <input
-                  type="text"
-                  name="district"
-                  value={formData.district}
-                  maxLength={20}
-                  placeholder="Enter district"
-                  onChange={handleChange}
-                />
+                <label>Position</label>
+                <select
+                  name="position"
+                  value={formData.position}
+                  onChange={handlePositionChange}
+                  style={{ width: '100%' }}
+                >
+                  <option value="">Choose One</option>
+                  {positions.map((position) => (
+                    <option key={position._id} value={position.position}>
+                      {position.position}
+                    </option>
+                  ))}
+                </select>
               </div>
-              {!positionId && (
-                <div>
-                  <label>Position</label>
-                  <select
-                    name="position"
-                    value={formData.position}
-                    onChange={handlePositionChange}
-                    style={{ width: '100%' }}
-                  >
-                    <option value="">Choose One</option>
-                    {positions.map((position) => (
-                      <option key={position._id} value={position.position}>
-                        {position.position}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              <div><label>Category<span className='require'>*</span></label>
+            )}
+            <div><label>Category<span className='require'>*</span></label>
               <select name="selectedCategory" value={formData.selectedCategory} required style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
 
                 <option value="">Choose One</option>
-              <option value="Technical">Technical</option>
+                <option value="Technical">Technical</option>
                 <option value="Non-Technical">Non-Technical</option>
               </select>
             </div>
             <div>
-            <label>Source<span className='require'>*</span></label>
-        <input type="text" name="source" value={formData.source} required onChange={handleChange} placeholder="Source (e.g., Online Ad, Career Site)"></input></div>
-         
-            <div style={{marginTop:'10px'}}>
-            <HrDropdown onSelect={handleSelectHr}  onSelectHr={handleSelectHr} required onChange={(value, option) => handleSelectHr(option.fullName, option.email)} /> 
+              <label>Source<span className='require'>*</span></label>
+              <input type="text" name="source" value={formData.source} required onChange={handleChange} placeholder="Source (e.g., Online Ad, Career Site)"></input></div>
+
+            <div style={{ marginTop: '10px' }}>
+              <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} required onChange={(value, option) => handleSelectHr(option.fullName, option.email)} />
+            </div>
           </div>
-           </div>    
         </div>
         <div id='btnWrapper'>
-          <Button className='add-button' style={{ backgroundColor: '#A50707', float:'end', marginTop:'15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
+          <Button className='add-button' style={{ backgroundColor: '#A50707', float: 'end', marginTop: '15px' }} type="submit" onClick={handleSubmit} >Submit</Button>
         </div>
 
-    </form>
-    <center><p style={{color:'#A50707'}}>* Fields are required</p></center>
-  </div>
+      </form>
+      <center><p style={{ color: '#A50707' }}>* Fields are required</p></center>
+    </div>
   )
 }
 
