@@ -244,14 +244,14 @@ const EditCandidate = ({candidate}) => {
                             <div className='block' >
                                 <div>
                                     <label>First Name<span className='require'>*</span></label>
-                                    <input type="text" name="firstName" value={formData.firstName} required onChange={handleChange} placeholder="Enter Fullname" disabled={true} />
+                                    <input type="text" name="firstName" value={formData.firstName} required onChange={handleChange} placeholder="Enter Fullname" disabled={false} />
                                 </div>
                                 <div><label>Email<span className='require'>*</span></label>
-                                    <input type="text" name="email" value={formData.email} required onChange={handleChange} placeholder="Enter valid Mail Id " disabled={true} />
+                                    <input type="text" name="email" value={formData.email} required onChange={handleChange} placeholder="Enter valid Mail Id " disabled={false} />
                                 </div>
                                 <div>
                                     <label>Total Experience<span className='require'>*</span></label>
-                                    <input type="text" name="totalExperience" value={formData.totalExperience} onChange={handleChange} placeholder="Enter Number of years only " disabled={true} />
+                                    <input type="text" name="totalExperience" value={formData.totalExperience} onChange={handleChange} placeholder="Enter Number of years only " disabled={false} />
                                 </div>
                                 <div>
                                     <label>Notice Period<span className='require'>*</span></label>
@@ -265,7 +265,7 @@ const EditCandidate = ({candidate}) => {
                                     </select> */}
                                 </div>
                                 <div>
-                                    <label>City<span className='require'>*</span></label>
+                                    <label>City</label>
                                     <input
                                         type="text"
                                         name="city"
@@ -276,7 +276,7 @@ const EditCandidate = ({candidate}) => {
                                     />
                                 </div>
                                 <div>
-                                    <label>State<span className='require'>*</span></label>
+                                    <label>State</label>
                                     <select
                                         name="state"
                                         value={formData.state}  // Bind the select value to formData.state
@@ -363,17 +363,17 @@ const EditCandidate = ({candidate}) => {
                             <div className='block' style={{ float: 'right' }}>
                                 <div>
                                     <label>Last Name<span className='require'>*</span></label>
-                                    <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange} disabled={true} />
+                                    <input type="text" name="lastName" value={formData.lastName} required placeholder="Enter Last name" onChange={handleChange} disabled={false} />
                                 </div>
 
                                 <div><label>Contact Number<span className='require'>*</span></label>
-                                    <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No." disabled={true} />
+                                    <input type="text" name="contact" value={formData.contact} maxLength={10} onChange={handleChange} required placeholder="Enter 10-digit valid mobile No." disabled={false} />
                                 </div>
                                 <div><label>Relevant Experience<span className='require'>*</span></label>
-                                    <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="Enter Number of years only " disabled={true} />
+                                    <input type="text" name="relevantExperience" value={formData.relevantExperience} onChange={handleChange} placeholder="Enter Number of years only " disabled={false} />
                                 </div>
                                 <div><label>Qualification<span className='require'>*</span></label>
-                                    <input type="text" name="qualification" value={formData.qualification} onChange={handleChange} placeholder="Highest Qualification" disabled={true} />
+                                    <input type="text" name="qualification" value={formData.qualification} onChange={handleChange} placeholder="Highest Qualification" disabled={false} />
                                 </div>
                                 <div>
                                     <label>District</label>
@@ -404,8 +404,8 @@ const EditCandidate = ({candidate}) => {
                                     </select>
                                 </div> */}
                                 {/* )} */}
-                                <div><label>Category<span className='require'>*</span></label>
-                                    <select name="selectedCategory" value={formData.selectedCategory} required style={{ width: '100%' }} onChange={handleChangeCategory} placeholder="choose Category" disabled={formData.selectedCategory ? true : false}>
+                                <div><label>Category</label>
+                                    <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChangeCategory} placeholder="choose Category" disabled={formData.selectedCategory ? true : false}>
 
                                         <option value="">Choose One</option>
                                         <option value="Technical">Technical</option>

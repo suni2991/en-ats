@@ -249,6 +249,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
   const handleSendEmail = async () => {
     const emailData = {
       role: candidateData.role,
+      mgrEmail: candidateData.mgrEmail,
       confirmPassword: candidateData.confirmPassword,
       email: candidateData.email,
       fullName: candidateData.fullName,

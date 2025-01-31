@@ -20,6 +20,7 @@ const template6 = fs.readFileSync("./views/interviewInvite.hjs", "utf-8");
 const template7 = fs.readFileSync("./views/shortlistEmail.hjs", "utf-8");
 const template8 = fs.readFileSync("./views/rejectionEmail.hjs", "utf-8");
 const template9 = fs.readFileSync("./views/acknowledgeEmail.hjs", "utf-8");
+const template10 = fs.readFileSync("./views/postApprovalEmail.hjs", "utf-8");
 const compiledTemplate = Hogan.compile(template);
 const compiledTemplate1 = Hogan.compile(template1);
 const compiledTemplate2 = Hogan.compile(template2);
@@ -30,6 +31,8 @@ const compiledTemplate6 = Hogan.compile(template6);
 const compiledTemplate7 = Hogan.compile(template7);
 const compiledTemplate8 = Hogan.compile(template8);
 const compiledTemplate9 = Hogan.compile(template9);
+const compiledTemplate10 = Hogan.compile(template10);
+
 // send mail
 emailRouter.post(
   "/user/register",
@@ -39,7 +42,6 @@ emailRouter.post(
     const { role, fullName, email, source, mgrName, mgrEmail, position, reference, selectedCategory, currentLocation, lwd } = req.body;
     // const { confirmPassword } = req.body;
   
-
     try {
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -112,7 +114,7 @@ emailRouter.post(
 
       const mailOptions = {
         from: process.env.EMAIL,
-        to: email,
+        to: 'sahil.shaikh@enfuse-solutions.com',
         subject: `Thank you for your application for the role of ${position}`,
         html: compiledTemplate9.render({
           fullName,
@@ -156,6 +158,7 @@ emailRouter.post("/user/credentials", (req, res) => {
   const { role } = req.body;
   const { confirmPassword } = req.body;
   const { email } = req.body;
+  const { mgrEmail } = req.body;
   const { fullName } = req.body;
 
   try {
@@ -172,6 +175,7 @@ emailRouter.post("/user/credentials", (req, res) => {
       const mailOptions = {
           from: process.env.EMAIL,
           to: email,
+          cc: mgrEmail,
           subject: "Enfuse Welcomes You",
           html: compiledTemplate1.render({ role, email, fullName, confirmPassword }),
           attachments: [
@@ -213,7 +217,7 @@ emailRouter.post(
   authenticate,
   // checkPermission("job_approve_email"),
   (req, res) => {
-    const { position, department, postedBy, jobId, toEmail } = req.body;
+    const { position, department, postedBy, jobId, toEmail, status } = req.body;
 
     try {
       const transporter = nodemailer.createTransport({
@@ -226,7 +230,7 @@ emailRouter.post(
 
       const mailOptions = {
         from: process.env.EMAIL,
-        to: process.env.TMP_EMAIL,
+        to: 'sunitha.chichula@enfuse-solutions.com',
         // to: toEmail,
         subject: "Approval Request for New Job Position",
         html: compiledTemplate2.render({
@@ -234,7 +238,76 @@ emailRouter.post(
           department,
           postedBy,
           jobId,
-        
+        }),
+        attachments: [
+          {
+            filename: "Recruitment.jpg",
+            path: "./views/Recruitment.jpg",
+            cid: "recruitment",
+          },
+          {
+            filename: "welcome.jpg",
+            path: "./views/welcome.jpg",
+            cid: "welcome",
+          },
+          {
+            filename: "enfuse-logo.png",
+            path: "./views/enfuse-logo.png",
+            cid: "enfuse-logo",
+          },
+        ],
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log("Error" + error);
+        } else {
+          console.log("Email sent:" + info.response);
+          res.status(201).json({ status: 201, info });
+        }
+      });
+    } catch (error) {
+      console.log("Error" + error);
+      res.status(401).json({ status: 401, error });
+    }
+  }
+);
+
+emailRouter.put(
+  "/job/approval",
+  authenticate,
+  // checkPermission("job_approve_email"),
+  (req, res) => {
+
+    console.log('entered put job/approval');
+    
+    const {_id, position, department, postedBy, vacancies, experience, jobId, jobLocation, description, toEmail, status } = req.body;
+
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: 'sunitha.chichula@enfuse-solutions.com',
+        // to: toEmail,
+        subject: "Status update for the Job Position Requested",
+        html: compiledTemplate10.render({
+          _id,
+          position,
+          department,
+          postedBy,
+          experience,
+          vacancies,
+          jobLocation,
+          description,
+          jobId,
+          status,
         }),
         attachments: [
           {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Modal, Table, Tooltip } from "antd";
+import { Button, Input, Modal, Spin, Table, Tooltip } from "antd";
 import { FiGrid } from "react-icons/fi";
 import { FaTableList } from "react-icons/fa6";
 import axios from "axios";
@@ -8,22 +8,45 @@ import JobDashboard from "../components/JobDashboard";
 import Viewjob from "../components/Viewjob";
 import Postjob from "../components/Postjob";
 import JobPositionPieChart from "../components/JobPosition";
+import { Cell } from "recharts";
+import moment from "moment";
+import ViewJobModal from "./ViewJobModal";
 
 const URL = process.env.REACT_APP_API_URL;
 
 const Dashboard = () => {
   const { auth } = useAuth();
   const [view, setView] = useState("tile");
+  const [isAddNewJobModalVisible, setIsAddNewJobModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isEditClicked, setIsEditClicked] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [pendingJobs, setPendingJobs] = useState([]);
   const [jobs, setJobs] = useState([]);
   const { token } = useAuth();
+
+  const daysRemaining = selectedJob ? moment(selectedJob.fullfilledBy).diff(moment(), 'days') : 0;
+
+  // const [editFields, setEditFields] = useState({
+  //   position: "",
+  //   department: "",
+  //   jobLocation: "",
+  //   experience: "",
+  //   vacancies: "",
+  //   postedBy: "",
+  //   status: "",
+  //   description: "",
+  //   note: "",
+  //   fullfilledBy: ""
+  // });
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         console.log('useEffect token: ', token);
-        
+
         // console.log("Parameters for fetching jobs:", {
         //   mgrRole: auth.role,
         //   fullName: auth.fullName,
@@ -65,12 +88,51 @@ const Dashboard = () => {
     fetchPendingJobs();
   }, [auth.role, auth.fullName, token]);
 
+
+  const handleRowButtonClick = async (jobId) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${URL}/job-posts/${jobId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const job = response.data;
+      setSelectedJob(job);
+      // setEditFields({
+      //   position: job.position,
+      //   department: job.department,
+      //   jobLocation: job.jobLocation,
+      //   experience: job.experience,
+      //   vacancies: job.vacancies,
+      //   postedBy: job.postedBy,
+      //   fullfilledBy: job.fullfilledBy,
+      //   status: job.status,
+      //   description: job.description,
+      //   note: "", // Initialize note as an empty string
+      // });
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const showModal = () => {
-    setIsModalVisible(true);
+    setIsAddNewJobModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setIsEditClicked(false);
   };
 
   const closeModal = () => {
-    setIsModalVisible(false);
+    setIsAddNewJobModalVisible(false);
   };
 
   const toggleView = () => {
@@ -104,9 +166,11 @@ const Dashboard = () => {
       dataIndex: "position",
       key: "position",
       render: (position) => capitalizeFirstLetter(position),
-      onCell: () => ({
-        style: { cursor: 'pointer' },
-      }),
+      onCell: (row) => ({
+        style: { cursor: 'pointer',},
+        
+        onClick: () => { handleRowButtonClick(row._id) },
+      })
     },
     {
       title: "Department",
@@ -190,7 +254,7 @@ const Dashboard = () => {
       {auth.role === 'Hiring-Manager' ?
         (
           <div className='stat-repo-dashboard'>
-            <JobPositionPieChart department={auth.department}/>
+            <JobPositionPieChart department={auth.department} />
           </div>
         ) :
         (
@@ -216,7 +280,7 @@ const Dashboard = () => {
       </div>
 
       <Modal
-        open={isModalVisible}
+        open={isAddNewJobModalVisible}
         onCancel={closeModal}
         footer={null}
         title={<h2>Add New Job Posting</h2>}
@@ -224,6 +288,18 @@ const Dashboard = () => {
       >
         <Postjob />
       </Modal>
+
+      <Modal
+        title={`This position ends in ${daysRemaining} days`}
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width={800}
+      >
+        <ViewJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} isEditClicked={isEditClicked} setIsEditClicked={setIsEditClicked} setIsModalVisible={setIsModalVisible} isEditButtonDisabled={true} />
+      </Modal>
+
+
     </div>
   );
 };

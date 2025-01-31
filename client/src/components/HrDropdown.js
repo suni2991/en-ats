@@ -10,17 +10,19 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
   const [selectedPanelist, setSelectedPanelist] = useState(null);
   const [mgrName, setMgrName] = useState(null);
   const [mgrEmail, setMgrEmail] = useState(null);
-  const {token} = useAuth();
+  const { token } = useAuth();
 
   const handleSelectChange = (fullName) => {
+    console.log('fullName: '+fullName);
     const selectedHr = hrs.find((hr) => hr.fullName === fullName);
-    if (selectedHr) {
+    console.log('selectedHr', selectedHr);
+    if (selectedHr && selectedHr.fullName) {
       setSelectedPanelist(fullName);
       onSelect(selectedHr.email);
       onSelectHr(selectedHr.fullName, selectedHr.email);
       setMgrName(selectedHr.fullName);
       setMgrEmail(selectedHr.email);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
           //     Authorization: `Bearer ${token}`
           //   }
           // }
-          );
+        );
         const data = response.data;
         if (data.length > 0) {
           setHrs(data);
@@ -57,10 +59,12 @@ const HrDropdown = ({ onSelect, onSelectHr }) => {
         style={{ width: '100%' }}
         className="custom-dropdown"
       >
-        {hrs.map((hr) => (
-          <Option key={hr._id} value={hr.fullName}>
-            {hr.fullName && hr.fullName.length > 0 ? hr.fullName[0].toUpperCase() + hr.fullName.slice(1).toLowerCase() : hr.fullName}
-          </Option>
+        {hrs.map((hr) => (  
+          <>
+            <Option key={hr._id} value={hr.fullName}>
+              {hr.fullName && hr.fullName.length > 0 ? hr.fullName[0].toUpperCase() + hr.fullName.slice(1).toLowerCase() : hr.fullName}
+            </Option>
+          </>
         ))}
       </Select>
       <style>

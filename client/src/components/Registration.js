@@ -544,6 +544,7 @@ function Registration({ closeModal }) {
               <input
                 type="text"
                 name="city"
+                required={true}
                 value={formData.city}
                 maxLength={20}
                 placeholder="Enter city"
@@ -554,6 +555,7 @@ function Registration({ closeModal }) {
               <label>State<span className='require'>*</span></label>
               <select
                 name="state"
+                required={true}
                 value={formData.state}  // Bind the select value to formData.state
                 onChange={handleChange}  // Handle state change on selection
               >
@@ -636,7 +638,7 @@ function Registration({ closeModal }) {
               </div>
             )}
             <div><label>Category<span className='require'>*</span></label>
-              <select name="selectedCategory" value={formData.selectedCategory} required style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category">
+              <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category" required>
 
                 <option value="">Choose One</option>
                 <option value="Technical">Technical</option>

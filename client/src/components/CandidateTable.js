@@ -186,6 +186,7 @@ const CandidateTable = ({ auth, token }) => {
             open={profileOpen}
             onClose={handleDrawerClose}
             candidateId={selectedCandidate ? selectedCandidate._id : ''}
+            candidateManager={selectedCandidate ? selectedCandidate.mgrEmail : ''}
           />}
 
         <Modal

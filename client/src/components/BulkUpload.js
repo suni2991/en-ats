@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, message, Form, Button } from 'antd';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 const URL = process.env.REACT_APP_API_URL;
 
@@ -88,7 +89,7 @@ const BulkUpload = () => {
 
         try {
 
-            const response = await axios.post(`${URL}/bulk-upload`, formData,  {
+            const response = await axios.post(`${URL}/bulk-upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -97,7 +98,7 @@ const BulkUpload = () => {
             console.log('Response:', response.data);
             message.success('File uploaded successfully.');
             console.log('Uploaded file handleSubmit:', uploadedFile);
-            
+
         } catch (error) {
             console.error('Error uploading file:', error);
         }
@@ -130,6 +131,30 @@ const BulkUpload = () => {
         // console.log('Uploaded file:', uploadedFile);
     }
 
+    const handleDownloadTemplate = () => {
+        console.log('Download Template.');
+
+        const headers = [
+            "Sr No", "Candidate Name", "Mobile Number", "Email ID", "Organisation",
+            "Role/Designation", "Total Experience", "Relevant Experience", "Education", "Salary",
+            "Expected Salary", "Notice Period/ LWD", "Current Location", "Prefered Location",
+            "Resume Status", "Test Applicability", "Test Status", "Test Score",
+            "L1 Interviewer", "L1 Interview Status", "L2 Interviewer", "L2 Interview Status",
+            "L3 Interviewer", "L3 Interview Status", "Candidate Final Status",
+            "HR Comments", "HR Name", "Resume Link"
+        ];
+
+        // Create a worksheet with just the headers
+        const worksheet = XLSX.utils.aoa_to_sheet([headers]);
+
+        // Create a workbook and append the worksheet
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "template");
+
+        // Write the file and trigger download
+        XLSX.writeFile(workbook, "Candidate_Template.xlsx");
+    }
+
     return (
         <>
             <div style={{ padding: '70px 15px', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
@@ -140,9 +165,14 @@ const BulkUpload = () => {
                         <div>
                             <input style={{ fontSize: '19px', alignItems: 'center', backgroundColor: 'white', border: '1px solid', marginBottom: '5px', borderRadius: '6px' }} type="file" required onChange={handleChange} accept=".xlsx, .csv" placeholder=".xlsx, .csv" ></input>
                         </div>
-                        <Button type="submit" className="form-btn" onClick={handleSubmit}>
-                            Submit
-                        </Button>
+                        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                            <Button type="submit" className="form-btn" onClick={handleSubmit}>
+                                Submit
+                            </Button>
+                            <Button type="button" className="form-btn" style={{ backgroundColor: '#1a2763' }} onClick={handleDownloadTemplate}>
+                                Download Template
+                            </Button>
+                        </div>
                     </form>
                 </div>
             </div>
