@@ -10,21 +10,26 @@ import Swal from 'sweetalert2';
 
 const URL = process.env.REACT_APP_API_URL;
 
-const EditCandidate = ({candidate}) => {
+const EditCandidate = ({selectedCandidate, closeModal}) => {
 
     const { token } = useAuth();
     // const location = useLocation();
     const navigateTo = useNavigate();
     // const candidate = location.state; // This will contain the passed 'row' object
-    const { selectedCategory } = candidate;
+    const { selectedCategory } = selectedCandidate;
 
-    const [formData, setFormData] = useState(candidate);
+    const [formData, setFormData] = useState(selectedCandidate);
     const [category, setCategory] = useState(selectedCategory);
 
     useEffect(() => {
-        console.log(formData);
+        setFormData(selectedCandidate); // Reset form data when candidate changes
+    }, [selectedCandidate]);
 
-    }, [formData])
+
+    // useEffect(() => {
+    //     console.log(formData);
+
+    // }, [formData])
 
     // const [formData, setFormData] = useState({
     //     firstName: candidate.firstName,
@@ -50,6 +55,10 @@ const EditCandidate = ({candidate}) => {
     //     source: "",
     // });
 
+    // const handleCloseModal = () => {
+    //     closeModal();
+    // }
+
     const handleChangeCategory = (event) => {
         const selectedValue = event.target.value;
         event.target.name = event.target.value;
@@ -61,7 +70,7 @@ const EditCandidate = ({candidate}) => {
         // console.log('In handleSubmit');
         e.preventDefault();
 
-        const response = await axios.patch(`${URL}/updateCandidateData/${candidate._id}`,
+        const response = await axios.patch(`${URL}/updateCandidateData/${selectedCandidate._id}`,
             formData,
             {
                 headers: {
@@ -334,13 +343,13 @@ const EditCandidate = ({candidate}) => {
                                     </>
                                 }
 
-                                {candidate.round && candidate.round.length > 0 &&
+                                {selectedCandidate.round && selectedCandidate.round.length > 0 &&
 
-                                    candidate.round.map((object, index) => (
+                                    selectedCandidate.round.map((object, index) => (
                                         <>
                                             <div key={index}>
                                                 <label>L{index + 1} Interviewer</label>
-                                                <input type="text" name={`round.${index}.panelistName`} value={formData.round[index].panelistName} onChange={handleNestedChange} placeholder="Enter interviewer name " />
+                                                <input type="text" name={`round.${index}.panelistName`} value={formData.round[index]?.panelistName || ''} onChange={handleNestedChange} placeholder="Enter interviewer name " />
                                             </div>
                                         </>
                                     ))
@@ -455,13 +464,13 @@ const EditCandidate = ({candidate}) => {
                                     </>
                                 }
 
-                                {candidate.round && candidate.round.length > 0 &&
+                                {selectedCandidate.round && selectedCandidate.round.length > 0 &&
 
-                                    candidate.round.map((object, index) => (
+                                    selectedCandidate.round.map((object, index) => (
                                         <>
                                             <div>
                                                 <label>L{index + 1} Interview Feedback</label>
-                                                <input type="text" name={`round.${index}.feedback`} value={formData.round[index].feedback} onChange={handleNestedChange} placeholder="Enter interview feedback " />
+                                                <input type="text" name={`round.${index}.feedback`} value={formData.round[index]?.feedback || ''} onChange={handleNestedChange} placeholder="Enter interview feedback " />
                                             </div>
                                         </>
                                     ))

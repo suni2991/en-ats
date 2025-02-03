@@ -19,6 +19,7 @@ const CandidateTable = ({ auth, token }) => {
   // const navigateTo = useNavigate();
 
   const closeModal = () => {
+    // setSelectedCandidate(null);
     setIsEditModalVisible(false);
   };
 
@@ -30,11 +31,9 @@ const CandidateTable = ({ auth, token }) => {
 
   useEffect(() => {
     console.log('token', token);
-
   }, [])
 
   const handleView = (row) => {
-
     setSelectedCandidate(row);
     setShowDrawer(false);
     setProfileOpen(true);
@@ -155,7 +154,7 @@ const CandidateTable = ({ auth, token }) => {
             </button>
           </Tooltip>
           <Tooltip title="Edit Candidate" color='cyan' >
-            <button className='table-btn' style={{ marginRight: '10px', fontSize: '12px' }} name='View' onClick={() => handleEditCandidate(row)}>
+            <button className='table-btn' style={{ marginRight: '10px', fontSize: '12px' }} name='Edit' onClick={() => handleEditCandidate(row)}>
               <TiEdit />
             </button>
           </Tooltip>
@@ -190,13 +189,14 @@ const CandidateTable = ({ auth, token }) => {
           />}
 
         <Modal
+          // key={selectedCandidate._id}
           open={isEditModalVisible}
           onCancel={closeModal}
           footer={null}
           width={800}
           title={<h2>Edit Candidate</h2>}
         >
-          <EditCandidate candidate={selectedCandidate} closeModal={closeModal} />
+          <EditCandidate selectedCandidate={selectedCandidate} closeModal={closeModal} />
         </Modal>
       </div>
     </>
