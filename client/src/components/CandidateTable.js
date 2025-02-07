@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MdOutlineAddTask } from "react-icons/md";
-import { TiEdit, TiEyeOutline } from "react-icons/ti";
+import { TiCancel, TiDelete, TiEdit, TiEyeOutline, TiUserDelete, TiUserDeleteOutline } from "react-icons/ti";
 import CandidateProfileDrawer from '../components/CandidateProfileDrawer';
 import Fetchtable from '../components/Fetchtable';
 import AssignInterview from '../components/AssignInterview';
@@ -53,6 +53,13 @@ const CandidateTable = ({ auth, token }) => {
     setIsEditModalVisible(true);
     // navigateTo('/editCandidate', { state: row });
   }
+
+  // const handeDeleteCandidate = (row) => {
+
+  //   console.log('row._id', row._id);
+    
+
+  // }
 
   const renderResumeLink = (row) => {
     if (row.resume) {
@@ -122,18 +129,19 @@ const CandidateTable = ({ auth, token }) => {
       ), sortable: true, width: '130px'
     },
     { name: 'Resume', cell: (row) => renderResumeLink(row), sortable: true, width: '130px' },
-    { name: 'Notice Period', selector: (row) => row.noticePeriod, sortable: true },
+    { name: 'Notice Period', selector: (row) => row.noticePeriod, sortable: true, width: '230px' },
     {
       name: 'Status',
       selector: (row) => row.status,
       sortable: true,
+      width: '250px',
       cell: (row) => (
         <div style={{
           ...getStatusStyles(row.status),
           padding: '5px 10px',
-          borderRadiufs: '5px',
+          // borderRadius: '5px',
           textAlign: 'center',
-          width: '80%'
+          // width: '30%'
         }}>
           {row.status}
         </div>
@@ -141,26 +149,26 @@ const CandidateTable = ({ auth, token }) => {
     },
     {
       name: 'Actions',
+      width: '298px',
       cell: (row) => (
-        <div style={{ marginRight: '10px', paddingRight: '5px' }}>
+        <div style={{marginLeft: '45px', paddingTop: '10px', paddingBottom: '10px'}}>
           <Tooltip title="Assign Interview" color='cyan'>
-            <button className='table-btn' name='Assign' onClick={() => handleAssign(row)}>
+            <button className='table-btn' style={{}}  name='Assign' onClick={() => handleAssign(row)}>
               <MdOutlineAddTask />
             </button>
           </Tooltip>
           <Tooltip title="View Details" color='cyan'>
-            <button className='table-btn' name='View' onClick={() => handleView(row)}>
+            <button className='table-btn'   name='View' onClick={() => handleView(row)}>
               <TiEyeOutline />
             </button>
           </Tooltip>
           <Tooltip title="Edit Candidate" color='cyan' >
-            <button className='table-btn' style={{ marginRight: '10px', fontSize: '12px' }} name='Edit' onClick={() => handleEditCandidate(row)}>
+            <button className='table-btn'   name='Edit' onClick={() => handleEditCandidate(row)}>
               <TiEdit />
             </button>
           </Tooltip>
         </div>
       ),
-      width: '150px'
     },
   ];
 

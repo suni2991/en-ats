@@ -1088,11 +1088,13 @@ userRouter.post("/bulk-upload", bulkUpload, async (req, res) => {
             else if (headerName === "Role/Designation") {
               rowData.position = cell.v; // Role/Designation
             }
-            else if (headerName === "Total Years of Experience") {
-              rowData.totalExperience = convertYearsToNumber(cell.v); // totalExperience
+            else if (headerName === "Total Experience") {
+              // rowData.totalExperience = convertYearsToNumber(cell.v); // totalExperience
+              rowData.totalExperience = cell.v;
             }
             else if (headerName === "Relevant Experience") {
-              rowData.relevantExperience = convertYearsToNumber(cell.v); // relevantExperience
+              rowData.relevantExperience = cell.v;
+              // rowData.relevantExperience = convertYearsToNumber(cell.v); // relevantExperience
             }
             else if (headerName === "Education") {
               rowData.qualification = cell.v; // qualification

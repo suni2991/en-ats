@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 
 const URL = process.env.REACT_APP_API_URL;
 
-const EditCandidate = ({selectedCandidate, closeModal}) => {
+const EditCandidate = ({ selectedCandidate, closeModal }) => {
 
     const { token } = useAuth();
     // const location = useLocation();
@@ -19,50 +19,28 @@ const EditCandidate = ({selectedCandidate, closeModal}) => {
     const { selectedCategory } = selectedCandidate;
 
     const [formData, setFormData] = useState(selectedCandidate);
-    const [category, setCategory] = useState(selectedCategory);
+    const [category, setCategory] = useState();
 
     useEffect(() => {
         setFormData(selectedCandidate); // Reset form data when candidate changes
+        console.log(selectedCandidate);
+        setCategory(null);
     }, [selectedCandidate]);
 
-
     // useEffect(() => {
-    //     console.log(formData);
-
-    // }, [formData])
-
-    // const [formData, setFormData] = useState({
-    //     firstName: candidate.firstName,
-    //     lastName: candidate.lastName,
-    //     totalExperience: candidate,
-    //     relevantExperience: "",
-    //     noticePeriod: "",
-    //     qualification: "",
-    //     contact: "",
-    //     email: "",
-    //     position: "",
-    //     currentLocation: "",
-    //     selectedCategory: "",
-    //     image: "",
-    //     resume: "",
-    //     mgrName: "",
-    //     mgrEmail: "",
-    //     lwd: "",
-    //     state: "",
-    //     district: "",
-    //     city: "",
-    //     reference: "",
-    //     source: "",
-    // });
-
-    // const handleCloseModal = () => {
-    //     closeModal();
-    // }
+    //     return () => {
+    //         setCategory(null); // Reset category when modal unmounts
+    //     };
+    // }, []);
 
     const handleChangeCategory = (event) => {
         const selectedValue = event.target.value;
         event.target.name = event.target.value;
         setCategory(selectedValue);
+        // setFormData((prevData) => ({
+        //     ...prevData,
+        //     selectedCategory: selectedValue,
+        // }));
         console.log('Selected Category: ', selectedValue);
     }
 
@@ -89,7 +67,7 @@ const EditCandidate = ({selectedCandidate, closeModal}) => {
         });
 
         navigateTo('/hr');
-        
+
     }
 
     const handleChange = (e) => {
@@ -99,53 +77,6 @@ const EditCandidate = ({selectedCandidate, closeModal}) => {
             { ...prevData, [name]: value }
         ));
     }
-
-    // const handleArrayDataChange = (e, index) => {
-
-    //     const{name, value} = e.target;
-
-    //     setFormData((prevData) => {
-    //         const updatedRounds = [...prevData.round];
-    //         updatedRounds[index] = {
-    //             ...updatedRounds[index],
-    //             [name]: value, // Update the specific field in the object
-    //         };
-
-    //         return {
-    //             ...prevData,
-    //             round: updatedRounds, // Update the round array
-    //         };
-    //     });
-    //  }
-
-    const handleArrayDataChange = (e, index) => {
-
-        console.log('index', index);
-
-        const { name, value } = e.target;
-
-        // Extract the actual key (e.g., "panelistName")
-        const keys = name.split(".");
-
-        console.log('keys', keys);
-
-
-        const field = keys[keys.length - 1];
-
-        setFormData((prevData) => {
-            const updatedRounds = [...prevData.round];
-            updatedRounds[index] = {
-                ...updatedRounds[index],
-                [field]: value, // Update the specific field in the object
-            };
-
-            return {
-                ...prevData,
-                round: updatedRounds,
-            };
-        });
-    };
-
 
     const handleNestedChange = (e) => {
         // console.log('In handleNestedChange');
@@ -158,17 +89,6 @@ const EditCandidate = ({selectedCandidate, closeModal}) => {
             let updatedData = { ...prevData };
             let currentLevel = updatedData;
 
-            // for (let i = 0; i < keys.length; i++) {
-            //     const key = keys[i];
-            //     // currentLevel[key] = { ...currentLevel[key] };
-            //     // currentLevel = currentLevel[key];
-
-            //     if (typeof currentLevel[key] === "object") {
-            //         currentLevel = currentLevel[key];
-            //     } else if(i === keys.length-1) {
-            //         currentLevel[key] = value;
-            //     }
-            // }
 
             for (let i = 0; i < keys.length; i++) {
                 const key = keys[i];
@@ -194,14 +114,6 @@ const EditCandidate = ({selectedCandidate, closeModal}) => {
 
     const handleDateChange = () => {
         console.log('In handleDateChange');
-    }
-
-    const handleSelectHr = () => {
-        console.log('In handleSelectHr');
-    }
-
-    const handlePositionChange = () => {
-        console.log('In handlePositionChange');
     }
 
     const statesList = [
@@ -354,15 +266,7 @@ const EditCandidate = ({selectedCandidate, closeModal}) => {
                                         </>
                                     ))
                                 }
-                                {/* <div>
-                                    <label>L1 Interviewer</label>
-                                    <input type="text" name={`round.0.panelistName`} value={formData.round[0].panelistName} onChange={handleNestedChange} placeholder="Enter interviewer name " />
-                                </div> */}
 
-                                {/* <div>
-                                    <label>Resume<span className='require'>*</span></label>
-                                    <input type="file" name="resume" path={formData.resume} required onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" />
-                                </div> */}
                                 <div>
                                     <label>Reference</label>
                                     <input type="text" name="reference" value={formData.reference} onChange={handleChange} placeholder="Enter Referred By Name" />
@@ -395,26 +299,8 @@ const EditCandidate = ({selectedCandidate, closeModal}) => {
                                         onChange={handleChange}
                                     />
                                 </div>
-                                {/* {!positionId && ( */}
-                                {/* <div>
-                                    <label>Position</label>
-                                    <select
-                                        name="position"
-                                        value={formData.position}
-                                        onChange={handlePositionChange}
-                                        style={{ width: '100%' }}
-                                    >
-                                        <option value="">Choose One</option>
-                                        {positions.map((position) => (
-                                            <option key={position._id} value={position.position}>
-                                                {position.position}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div> */}
-                                {/* )} */}
                                 <div><label>Category</label>
-                                    <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChangeCategory} placeholder="choose Category" disabled={formData.selectedCategory ? true : false}>
+                                    <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChangeCategory} placeholder="Choose Category" disabled={formData.selectedCategory ? true : false}>
 
                                         <option value="">Choose One</option>
                                         <option value="Technical">Technical</option>
@@ -488,14 +374,6 @@ const EditCandidate = ({selectedCandidate, closeModal}) => {
                                     // disabledDate={disabledDate} // Apply date restriction
                                     />
                                 </div>
-
-                                {/* <div>
-                                    <label>Source<span className='require'>*</span></label>
-                                    <input type="text" name="source" value={formData.source} required onChange={handleChange} placeholder="Source (e.g., Online Ad, Career Site)" />
-                                </div> */}
-                                {/* <div style={{ marginTop: '10px' }}>
-                                    <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} required onChange={(value, option) => handleSelectHr(option.fullName, option.email)} />
-                                </div> */}
                             </div>
                         </div>
                         <div id='btnWrapper'>
