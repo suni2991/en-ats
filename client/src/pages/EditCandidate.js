@@ -13,43 +13,56 @@ const URL = process.env.REACT_APP_API_URL;
 const EditCandidate = ({ selectedCandidate, closeModal }) => {
 
     const { token } = useAuth();
-    // const location = useLocation();
     const navigateTo = useNavigate();
-    // const candidate = location.state; // This will contain the passed 'row' object
     const { selectedCategory } = selectedCandidate;
 
     const [formData, setFormData] = useState(selectedCandidate);
-    const [category, setCategory] = useState();
+    const [category, setCategory] = useState(selectedCandidate.selectedCategory || '');
 
     useEffect(() => {
         setFormData(selectedCandidate); // Reset form data when candidate changes
         console.log(selectedCandidate);
-        setCategory(null);
+        setCategory(selectedCategory || '');
+        console.log('category: ', category); 
     }, [selectedCandidate]);
 
     // useEffect(() => {
-    //     return () => {
-    //         setCategory(null); // Reset category when modal unmounts
-    //     };
-    // }, []);
+    //     setFormData(prevData => ({
+    //         ...prevData,
+    //         selectedCategory: category
+    //     }));
+    // }, [category]);
 
+    // let selectedValue = '';
     const handleChangeCategory = (event) => {
         const selectedValue = event.target.value;
+        console.log('selectedValue: ', selectedValue);
+
         event.target.name = event.target.value;
         setCategory(selectedValue);
-        // setFormData((prevData) => ({
-        //     ...prevData,
-        //     selectedCategory: selectedValue,
-        // }));
-        console.log('Selected Category: ', selectedValue);
+
+        console.log('category: ', category);
     }
 
+
+
     const handleSubmit = async (e) => {
-        // console.log('In handleSubmit');
         e.preventDefault();
 
+        // setFormData(prevData => ({
+        //     ...prevData, selectedCategory: category
+        // })) 
+        // console.log('formdata.selectedCategory: ', formData.selectedCategory);
+
+        const updatedData = {
+            ...formData,
+            selectedCategory: category, // Ensure the updated category is used
+        };
+
+        console.log('Updated form data:', updatedData);
+
         const response = await axios.patch(`${URL}/updateCandidateData/${selectedCandidate._id}`,
-            formData,
+            updatedData,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -66,12 +79,10 @@ const EditCandidate = ({ selectedCandidate, closeModal }) => {
             confirmButtonText: 'Close',
         });
 
-        navigateTo('/hr');
-
+        closeModal();
     }
 
     const handleChange = (e) => {
-        // console.log('In handleChange');
         const { name, value } = e.target;
         setFormData((prevData) => (
             { ...prevData, [name]: value }
@@ -79,16 +90,12 @@ const EditCandidate = ({ selectedCandidate, closeModal }) => {
     }
 
     const handleNestedChange = (e) => {
-        // console.log('In handleNestedChange');
-
         const { name, value } = e.target;
-
         const keys = name.split(".");
 
         setFormData((prevData) => {
             let updatedData = { ...prevData };
             let currentLevel = updatedData;
-
 
             for (let i = 0; i < keys.length; i++) {
                 const key = keys[i];
@@ -177,13 +184,6 @@ const EditCandidate = ({ selectedCandidate, closeModal }) => {
                                 <div>
                                     <label>Notice Period<span className='require'>*</span></label>
                                     <input type="text" name="noticePeriod" value={formData.noticePeriod} onChange={handleChange} placeholder="Enter Last Working Day " />
-                                    {/* <select name="noticePeriod" style={{ width: '100%' }} value={formData.noticePeriod} onChange={handleChange}>
-                                        <option value="">Choose One</option>
-                                        <option value="Immediate">Immediate </option>
-                                        <option value="30days">Less than 30days</option>
-                                        <option value="45days">Less than 45days</option>
-                                        <option value="90days">More than 90days</option>
-                                    </select> */}
                                 </div>
                                 <div>
                                     <label>City</label>
@@ -300,7 +300,7 @@ const EditCandidate = ({ selectedCandidate, closeModal }) => {
                                     />
                                 </div>
                                 <div><label>Category</label>
-                                    <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChangeCategory} placeholder="Choose Category" disabled={formData.selectedCategory ? true : false}>
+                                    <select name="selectedCategory" value={category} style={{ width: '100%' }} onChange={handleChangeCategory} placeholder="Choose Category" disabled={formData.selectedCategory ? true : false}>
 
                                         <option value="">Choose One</option>
                                         <option value="Technical">Technical</option>

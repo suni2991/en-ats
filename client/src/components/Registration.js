@@ -536,6 +536,7 @@ function Registration({ closeModal }) {
                 <option value="Immediate">Immediate </option>
                 <option value="30days">Less than 30days</option>
                 <option value="45days">Less than 45days</option>
+                <option value="60 Days or Less">60 Days or Less</option>
                 <option value="90days">More than 90days</option>
               </select>
             </div>

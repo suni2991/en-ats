@@ -243,6 +243,9 @@ userRouter.patch("/updateCandidateData/:id", authenticate, checkPermission("view
       const _id = req.params.id;
       console.log('Candidate id: ', _id);
 
+      const selectedCategory = req.body.selectedCategory;
+      console.log('selectedCategory: ', selectedCategory);
+
       const updatedCandidate = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
       console.log('updatedCandidate: ', updatedCandidate);
 
