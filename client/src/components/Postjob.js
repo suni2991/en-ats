@@ -26,7 +26,7 @@ const Postjob = () => {
     secondarySkills: [],
     experience: "",
     postedBy: "",
-    status: "Approval Pending",
+    status: "Requisition recieved",
     mgrRole: role,
     jd: "",
     fullfilledBy: "",
@@ -233,7 +233,6 @@ const Postjob = () => {
           },
         }
       );
-
 
       message.success(
         "New Job created successfully and sent for Directors Approval"

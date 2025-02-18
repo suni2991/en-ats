@@ -241,7 +241,7 @@ const ViewJobModal = ({ selectedJob, setSelectedJob, isEditClicked, setIsEditCli
                             >
                                 History
                             </Button>
-                            <h1
+                            <h3
                                 style={{
                                     fontWeight: "bold",
                                     color: colors[selectedJob.status],
@@ -268,7 +268,7 @@ const ViewJobModal = ({ selectedJob, setSelectedJob, isEditClicked, setIsEditCli
                                 ) : (
                                     selectedJob.status
                                 )}
-                            </h1>
+                            </h3>
                             <Tooltip title="Edit" color="cyan">
                                 <button
                                     className="table-btn"

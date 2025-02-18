@@ -116,7 +116,7 @@ jobRouter.get(
       let jobPosts;
       if (mgrRole === "HR" || mgrRole === "Admin") {
         jobPosts = await Job.find({
-          status: { $in: ["Approval Pending", "Denied"] },
+          status: { $in: ["Requisition recieved", "Approval Pending", "Denied"] },
         });
       } else if (mgrRole === "Hiring-Manager") {
 
@@ -141,7 +141,7 @@ jobRouter.get(
         const fullNameRegex = new RegExp(fullName, "i");
         jobPosts = await Job.find({
           postedBy: fullNameRegex,
-          status: { $in: ["Approval Pending", "Denied"] },
+          status: { $in: ["Approval Pending", "Requisition recieved", "Denied"] },
         });
       }
       res.status(200).json(jobPosts);

@@ -420,7 +420,8 @@ userRouter.get(
 userRouter.put('/candidate/:id', async (req, res) => {
   try {
     const _id = req.params.id;
-    const result = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
+    const { note, status, history } = req.body; 
+    const result = await Candidate.findByIdAndUpdate(_id, {note, status, $push: { history }}, { new: true });
     if (!result) {
       res.json({
         status: "FAILED",

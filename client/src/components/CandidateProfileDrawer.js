@@ -1,19 +1,44 @@
 import React, { useState, useEffect } from "react";
 import userlogo from "../Assests/Applicant.jpg";
-import { Drawer, Collapse, Button, message, Card, Input, Modal } from "antd";
+import { Drawer, Collapse, Button, message, Card, Input, Modal, List } from "antd";
 import useAuth from "../hooks/useAuth";
 import axios from "axios";
+import Item from "antd/es/list/Item";
+import ButtonGroup from "antd/es/button/button-group";
 
 const { Panel } = Collapse;
 const URL = process.env.REACT_APP_API_URL;
 
 const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
   const [candidateData, setCandidateData] = useState({});
+  const [candidateUniqueId, setCandidateUniqueId] = useState(candidateId);
   const [loading, setLoading] = useState(true);
+  const [isRejectCVButtonDisabled, setIsRejectCVButtonDisabled] = useState(false);
+  const [isPutCVOnHoldButtonDisabled, setisPutCVOnHoldButtonDisabled] = useState(false);
+  const [isShortlistCVButtonDisabled, setIsShortlistCVButtonDisabled] = useState(false);
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const { token, auth, role } = useAuth();
   const [rejectionModalVisible, setRejectionModalVisible] = useState(false);
   const [rejectionNote, setRejectionNote] = useState("");
+
+
+  useEffect(() => {
+    if (candidateData.status === 'Rejected' || candidateData.status === 'CV Shortlisted' || candidateData.status === 'CV Rejected') {
+      setIsShortlistCVButtonDisabled(true);
+      setisPutCVOnHoldButtonDisabled(true);
+      setIsRejectCVButtonDisabled(true);
+    }
+    else if(candidateData.status === 'CV On Hold'){
+      setIsShortlistCVButtonDisabled(false);
+      setisPutCVOnHoldButtonDisabled(true);
+      setIsRejectCVButtonDisabled(false);
+    }
+    else{
+      setIsShortlistCVButtonDisabled(false);
+      setisPutCVOnHoldButtonDisabled(false);
+      setIsRejectCVButtonDisabled(false);
+    }
+  }, [candidateData, candidateUniqueId])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -179,19 +204,75 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
     }
   };
 
+  // const handleSelection = async () => {
+  //   console.log('Candiddate CV Shortlisted');
+
+  // }
+
+
+  const handlePutOnHold = async () => {
+
+    const updatedBy = auth.fullName;
+
+    try {
+
+      const holdResponse = await axios.put(
+        `${URL}/candidate/${candidateId}`,
+        {
+          status: "CV On Hold",
+          // note: rejectionNote,
+          history: {
+            // note: `${rejectionNote}`,
+            note: "CV Put On Hold",
+            updatedBy: updatedBy,
+            updatedAt: new Date(),
+          }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setCandidateData((prevData) => ({
+        ...prevData,
+        status: "CV On Hold",
+        history: [
+          ...(prevData.history || []),
+          {
+            note: "CV Put On Hold",
+            updatedBy: updatedBy,
+            updatedAt: new Date(),
+          }
+        ]
+      }));
+
+      message.success("Candidate status updated to 'CV On Hold'.");
+      setIsShortlistCVButtonDisabled(false);
+      setisPutCVOnHoldButtonDisabled(true);
+      setIsRejectCVButtonDisabled(false);
+    } catch (error) {
+      console.error("Error updating candidate status:", error);
+      message.error("Error updating candidate status to 'CV on Hold'.");
+    }
+
+  }
+
   const handleRejection = async () => {
     if (!rejectionNote) {
       message.warning("Please provide a note for the rejection.");
       return;
     }
-  
+
     const updatedBy = auth.fullName; // Replace with actual user role if dynamic
 
     try {
       await axios.put(
         `${URL}/candidate/${candidateId}`,
         {
-          status: "Rejected",
+          status: "CV Rejected",
           note: rejectionNote,
           history: {
             note: `${rejectionNote}`,
@@ -206,7 +287,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
           },
         }
       );
-  
+
       message.success("Candidate status updated to 'Rejected'");
       setRejectionModalVisible(false);
       setRejectionNote("");
@@ -218,12 +299,16 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
           { note: `Rejection reason: ${rejectionNote}`, updatedBy }
         ]
       }));
+
+      setIsShortlistCVButtonDisabled(true);
+      setisPutCVOnHoldButtonDisabled(true);
+      setIsRejectCVButtonDisabled(true);
     } catch (error) {
       console.error("Error rejecting candidate:", error);
       message.error("Error updating candidate status.");
     }
   };
-  
+
 
   const renderRejectionModal = () => (
     <Modal
@@ -242,11 +327,14 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
         placeholder="Enter rejection reason"
         required
       />
-      
+
     </Modal>
   );
 
   const handleSendEmail = async () => {
+
+    const updatedBy = auth.fullName; 
+
     const emailData = {
       role: candidateData.role,
       mgrEmail: candidateData.mgrEmail,
@@ -266,13 +354,14 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
         try {
           const updateResponse = await axios.put(
             `${URL}/candidate/${candidateId}`,
-            { status: "CV Shortlisted",
-            history: {
-              note:"Credentials sent for Screening Test",
-              updatedBy: auth.fullName,
-              updatedAt: new Date(),
-            }
-           },  // update status to CV Processed
+            {
+              status: "CV Shortlisted",
+              history: {
+                note: "Credentials sent for Screening Test",
+                updatedBy: auth.fullName,
+                updatedAt: new Date(),
+              }
+            },  // update status to CV Processed
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -282,6 +371,19 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
           );
           if (updateResponse.status === 200) {
             message.success("Candidate status updated to 'CV Processed'");
+            setIsShortlistCVButtonDisabled(true);
+            setisPutCVOnHoldButtonDisabled(true);
+            setIsRejectCVButtonDisabled(true);
+
+            setCandidateData((prevData) => ({
+              ...prevData,
+              status: "CV Shortlisted",
+              history: [
+                ...(prevData.history || []),
+                { note: `CV has been shortlisted.`, updatedAt: new Date(), updatedBy }
+              ]
+            }));
+
           } else {
             message.error("Failed to update candidate status.");
           }
@@ -470,14 +572,28 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
             )}
           </Panel>
         </Collapse>
+        <Collapse accordion>
+          <Panel header="Take Action on CV" key="7">
+            {candidateData ? (
+              // candidateData.status !== 'Rejected' && candidateData.status !== 'CV Shorlisted' && candidateData.status !== 'CV on Hold' && 
+              <List>
+                <Item><Button style={{ backgroundColor: 'green', color: 'white', padding: '10px' }} onClick={handleSendEmail} disabled={isShortlistCVButtonDisabled}> Shortlist CV</Button></Item>
+                <Item><Button style={{ backgroundColor: '#EDC001', color: 'white', padding: '10px' }} onClick={handlePutOnHold} disabled={isPutCVOnHoldButtonDisabled}>Put on Hold</Button></Item>
+                <Item><Button style={{ backgroundColor: 'red', color: 'white', padding: '10px' }} onClick={() => setRejectionModalVisible(true)} disabled={isRejectCVButtonDisabled}>Reject CV</Button></Item>
+              </List>
+            ) : (
+              <p>Loading candidate details...</p>
+            )}
+          </Panel>
+        </Collapse>
 
         <div className="btn-wrapper" style={{ display: "flex", justifyContent: "space-between" }}>
-          {candidateData.status === "CV Sourced" && (
+          {/* {candidateData.status === "CV Sourced" && (
             <Button type="primary" onClick={handleSendEmail} style={{ marginTop: "20px", background: "#00B4D2" }}>Shortlist CV</Button>
-          )}
+          )} */}
           {candidateData.status !== "Rejected" ? (
             <>
-              <Button type="primary" onClick={() => setRejectionModalVisible(true)} style={{ marginTop: "20px", background: "red" }}>Reject</Button>
+              {/* <Button type="primary" onClick={() => setRejectionModalVisible(true)} style={{ marginTop: "20px", background: "red" }}>Reject</Button> */}
               <Button type="primary" onClick={handleHistoryDrawerOpen} style={{ marginTop: "20px", background: "#00B4D2" }}>View History</Button>
             </>
           ) : (
@@ -486,39 +602,43 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
         </div>
       </Drawer>
       {renderRejectionModal()}
-   
-   {/* Candidate History Drawer Content */}
-<Drawer
-  title="Candidate History"
-  placement="left"
-  closable={true}
-  onClose={handleHistoryDrawerClose}
-  open={historyDrawerOpen}
-  width={400}
->
-  {candidateData.history && candidateData.history.length > 0 ? (
-    candidateData.history.map((historyItem, index) => (
-      <div key={index} style={{ marginBottom: "10px" }}>
-        <p>
-          <span style={labelStyle}>Updated By</span>
-          <span style={valueStyle}>: {historyItem.updatedBy}</span>
-        </p>
-        <p>
-          <span style={labelStyle}>Updated At</span>
-          <span style={valueStyle}>
-            : {new Date(historyItem.updatedAt).toLocaleDateString()}
-          </span>
-        </p>
-        <p>
-          <span style={labelStyle}>Note</span>
-          <span style={valueStyle}>: {historyItem.note}</span>
-        </p>
-      </div>
-    ))
-  ) : (
-    <p>No history available for this candidate.</p>
-  )}
-</Drawer>
+
+      {/* Candidate History Drawer Content */}
+      <Drawer
+        title="Candidate History"
+        placement="left"
+        closable={true}
+        onClose={handleHistoryDrawerClose}
+        open={historyDrawerOpen}
+        width={400}
+      >
+        {candidateData.history && candidateData.history.length > 0 ? (
+          candidateData.history.map((historyItem, index) => (
+            <div key={index} style={{ marginBottom: "10px" }}>
+              <p>
+                <span style={labelStyle}>Updated By</span>
+                <span style={valueStyle}>: {historyItem.updatedBy}</span>
+              </p>
+              <p>
+                <span style={labelStyle}>Updated At</span>
+                <span style={valueStyle}>
+                  : {new Date(historyItem.updatedAt).toLocaleDateString()}
+                </span>
+              </p>
+              <p>
+                <span style={labelStyle}>Status</span>
+                <span style={valueStyle}>: {candidateData.status}</span>
+              </p>
+              <p>
+                <span style={labelStyle}>Note</span>
+                <span style={valueStyle}>: {historyItem.note}</span>
+              </p>
+            </div>
+          ))
+        ) : (
+          <p>No history available for this candidate.</p>
+        )}
+      </Drawer>
     </>
   );
 };

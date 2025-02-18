@@ -174,7 +174,7 @@ emailRouter.post("/user/credentials", (req, res) => {
 
       const mailOptions = {
           from: process.env.EMAIL,
-          to: email,
+          to: process.env.TMP_EMAIL,
           cc: mgrEmail,
           subject: "Enfuse Welcomes You",
           html: compiledTemplate1.render({ role, email, fullName, confirmPassword }),
