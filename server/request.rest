@@ -1,0 +1,11 @@
+POST http://localhost:5041/register/candidate
+Content-Type: application/json
+
+{
+    "username" : "Walk-in",
+    "password" : "ENFHR@2025",
+    "confirmPassword" : "ENFHR@2025",
+    "role" : "Admin",
+    "email" : "adming-ats@enfuse-solutions.com",
+    "fullName": "ADMIN"
+} 

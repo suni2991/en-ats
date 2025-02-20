@@ -1,0 +1,58 @@
+.welcome-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #000834, #00B4D2, #000834);
+    color: white;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .welcome-container {
+    max-width: 600px;
+  }
+  
+  .app-name {
+    font-size: 5em;
+    margin-bottom: 20px;
+    color: aliceblue;
+  }
+  
+  .app-description {
+    font-size: 1.5em;
+    margin-bottom: 40px;
+    color: #FFFF;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .explore-button,
+  .login-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: white;
+    background: transparent;
+    border: 2px solid white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .explore-button:hover,
+  .login-button:hover {
+    background: white;
+    color: #00B4D2;
+    font-weight: bold;
+  }
+  
+  .explore-button:active,
+  .login-button:active {
+    background: rgba(255, 255, 255, 0.7);
+    transition: background 0.1s;
+  }
+  

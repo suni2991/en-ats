@@ -1,0 +1,454 @@
+import React, { useState, useEffect } from "react";
+import Fetchtable from "./Fetchtable";
+import {
+  Modal,
+  Button,
+  Spin,
+  Tooltip,
+  List,
+  Select,
+  message,
+  Input,
+  Row,
+  Col,
+  Drawer,
+  DatePicker
+} from "antd";
+import { TiEyeOutline } from "react-icons/ti";
+import axios from "axios";
+import moment from "moment";
+import { CiEdit } from "react-icons/ci";
+import { AiOutlineCheckCircle, AiOutlineDelete } from "react-icons/ai";
+import useAuth from "../hooks/useAuth";
+import ViewJobModal from "../pages/ViewJobModal";
+
+const { Option } = Select;
+const { TextArea } = Input;
+
+const URL = process.env.REACT_APP_API_URL;
+const Viewjob = ({ auth }) => {
+  const { token, role } = useAuth();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [isEditClicked, setIsEditClicked] = useState(false);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState(null);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const [historyData, setHistoryData] = useState([]);
+
+  const [editFields, setEditFields] = useState({
+    position: "",
+    department: "",
+    jobLocation: "",
+    experience: "",
+    vacancies: "",
+    postedBy: "",
+    status: "",
+    description: "",
+    note: "",
+    fullfilledBy: ""
+  });
+
+  const colors = {
+    Active: "green",
+    Hold: "#00B4D2",
+    Closed: "red",
+  };
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get(`${URL}/api/viewjobs`, {
+          params: { mgrRole: auth.role, fullName: auth.fullName },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setJobs(response.data.reverse());
+        setFilteredJobs(response.data.reverse());
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, [auth.role, auth.fullName, token]);
+
+  useEffect(() => {
+    console.log("Filtered Jobs for Sahil Grid View: ");
+    console.log(filteredJobs);
+
+    console.log("Jobs for Sahil Grid View: ");
+    console.log(jobs);
+
+    console.log(auth);
+
+  }, [filteredJobs, jobs]);
+
+  const handleDateChange = (date, dateString) => {
+    if (date && date.isBefore(moment(), "day")) {
+      message.error("Fullfilled By date should be a future date");
+      setEditFields((prevData) => ({
+        ...prevData,
+        fullfilledBy: "",
+      }));
+    } else {
+      setEditFields((prevData) => ({
+        ...prevData,
+        fullfilledBy: dateString,
+
+      }));
+    }
+  };
+
+
+  const userColumns = [
+    { name: "Role", selector: (row) => row.position, sortable: true },
+    { name: "Department", selector: (row) => row.department, sortable: true },
+    {
+      name: "Location",
+      selector: (row) => row.jobLocation,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "HR Name",
+      selector: (row) => row.postedBy,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+      width: "100px",
+      cell: (row) => (
+        <div
+          style={{
+            backgroundColor: getStatusColor(row.status),
+            color: "white",
+            padding: "5px 10px",
+            borderRadius: "5px",
+            textAlign: "center",
+            alignItems: "center",
+          }}
+        >
+          {row.status}
+        </div>
+      ),
+    },
+    {
+      name: "Action",
+      cell: (row) => (
+        <>
+          <Tooltip title="View Details" color="cyan">
+            <button
+              className="table-btn"
+              name="View"
+              onClick={() => handleRowButtonClick(row._id)}
+            >
+              <TiEyeOutline />
+            </button>
+          </Tooltip>
+          {auth.role === "Admin" && (
+            <Tooltip title="Delete Job" color="cyan">
+              <button
+                className="table-btn"
+                name="delete"
+                onClick={() => showConfirmModal(row._id)}
+              >
+                <AiOutlineDelete />
+              </button>
+            </Tooltip>
+          )}
+        </>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+  ];
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Active":
+        return "green";
+      case "Hold":
+        return "#00B4D2";
+      case "Closed":
+        return "red";
+      default:
+        return "black";
+    }
+  };
+
+  const handleRowButtonClick = async (jobId) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${URL}/api/job-posts/${jobId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const job = response.data;
+      setSelectedJob(job);
+      setEditFields({
+        position: job.position,
+        department: job.department,
+        jobLocation: job.jobLocation,
+        experience: job.experience,
+        vacancies: job.vacancies,
+        postedBy: job.postedBy,
+        fullfilledBy: job.fullfilledBy,
+        status: job.status,
+        description: job.description,
+        note: "", // Initialize note as an empty string
+      });
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const disabledDate = (current) => {
+    // Disable dates before today and after 60 days from today
+    const today = moment();
+    const maxDate = moment().add(240, 'days');
+    return current && (current < today.startOf('day') || current > maxDate.endOf('day'));
+  };
+
+  const showConfirmModal = (jobId) => {
+    setJobToDelete(jobId);
+    setIsConfirmModalVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `${URL}/api/job-posts/${jobToDelete}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const updatedJobs = jobs.filter((job) => job._id !== jobToDelete);
+        setJobs(updatedJobs);
+        // setFilteredJobs(updatedJobs);
+        message.success("Job deleted successfully!");
+      } else {
+        message.error(
+          "Failed to delete job. Please check server logs for details."
+        );
+      }
+    } catch (error) {
+      message.error("An error occurred while deleting the job", error);
+    } finally {
+      setIsConfirmModalVisible(false);
+      setJobToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsConfirmModalVisible(false);
+    setJobToDelete(null);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setSelectedJob(null);
+    setIsEditClicked(false);
+    setSelectedStatus("");
+  };
+
+  const handleSaveChanges = async () => {
+    setLoading(true);
+    try {
+      // Determine which fields have changed
+      const changes = [];
+      Object.keys(editFields).forEach((key) => {
+        if (key !== 'note' && editFields[key] !== selectedJob[key]) {
+          changes.push({ field: key, oldValue: selectedJob[key], newValue: editFields[key] });
+        }
+      });
+
+      // Create history entry
+      const historyEntry = {
+        date: new Date(),
+        updatedBy: auth.fullName,
+        note: `Updated fields: ${changes.map(change => `${change.field} (from "${change.oldValue}" to "${change.newValue}")`).join(", ")}. Note: ${editFields.note}`,
+      };
+
+      const updatedJob = {
+        ...editFields,
+        updatedAt: new Date(),
+        updatedBy: auth.fullName,
+        history: [...(selectedJob.history || []), historyEntry],
+      };
+
+      // Update job in backend
+      await axios.put(
+        `${URL}/api/job-posts/${selectedJob._id}`,
+        updatedJob,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Update job list locally
+      const updatedJobs = jobs.map((job) =>
+        job._id === selectedJob._id ? updatedJob : job
+      );
+      setJobs(updatedJobs);
+      // setFilteredJobs(updatedJobs);
+
+      setIsModalVisible(false);
+      setIsEditClicked(false);
+    } catch (error) {
+      console.error("Error updating job details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFields((prevFields) => ({
+      ...prevFields,
+      [name]: value,
+    }));
+  };
+
+  const renderResumeLink = (selectedJob) => {
+    if (selectedJob.jd) {
+      const downloadLink = `${URL}${selectedJob.jd}`;
+      return (
+        <a href={downloadLink} target="_blank" rel="noopener noreferrer" style={{ color: "#00B4D2" }}>
+          View JD
+        </a>
+      );
+    } else {
+      return "JD not available";
+    }
+  };
+
+  const daysRemaining = selectedJob ? moment(selectedJob.fullfilledBy).diff(moment(), 'days') : 0;
+
+  const handleHistoryClick = (job) => {
+    if (job.history) {
+      const sortedHistory = job.history.reverse();
+      setHistoryData(sortedHistory);
+    } else {
+      setHistoryData([]);
+    }
+    setIsDrawerVisible(true);
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerVisible(false);
+  };
+
+  return (
+    <div>
+      {auth.role === "Hiring-Manager" ? (
+        <div>
+          <Fetchtable
+            url={`${URL}/api/viewjobs?mgrRole=Hiring-Manager&fullName=${auth.fullName}`}
+            columns={userColumns}
+            filteredData={filteredJobs}
+          />
+          <Modal
+            title={`This position ends in ${daysRemaining} days`}
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={null}
+            width={800}
+          >
+            <ViewJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} isEditClicked={isEditClicked} setIsEditClicked={setIsEditClicked} setIsModalVisible={setIsModalVisible} isEditButtonDisabled={false} />
+
+          </Modal>
+          <Modal
+            title="Confirm Delete"
+            open={isConfirmModalVisible}
+            onOk={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+          >
+            <p>Are you sure you want to delete this job?</p>
+          </Modal>
+        </div>
+      ) : (
+        <div>
+          <Fetchtable
+            url={`${URL}/api/viewjobs`}
+            columns={userColumns}
+            filteredData={filteredJobs}
+          />
+          <Modal
+            title={`This position ends in ${daysRemaining} days`}
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={null}
+            width={800}
+          >
+            <ViewJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} isEditClicked={isEditClicked} setIsEditClicked={setIsEditClicked} setIsModalVisible={setIsModalVisible} isEditButtonDisabled={false} />
+          </Modal>
+          <Modal
+            title="Confirm Delete"
+            open={isConfirmModalVisible}
+            onOk={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+          >
+            <p>Are you sure you want to delete this job?</p>
+          </Modal>
+          {/* <Drawer
+            title="History Data"
+            placement="left"
+            closable={true}
+            onClose={handleDrawerClose}
+            open={isDrawerVisible}
+            width={400}
+          >
+            {historyData.length > 0 ? (
+              <List
+                dataSource={historyData}
+                renderItem={(item, index) => (
+                  <List.Item key={index}>
+                    <List.Item.Meta
+                      title={`Date: ${moment(item.date).format(
+                        "DD MMMM YYYY, HH:mm"
+                      )}`}
+                      description={
+                        <>
+                          <p>Comments: {item.note}</p>
+                          <p>Updated By: {item.updatedBy}</p>
+                        </>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <p>No history available</p>
+            )}
+          </Drawer> */}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Viewjob;
