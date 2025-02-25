@@ -60,6 +60,7 @@ userRouter.post(
         reference,
         source,
         availableSlots,
+        testStatus
       } = req.body;
 
       const encryptedPassword = CryptoJS.AES.encrypt(
@@ -114,6 +115,7 @@ userRouter.post(
         state,
         district,
         taluka,
+        testStatus,
         selectedCategory,
         mgrName,
         mgrEmail,
@@ -215,6 +217,30 @@ userRouter.get("/api/hrs/candidate-count", async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 });
+
+userRouter.get(
+  "/api/candidatesreport",
+  authenticate,
+  checkPermission("view_candidates_report"),
+  async (req, res) => {
+    try {
+      const { selectedCategory } = req.query;
+      let query = {
+        role: { $in: ["Applicant"] },
+        status: { $ne: "Onboarded" },
+      };
+
+      if (selectedCategory && selectedCategory !== "all") {
+        query.selectedCategory = selectedCategory;
+      }
+      const docs = await Candidate.find(query);
+      res.json(docs);
+    } catch (error) {
+      console.error("Error fetching candidates:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
 
 userRouter.get("/api/getCandidateById/:id", authenticate, checkPermission("view_candidates_report"),
   async (req, res) => {

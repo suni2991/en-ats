@@ -55,7 +55,7 @@ const jobSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: "Approval Pending"
+        default: "Waiting for Approval"
     },
     postedBy: {
         type: String,

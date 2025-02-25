@@ -56,7 +56,7 @@ const Hire = () => {
     // setShowModal(false);
     const fetchCandidate = async () => {
       try {
-        const res = await axios.get(`/candidate/profile/${Id}`);
+        const res = await axios.get(`/api/candidate/profile/${Id}`);
         if (res.data.status === "SUCCESS") {
           setCandidate(res.data.data);
         } else {
@@ -121,17 +121,9 @@ const Hire = () => {
   };
 
 
-  // useEffect( async () => {
-  //   const res = await axios.put(`/candidate/${Id}`, { assessmentDone: true, status: 'Screening Done' });
-  //   if (res.data.status === "SUCCESS") {
-  //     // message.success('All tests completed! Exam submitted successfully.');
-  //     navigate("/thankyou");
-  //   }
-  // }, [])
 
   useEffect(() => {
-    // console.log("loggg candidate");
-    // console.log(candidate);
+
     const hasSeenModal = localStorage.getItem('hasSeenModal');
     if (candidate) {
       if (candidate.assessmentDone === false) {
@@ -147,17 +139,21 @@ const Hire = () => {
 
   const handleSubmit = async () => {
     if (!isChecked) {
-      message.error('Please confirm that you have successfully submitted all tests by checking the box')
+      message.error('Please confirm that you have successfully submitted all tests by checking the box');
       return;
     }
-
-    if (completedTests < 4) {
-      message.error('Please complete all tests before submitting.');
+  
+    // Exclude "Accounts" and "Java" from the completion check
+    const requiredTests = tests.filter(test => test.name !== 'Accounts' && test.name !== 'Java');
+    const completedRequiredTests = requiredTests.filter(test => test.score > -1).length;
+  
+    if (completedRequiredTests < requiredTests.length) {
+      message.error('Please complete all required tests before submitting.');
     } else {
       try {
-        const res = await axios.put(`/candidate/${Id}`, { assessmentDone: true, status: 'Screening Done' });
+        const res = await axios.put(`/api/candidate/${Id}`, { assessmentDone: true, status: 'Test Feedback Awaited' });
         if (res.data.status === "SUCCESS") {
-          message.success('All tests completed! Exam submitted successfully.');
+          message.success('All required tests completed! Exam submitted successfully.');
           navigate("/thankyou");
         } else {
           message.error('Error submitting exam.');

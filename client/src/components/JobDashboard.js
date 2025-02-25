@@ -7,7 +7,7 @@ import useAuth from "../hooks/useAuth";
 import moment from "moment";
 
 const colors = {
-  Active: "green",
+  "REQ Approved": "green",
   Hold: "#00B4D2",
   Inactive: "red",
 };
@@ -214,8 +214,8 @@ const JobDashboard = ({ jobs }) => {
                           {job.status} 
                         </span>
                       </p>
-                      {job.status === "Active" && job.fullfilledBy !== null && ( <p> <strong>Closes in:</strong> {daysRemaining} days </p> )}
-                      {/* {job.status === "Active" && (
+                      {job.status === "REQ Approved" && job.fullfilledBy !== null && ( <p> <strong>Closes in:</strong> {daysRemaining} days </p> )}
+                      {/* {job.status === "REQ Approved" && (
                       <p>
                         <strong>Closed in:</strong> {daysRemaining} days
                       </p>)} */}

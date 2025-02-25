@@ -77,7 +77,7 @@ jobRouter.get(
       let jobs;
       if (mgrRole === "HR" || mgrRole === "Admin") {
         jobs = await Job.find({
-          status: { $nin: ["Approval Pending", "Denied"] },
+          status: { $nin: ["Waiting for Approval", "Denied"] },
         });
       } else if (mgrRole === "Hiring-Manager") {
         // const fullNameRegex = new RegExp(fullName, "i");
@@ -87,7 +87,7 @@ jobRouter.get(
         jobs = await Job.find({
           department: hiringManager.department,
           // updateBy: fullNameRegex,
-          status: { $nin: ["Approval Pending", "Denied"] },
+          status: { $nin: ["Waiting for Approval", "Denied"] },
         });
         console.log("jobs: ");
         console.log(jobs);
@@ -95,7 +95,7 @@ jobRouter.get(
         const fullNameRegex = new RegExp(fullName, "i");
         jobs = await Job.find({
           postedBy: fullNameRegex,
-          status: { $nin: ["Approval Pending", "Denied"] },
+          status: { $nin: ["Waiting for Approval", "Denied"] },
         });
       }
       res.json(jobs);
@@ -116,7 +116,7 @@ jobRouter.get(
       let jobPosts;
       if (mgrRole === "HR" || mgrRole === "Admin") {
         jobPosts = await Job.find({
-          status: { $in: ["Approval Pending", "Denied"] },
+          status: { $in: ["Waiting for Approval", "Denied"] },
         });
       } else if (mgrRole === "Hiring-Manager") {
 
@@ -126,7 +126,7 @@ jobRouter.get(
         jobs = await Job.find({
           department: hiringManager.department,
           // updateBy: fullNameRegex,
-          status: { $nin: ["Approval Pending", "Denied"] },
+          status: { $nin: ["Waiting for Approval", "Denied"] },
         });
         console.log("jobs: ");
         console.log(jobs);
@@ -135,13 +135,13 @@ jobRouter.get(
         // const fullNameRegex = new RegExp(fullName, "i");
         // jobPosts = await Job.find({
         //   updateBy: fullNameRegex,
-        //   status: { $in: ["Approval Pending", "Denied"] },
+        //   status: { $in: ["Waiting for Approval", "Denied"] },
         // });
       } else {
         const fullNameRegex = new RegExp(fullName, "i");
         jobPosts = await Job.find({
           postedBy: fullNameRegex,
-          status: { $in: ["Approval Pending", "Denied"] },
+          status: { $in: ["Waiting for Approval", "Denied"] },
         });
       }
       res.status(200).json(jobPosts);

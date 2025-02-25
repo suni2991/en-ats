@@ -26,7 +26,7 @@ const Postjob = () => {
     secondarySkills: [],
     experience: "",
     postedBy: "",
-    status: "Approval Pending",
+    status: "Waiting for Approval",
     mgrRole: role,
     jd: "",
     fullfilledBy: "",

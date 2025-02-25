@@ -321,54 +321,6 @@ function Registration({ closeModal }) {
     }
 };
 
-  // const handleChange = async (e) => {
-  //   e.preventDefault();
-  //   if ( e.target.name === "resume") {
-  //     const uploadFormData = new FormData();
-  //     uploadFormData.append(
-  //       e.target.name,
-  //       e.target.files[0],
-  //       e.target.files[0].name
-  //     );
-  //     const uploadEndpoint = e.target.name;
-
-  //     const response = await fetch(
-  //       `${URL}/api/upload/` + uploadEndpoint,
-  //       {
-  //         method: "POST",
-  //         body: uploadFormData,
-  //       }
-  //     );
-  //     if (!response.ok) {
-  //       console.error("Image upload failed with status code", response.status);
-  //     } else {
-  //       console.log("Image uploaded successfully");
-  //     }
-  //     const data = await response.json();
-  //     console.log(data);
-
-  //     setFormData(() => ({
-  //       ...formData,
-  //       [e.target.name]: data["uploadedFile"],
-  //     }));
-  //   } 
-  //   const { name, value } = e.target;
-  //   if (name === "state") {
-  //     // When typing in the state field, filter suggestions
-  //     const filteredStates = statesList.filter((state) =>
-  //       state.toLowerCase().startsWith(value.toLowerCase())
-  //     );
-  //     setStateSuggestions(filteredStates.slice(0, 5)); // Show up to 5 suggestions
-  //     setShowSuggestions(true);  // Show the suggestions
-  //   }
-
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     [name]: value,  // Update the form field
-  //   }));
-
-  // };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -603,12 +555,13 @@ function Registration({ closeModal }) {
                 </select>
               </div>
             )}
-            <div><label>Category<span className='require'>*</span></label>
+            <div><label>Category(For Screening)<span className='require'>*</span></label>
               <select name="selectedCategory" value={formData.selectedCategory} style={{ width: '100%' }} onChange={handleChange} placeholder="choose Category" required>
 
                 <option value="">Choose One</option>
                 <option value="Technical">Technical</option>
                 <option value="Non-Technical">Non-Technical</option>
+                <option value="No-Screening">No-Screening</option>
               </select>
             </div>
             <div>

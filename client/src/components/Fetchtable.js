@@ -48,35 +48,6 @@ const Fetchtable = ({
   }, [url, token, reloadData]); // Reload data whenever reloadData changes
 
 
-
-  // useEffect(() => {
-  //   if (!filteredData) {
-  //     const fetchData = async () => {
-  //       try {
-  //         const response = await axios.get(url, {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         });
-  //         console.log("Fetched Data:", response.data); // Debugging
-  
-  //         // Check if response.data contains the array
-  //         const dataArray = Array.isArray(response.data)
-  //           ? response.data
-  //           : response.data.items || []; // Adjust this based on your data structure
-  
-  //         setData(dataArray.reverse());
-  //       } catch (error) {
-  //         console.error("Error fetching data:", error);
-  //       }
-  //     };
-  
-  //     fetchData();
-  //   } else {
-  //     setData(filteredData.reverse());
-  //   }
-  // }, [url, filteredData, token]);
-  
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };

@@ -7,7 +7,7 @@ import axios from "axios";
 const { Panel } = Collapse;
 const URL = process.env.REACT_APP_API_URL;
 
-const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
+const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) => {
   const [candidateData, setCandidateData] = useState({});
   const [loading, setLoading] = useState(true);
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
@@ -113,7 +113,8 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
     try {
       const response = await axios.put(
         `${URL}/api/candidate/${candidateId}/reset-scores`,
-        { subject },  // Only send the subject name
+        { subject }, 
+         // Only send the subject name
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -125,7 +126,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
         message.success(`Score reset for ${subject}`);
         setCandidateData((prevData) => ({
           ...prevData,
-          [subject]: { ...prevData[subject], score: -1 },
+          [subject]: { ...prevData[subject], score: -1, status: "pending" },
         }));
       }
     } catch (error) {
@@ -134,10 +135,13 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
     }
   };
 
-
   const renderScores = () => {
+    if (!candidateData?.assessmentDone) {
+      return <p>No assessment data available.</p>;
+    }
+  
     const renderScoreRow = (subject, subjectData) => (
-      <p>
+      <p key={subject}>
         {subject}:{" "}
         <span style={{ color: subjectData?.status > "pass" ? "#00B4D2" : "black" }}>
           {subjectData?.score === -1 ? 0 : subjectData?.score}, {subjectData?.status ?? " "}
@@ -153,29 +157,87 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
         )}
       </p>
     );
+  
+    const scores = candidateData.selectedCategory === "Technical" ? (
+      <>
+        {renderScoreRow("Psychometric", candidateData.psychometric)}
+        {renderScoreRow("Java", candidateData.java)}
+        {renderScoreRow("Vocabulary", candidateData.vocabulary)}
+        {renderScoreRow("Quantitative", candidateData.quantitative)}
+      </>
+    ) : (
+      <>
+        {renderScoreRow("Vocabulary", candidateData.vocabulary)}
+        {renderScoreRow("Excel", candidateData.excel)}
+        {renderScoreRow("Accounts", candidateData.accounts)}
+        {renderScoreRow("Quantitative", candidateData.quantitative)}
+      </>
+    );
+  
+    return (
+      <>
+        {scores}
+        <div style={{ marginTop: "20px" }}>
+          <h4><strong>Test:</strong></h4>
+          <Button type="primary" onClick={() => handleTestStatusUpdate("Test Rejected")} style={{ background: "red", width: "30%", marginRight: "5%" }}>Rejected</Button>
+          <Button type="primary" onClick={() => handleTestStatusUpdate("Test Shortlisted")} style={{ background: "#00B4D2", width: "30%", marginRight: "5%" }}>Shortlisted</Button>
+          <Button type="primary" onClick={() => handleTestStatusUpdate("Re-Test")} style={{ background: "#007d93", width: "30%" }}>Re-Test</Button>
+        </div>
+      </>
+    );
+  };
 
-    if (!candidateData?.assessmentDone) {
-      return <p>No assessment data available.</p>;
+  const handleTestStatusUpdate = async (status) => {
+    if (status === "Re-Test") {
+      // Reset scores of "fail" subjects
+      const subjectsToReset = ["psychometric", "java", "vocabulary", "quantitative", "excel", "accounts"];
+      const resetPromises = subjectsToReset.map(subject => {
+        if (candidateData[subject]?.status === "Fail") {
+          return updateScore(subject);
+        }
+        return Promise.resolve();
+      });
+      await Promise.all(resetPromises);
     }
-
-    if (candidateData.selectedCategory === "Technical") {
-      return (
-        <>
-          {renderScoreRow("Psychometric", candidateData.psychometric)}
-          {renderScoreRow("Java", candidateData.java)}
-          {renderScoreRow("Vocabulary", candidateData.vocabulary)}
-          {renderScoreRow("Quantitative", candidateData.quantitative)}
-        </>
+  
+    try {
+      const response = await axios.put(
+        `${URL}/api/candidate/${candidateId}`,
+        {
+          testStatus: status,
+          status: status,
+          assessmentDone: status === "Re-Test" ? false : candidateData.assessmentDone,
+          history: {
+            note: `Test status updated to ${status}`,
+            updatedBy: auth.fullName,
+            updatedAt: new Date().toISOString(),
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
-    } else if (candidateData.selectedCategory === "Non-Technical") {
-      return (
-        <>
-          {renderScoreRow("Vocabulary", candidateData.vocabulary)}
-          {renderScoreRow("Excel", candidateData.excel)}
-          {renderScoreRow("Accounts", candidateData.accounts)}
-          {renderScoreRow("Quantitative", candidateData.quantitative)}
-        </>
-      );
+      if (response.status === 200) {
+        message.success(`Test status updated to '${status}'`);
+        setCandidateData((prevData) => ({
+          ...prevData,
+          testStatus: status,
+          status: status,
+          assessmentDone: status === "Re-Test" ? false : prevData.assessmentDone,
+          history: [
+            ...(prevData.history || []),
+            { note: `Test status updated to ${status}`, updatedBy: auth.fullName, updatedAt: new Date().toISOString() },
+          ],
+        }));
+      } else {
+        message.error("Failed to update test status.");
+      }
+    } catch (error) {
+      console.error("Error updating test status:", error);
+      message.error("Error updating test status.");
     }
   };
 
@@ -246,58 +308,70 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
     </Modal>
   );
 
-  const handleSendEmail = async () => {
-    const emailData = {
-      role: candidateData.role,
-      mgrEmail: candidateData.mgrEmail,
-      confirmPassword: candidateData.confirmPassword,
-      email: candidateData.email,
-      fullName: candidateData.fullName,
-    };
-
-    try {
-      // Send email credentials
-      const emailResponse = await axios.post(`${URL}/api/user/credentials`, emailData);
-
-      if (emailResponse.status === 201) {
-        message.success("Email sent successfully!");
-
-        // If email is sent successfully, update the candidate's status to "CV Processed"
-        try {
-          const updateResponse = await axios.put(
-            `${URL}/api/candidate/${candidateId}`,
-            { status: "CV Shortlisted",
-            history: {
-              note:"Credentials sent for Screening Test",
-              updatedBy: auth.fullName,
-              updatedAt: new Date(),
-            }
-           },  // update status to CV Processed
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (updateResponse.status === 200) {
-            message.success("Candidate status updated to 'CV Processed'");
-          } else {
-            message.error("Failed to update candidate status.");
-          }
-        } catch (error) {
-          console.error("Error updating candidate status:", error);
-          message.error("Error updating candidate status.");
+  const handleSendEmailAndUpdateStatus = async (status) => {
+    if (status === "CV Shortlisted") {
+      const emailData = {
+        role: candidateData.role,
+        mgrEmail: candidateData.mgrEmail,
+        confirmPassword: candidateData.confirmPassword,
+        email: candidateData.email,
+        fullName: candidateData.fullName,
+      };
+  
+      try {
+        // Send email credentials
+        const emailResponse = await axios.post(`${URL}/api/user/credentials`, emailData);
+        if (emailResponse.status === 201) {
+          message.success("Email sent successfully!");
+        } else {
+          message.error("Failed to send email.");
         }
+      } catch (error) {
+        console.error("Error sending email:", error);
+        message.error("Error sending email.");
+      }
+    }
+  
+    // Update candidate's status
+    try {
+      const updateResponse = await axios.put(
+        `${URL}/api/candidate/${candidateId}`,
+        {
+          status,
+          history: {
+            note: `Status updated to ${status}`,
+            updatedBy: auth.fullName,
+            updatedAt: new Date().toISOString(),
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (updateResponse.status === 200) {
+        message.success(`Candidate status updated to '${status}'`);
+        setCandidateData((prevData) => ({
+          ...prevData,
+          status,
+          history: [
+            ...(prevData.history || []),
+            { note: `Status updated to ${status}`, updatedBy: auth.fullName, updatedAt: new Date().toISOString() },
+          ],
+        }));
+        // Call the callback function to update the status in CandidateCard
+        onUpdateStatus(candidateId, status);
       } else {
-        message.error("Failed to send email.");
+        message.error("Failed to update candidate status.");
       }
     } catch (error) {
-      console.error("Error sending email:", error);
-      message.error("Error sending email.");
+      console.error("Error updating candidate status:", error);
+      message.error("Error updating candidate status.");
     }
   };
-
+  
 
   return (
     <>
@@ -471,56 +545,57 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
           </Panel>
         </Collapse>
 
-        <div className="btn-wrapper" style={{ display: "flex", justifyContent: "space-between" }}>
-          {candidateData.status === "CV Sourced" && (
-            <Button type="primary" onClick={handleSendEmail} style={{ marginTop: "20px", background: "#00B4D2" }}>Shortlist CV</Button>
-            
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {(candidateData.status && (candidateData.status.includes("CV") || candidateData.status.includes("Awaiting"))) && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", width: "100%", marginBottom: "10px" }}>
+                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("CV Shortlisted")} style={{ background: "#00B4D2", width: "48%" }}>CV Shortlisted</Button>
+                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("Awaiting Feedback")} style={{ background: "#00B4D2", width: "48%" }}>Awaiting Feedback</Button>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("CV on Hold")} style={{ background: "#007d93", width: "48%" }}>CV on Hold</Button>
+                <Button type="primary" onClick={() => setRejectionModalVisible(true)} style={{ background: "red", width: "48%" }}>CV Rejected</Button>
+              </div>
+            </div>
           )}
-          {candidateData.status !== "Rejected" ? (
-            <><Button type="primary" onClick={handleSendEmail} style={{ marginTop: "20px", background: "#007d93" }}>Hold</Button>,
-              <Button type="primary" onClick={() => setRejectionModalVisible(true)} style={{ marginTop: "20px", background: "red" }}>Reject</Button>
-              <Button type="primary" onClick={handleHistoryDrawerOpen} style={{ marginTop: "20px", background: "#00B4D2" }}>View History</Button>
-            </>
-          ) : (
-           
-            <Button type="primary" onClick={handleHistoryDrawerOpen} style={{ marginTop: "20px", background: "#00B4D2" }}>View History</Button>
-          )}
+          <Button type="primary" onClick={handleHistoryDrawerOpen} style={{ marginTop: "20px", background: "#00B4D2", alignSelf: "center" }}>View History</Button>
+          <div>
+            <h6>{candidateData.status}</h6>
+          </div>
         </div>
       </Drawer>
       {renderRejectionModal()}
-   
-   {/* Candidate History Drawer Content */}
-<Drawer
-  title="Candidate History"
-  placement="left"
-  closable={true}
-  onClose={handleHistoryDrawerClose}
-  open={historyDrawerOpen}
-  width={400}
->
-  {candidateData.history && candidateData.history.length > 0 ? (
-    candidateData.history.map((historyItem, index) => (
-      <div key={index} style={{ marginBottom: "10px" }}>
-        <p>
-          <span style={labelStyle}>Updated By</span>
-          <span style={valueStyle}>: {historyItem.updatedBy}</span>
-        </p>
-        <p>
-          <span style={labelStyle}>Updated At</span>
-          <span style={valueStyle}>
-            : {new Date(historyItem.updatedAt).toLocaleDateString()}
-          </span>
-        </p>
-        <p>
-          <span style={labelStyle}>Note</span>
-          <span style={valueStyle}>: {historyItem.note}</span>
-        </p>
-      </div>
-    ))
-  ) : (
-    <p>No history available for this candidate.</p>
-  )}
-</Drawer>
+      <Drawer
+        title="Candidate History"
+        placement="left"
+        closable={true}
+        onClose={handleHistoryDrawerClose}
+        open={historyDrawerOpen}
+        width={400}
+      >
+        {candidateData.history && candidateData.history.length > 0 ? (
+          candidateData.history.map((historyItem, index) => (
+            <div key={index} style={{ marginBottom: "10px" }}>
+              <p>
+                <span style={labelStyle}>Updated By</span>
+                <span style={valueStyle}>: {historyItem.updatedBy}</span>
+              </p>
+              <p>
+                <span style={labelStyle}>Updated At</span>
+                <span style={valueStyle}>
+                  : {new Date(historyItem.updatedAt).toLocaleDateString()}
+                </span>
+              </p>
+              <p>
+                <span style={labelStyle}>Note</span>
+                <span style={valueStyle}>: {historyItem.note}</span>
+              </p>
+            </div>
+          ))
+        ) : (
+          <p>No history available for this candidate.</p>
+        )}
+      </Drawer>
     </>
   );
 };

@@ -182,7 +182,7 @@ const Dashboard = () => {
   ];
 
   const getRowClassName = (record) => {
-    if (record.status === "Approval Pending") {
+    if (record.status === "Waiting for Approval") {
       return "approval-pending-row";
     }
     if (record.status === "Denied") {

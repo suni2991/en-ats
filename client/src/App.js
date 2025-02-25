@@ -14,33 +14,26 @@ import JavaTest from "./components/assessment/JavaTest.js";
 import Accounts from "./components/assessment/AccountsTest.js";
 import Excel from "./components/assessment/ExcelTest.js";
 import Reports from "./pages/Reports.js";
-
 import "./App.css";
 import Thankyou from "./pages/Thankyou";
 import { FadeLoader } from "react-spinners";
-
 import Statistics from "./pages/Statistics.js";
-
 import Admin from "./pages/Admin.js";
 import Postjob from "./components/Postjob.js";
 import Createhr from "./components/Createhr.js";
 import Feedback from "./pages/Feedbacks.js";
-
 import ProfilePage from "./components/ProfilePage.js";
 import Panelist from "./components/Panelist.js";
-import JobDashboard from "./components/JobDashboard.js";
 import Dashboard from "./pages/Dashboard.js";
 import Applicant from "./pages/Applicant.js";
-
 import ApproveJobDetails from "./pages/Approve.js";
-import WelcomePage from "./pages/WelcomePage.js";
 import Explore from "./pages/Explore.js";
 import Schedule from "./pages/Schedule.js";
 import Availability from "./pages/Availability.js";
 import ImageCarousel from "./components/ImageCarousel.js";
 import JobRegistration from "./pages/JobRegistration.js";
 import BulkUpload from "./components/BulkUpload.js";
-import EditCandidate from "./pages/EditCandidate.js";
+import EditCandidate from "./components/EditCandidate.js";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -99,7 +92,7 @@ const App = () => {
             <Route path="/applicants" element={<Sidebar><Applicant /></Sidebar>} />
             <Route path='/provideFeedback/:id' element={<Sidebar><Panelist /></Sidebar>} />
             <Route path="/bulkupload" element={<Sidebar><BulkUpload /></Sidebar>} />
-
+            <Route path="/editCandidate" element={<Sidebar><EditCandidate /></Sidebar>} />
           </Route>
           {/* <Route path="/editCandidate" element={<EditCandidate />}/> */}
         </Routes>

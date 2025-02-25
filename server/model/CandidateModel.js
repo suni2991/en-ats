@@ -107,7 +107,7 @@ const candidateSchema = new mongoose.Schema({
   joiningDate: { type: Date },
   district: { type: String },
   city: { type: String },
-  selectedCategory: { type: String, enum: ["Technical", "Non-Technical"] },
+  selectedCategory: { type: String, enum: ["Technical", "Non-Technical", "No-Screening"] },
   mgrName: { type: String },
   mgrEmail: { type: String },
   notes: { type: String },
@@ -124,7 +124,8 @@ const candidateSchema = new mongoose.Schema({
   assessmentDone: { type: Boolean, default: false },
   salary: { type: String },
   expectedSalary: { type: String },
-  preferedLocation: { type: String }
+  preferedLocation: { type: String },
+  testStatus:{type:String, enum:["Test Rejected", "Test Shortlisted", "Re-Test", "Test Feedback Awaited"]},
 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);

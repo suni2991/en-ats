@@ -55,8 +55,8 @@ const Viewjob = ({ auth }) => {
   });
 
   const colors = {
-    Active: "green",
-    Hold: "#00B4D2",
+    "REQ Approved": "green",
+    "REQ on Hold": "#00B4D2",
     Closed: "red",
   };
 
@@ -176,9 +176,9 @@ const Viewjob = ({ auth }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Active":
+      case "REQ Approved":
         return "green";
-      case "Hold":
+      case "REQ on Hold":
         return "#00B4D2";
       case "Closed":
         return "red";

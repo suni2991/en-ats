@@ -54,14 +54,14 @@ const ApproveJobDetails = () => {
       setJob((prevJob) => ({ ...prevJob, status: newStatus }));
       message.success(
         `Job ${
-          newStatus === "Active" ? "Approved" : "Rejected"
+          newStatus === "REQ Approved" ? "REQ Approved" : "REQ Rejected"
         } successfully`
       );
       setIsModalVisible(false);
     } catch (error) {
       console.error("Update request failed:", error);
       message.error(
-        `Failed to ${newStatus === "Active" ? "approve" : "reject"} job`
+        `Failed to ${newStatus === "REQ Approved" ? "approve" : "reject"} job`
       );
     }
   };
@@ -81,7 +81,7 @@ const ApproveJobDetails = () => {
   };
 
   const showApproveModal = () => {
-    setModalMode("Active");
+    setModalMode("REQ Approved");
     setIsModalVisible(true);
   };
 
@@ -98,7 +98,7 @@ const ApproveJobDetails = () => {
     color:
       job.status === "Denied"
         ? "red"
-        : job.status === "Active"
+        : job.status === "REQ Approved"
         ? "green"
         : "inherit",
     fontWeight: "bold",
@@ -108,7 +108,7 @@ const ApproveJobDetails = () => {
   return (
     <div className="bg">
       <div className="job-details">
-        {(job.status === "Active" || job.status === "Denied") && (
+        {(job.status === "REQ Approved" || job.status === "Denied") && (
           <p style={statusMessageStyle}>
             The current Job is already {job.status} on{" "}
             {new Date(job.postedAt).toLocaleString()}
@@ -151,7 +151,7 @@ const ApproveJobDetails = () => {
           {new Date(job.postedAt).toLocaleString()}
         </p>
 
-        {(job.status !== "Active" && job.status !== "Denied") && (
+        {(job.status !== "REQ Approved" && job.status !== "Denied") && (
           <div className="button-container">
             <button onClick={showApproveModal}>Approve</button>
             <button onClick={showRejectModal}>Reject</button>
@@ -160,11 +160,11 @@ const ApproveJobDetails = () => {
       </div>
 
       <Modal
-        title={modalMode === "Active" ? "Approve Job" : "Reject Job"}
-        visible={isModalVisible}
+        title={modalMode === "REQ Approved" ? "Approve Job" : "Reject Job"}
+        open={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
-        okText={modalMode === "Active" ? "Approve" : "Reject"}
+        okText={modalMode === "REQ Approved" ? "Approve" : "Reject"}
         cancelText="Cancel"
       >
         <Input.TextArea

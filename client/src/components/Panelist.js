@@ -413,19 +413,31 @@ const Panelist = () => {
             </table>
 
             {index === rounds.length - 1 && !round.feedbackProvided && (
-              <div className='panelistTable'>
-                <label htmlFor='feedback'>Final Feedback:</label>
-                <select name='feedback' value={formData.feedback} onChange={handleChange}>
-                  <option value=''>Select Feedback</option>
-                  <option value='L1 Interview Cleared'>L1 Interview Cleared</option>
-                  <option value='L1 Interview Rejected'>L1 Interview Rejected</option>
-                  <option value='L2 Interview Rejected'>L2 Interview Rejected</option>
-                  <option value='L2 Interview Cleared'>L2 Interview Cleared</option>
-                  <option value='HR Interview Rejected'>HR Interview Rejected</option>
-                  <option value='HR Interview Cleared'>HR Interview Cleared</option>
-                </select>
-              </div>
-            )}
+  <div className='panelistTable'>
+    <label htmlFor='feedback'>Final Feedback:</label>
+    <select name='feedback' value={formData.feedback} onChange={handleChange}>
+      <option value=''>Select Feedback</option>
+      {round.roundName === 'L1' && (
+        <>
+          <option value='L1 Interview Cleared'>L1 Interview Cleared</option>
+          <option value='L1 Interview Rejected'>L1 Interview Rejected</option>
+        </>
+      )}
+      {round.roundName === 'L2' && (
+        <>
+          <option value='L2 Interview Cleared'>L2 Interview Cleared</option>
+          <option value='L2 Interview Rejected'>L2 Interview Rejected</option>
+        </>
+      )}
+      {round.roundName === 'HR' && (
+        <>
+          <option value='HR Interview Cleared'>HR Interview Cleared</option>
+          <option value='HR Interview Rejected'>HR Interview Rejected</option>
+        </>
+      )}
+    </select>
+  </div>
+)}
 
             {index === rounds.length - 1 && !round.feedbackProvided && (
               <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>

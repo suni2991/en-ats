@@ -53,7 +53,7 @@ const Accounts = () => {
   const updateaccounts = useCallback(() => {
     const correctAnswers = result.correctAnswers;
     const totalQuestions = questions.length;
-  const passingMark = Math.ceil(totalQuestions * 0.8); // 80% passing criteria (round up)
+  const passingMark = Math.ceil(totalQuestions * 0.7); // 80% passing criteria (round up)
 
     const status = correctAnswers >= passingMark ? 'Pass' : 'Fail';// 80% passing criteria
 

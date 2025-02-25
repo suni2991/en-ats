@@ -53,7 +53,7 @@ const PsychometricTest = () => {
   const updatepsychometric = useCallback(() => {
     const correctAnswers = result.correctAnswers;
     const totalQuestions = questions.length;
-  const passingMark = Math.ceil(totalQuestions * 0.8); 
+  const passingMark = Math.ceil(totalQuestions * 0.7); 
     const status = correctAnswers >= passingMark ? 'Pass' : 'Fail';// 80% passing criteria
 
     const updatedResult = {

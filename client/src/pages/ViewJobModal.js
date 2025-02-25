@@ -48,9 +48,9 @@ const ViewJobModal = ({ selectedJob, setSelectedJob, isEditClicked, setIsEditCli
     };
 
     const colors = {
-        Active: "green",
-        Hold: "#00B4D2",
-        Closed: "red",
+        "REQ Approved": "green",
+        "REQ on Hold": "#00B4D2",
+        "REQ Fullfilled": "red",
     };
 
     const [editFields, setEditFields] = useState({
@@ -261,9 +261,9 @@ const ViewJobModal = ({ selectedJob, setSelectedJob, isEditClicked, setIsEditCli
                                             }))
                                         }
                                     >
-                                        <Option value="Hold">Hold</Option>
-                                        <Option value="Active">Active</Option>
-                                        <Option value="Closed">Closed</Option>
+                                        <Option value="REQ on Hold">REQ on Hold</Option>
+                                        <Option value="REQ Approved">REQ Approved</Option>
+                                        <Option value="REQ Fullfilled">REQ Fullfilled</Option>
                                     </Select>
                                 ) : (
                                     selectedJob.status

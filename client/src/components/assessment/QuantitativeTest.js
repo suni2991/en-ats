@@ -51,7 +51,7 @@ const QuantitativeTest= () => {
 
   const updateAptitude = useCallback(() => {
     const totalQuestions = questions.length;
-    const passingMark = Math.ceil(totalQuestions * 0.8); // 80% passing criteria (round up)
+    const passingMark = Math.ceil(totalQuestions * 0.7); // 80% passing criteria (round up)
     const correctAnswers = result.correctAnswers;
     const status = correctAnswers >= passingMark ? 'Pass' : 'Fail';// 80% passing criteria
 
