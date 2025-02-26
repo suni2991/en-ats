@@ -512,6 +512,7 @@ userRouter.put(
       if (history && Array.isArray(history)) {
         history.forEach((entry) => {
           candidate.history.push({
+            status: entry.status,
             updatedBy: entry.updatedBy,
             updatedAt: entry.updatedAt,
             note: entry.note,
@@ -569,6 +570,13 @@ userRouter.put(
       if (skills && Array.isArray(skills)) {
         candidate.round[roundIndex].skills = skills;
       }
+
+      candidate.history.push({
+        status: candidate.status,
+        updatedBy: req.user.id, // Assuming you have user info in req.user
+        updatedAt: new Date(),
+        note: "Feedback updated",
+      });
 
       await candidate.save();
       res.status(200).json(candidate);
@@ -694,7 +702,7 @@ userRouter.put(
       mgrName,
       city,
       totalExperience,
-
+      selectedCategory,
     } = req.body;
 
     try {
@@ -711,6 +719,9 @@ userRouter.put(
       if (role) {
         updates.role = role;
       }
+      if (selectedCategory) {
+        updates.selectedCategory = selectedCategory;
+      }
 
       const candidate = await Candidate.findByIdAndUpdate(id, updates, {
         new: true,
@@ -720,9 +731,12 @@ userRouter.put(
         return res.status(404).json({ error: "Candidate not found" });
       }
 
-      if (historyUpdate) {
+      if (historyUpdate && historyUpdate.status) {
         candidate.history.push(historyUpdate);
+      } else {
+        return res.status(400).json({ error: "History update status is required" });
       }
+
       await candidate.save();
       res.json({ status: "SUCCESS" });
     } catch (error) {
@@ -828,6 +842,8 @@ userRouter.put("/api/panelists/slot/:panelistEmail", async (req, res) => {
     // Update the slot's booked status
     panelist.availableSlots[slotIndex].booked = booked;
 
+
+
     // Save the updated panelist
     await panelist.save();
 
@@ -860,7 +876,7 @@ userRouter.get(
 userRouter.put("/api/candidate/:id/reset-scores", async (req, res) => {
   try {
     const _id = req.params.id;
-    let { subject } = req.body; // Use 'let' so 'subject' can be modified
+    let { subject, history } = req.body; // Use 'let' so 'subject' can be modified
 
     // Convert the subject to lowercase to make the check case-insensitive
     subject = subject.toLowerCase();
@@ -875,57 +891,12 @@ userRouter.put("/api/candidate/:id/reset-scores", async (req, res) => {
       });
     }
 
-    // Build the update object dynamically based on the subject
-    const resetFields = {
-      [`${subject}.score`]: -1,
-      [`${subject}.status`]: null // Optionally reset status to null or another value if needed
-    };
-
-    // Perform the update
-    const result = await Candidate.findByIdAndUpdate(
-      _id,
-      { $set: resetFields }, // Dynamically reset the specific subject score
-      { new: true }
-    );
-
-    if (!result) {
-      return res.json({
-        status: "FAILED",
-        message: `Failed to reset score for ${subject}`
-      });
-    }
-
-    res.json({
-      status: "SUCCESS",
-      message: `Score reset for ${subject}`,
-      data: result
+    candidate.history.push({
+      status: candidate.status,
+      updatedBy: req.user.id, // Assuming you have user info in req.user
+      updatedAt: new Date(),
+      note: "Score reset",
     });
-  } catch (e) {
-    res.status(500).json({
-      status: "FAILED",
-      message: "An error occurred while resetting the score",
-      error: e.message
-    });
-  }
-});
-
-userRouter.put("/api/candidate/:id/reset-scores", async (req, res) => {
-  try {
-    const _id = req.params.id;
-    let { subject } = req.body; // Use 'let' so 'subject' can be modified
-
-    // Convert the subject to lowercase to make the check case-insensitive
-    subject = subject.toLowerCase();
-
-    // List of valid subjects (in lowercase)
-    const validSubjects = ['psychometric', 'quantitative', 'vocabulary', 'java', 'accounts', 'excel'];
-
-    if (!validSubjects.includes(subject)) {
-      return res.status(400).json({
-        status: "FAILED",
-        message: "Invalid subject provided"
-      });
-    }
 
     // Build the update object dynamically based on the subject
     const resetFields = {

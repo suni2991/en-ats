@@ -268,13 +268,14 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
   const handleSubmit = async () => {
     try {
       const { round, note } = formData;
-      const status = `${round.roundName} Assigned`;
+      const status = `${round.roundName} Feedback Awaited`;
       const panelistName = round.panelistName;
       const historyNote = note || `${status} assigned to Applicant and the panelist is ${panelistName}`;
       const historyUpdate = {
         updatedBy: auth.fullName,
         updatedAt: new Date(),
         note: historyNote,
+        status,
       };
 
       const requestBody = {
@@ -412,10 +413,11 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
 
         <Form.Item label="Round" name="round">
           <Select onChange={handleRoundChange} value={formData.round.roundName}>
-            <Option value="L1">L1 / HR Round</Option>
+            <Option value="L1">L1 - HR Round</Option>
             <Option value="L2">L2 Round</Option>
             <Option value="L3">L3 Round</Option>
-            <Option value="L4">L4 / Client Round</Option>
+            <Option value="L4">L4 - Client Round</Option>
+
           </Select>
         </Form.Item>
         <PanelistDropdown onSelect={handlePanelistSelect} />

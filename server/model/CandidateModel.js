@@ -9,11 +9,12 @@ const skillSchema = new Schema({
 });
 
 const historySchema = new Schema({
-  _id: false,
+  status: { type: String },
   updatedBy: { type: String },
   updatedAt: { type: Date, default: Date.now },
   note: { type: String },
 });
+
 
 const roundSchema = new Schema({
   roundName: { type: String, required: false },
@@ -125,6 +126,8 @@ const candidateSchema = new mongoose.Schema({
   salary: { type: String },
   expectedSalary: { type: String },
   preferedLocation: { type: String },
+  atsCleared: { type: Boolean, default: false },
+
   testStatus:{type:String, enum:["Test Rejected", "Test Shortlisted", "Re-Test", "Test Feedback Awaited"]},
 });
 

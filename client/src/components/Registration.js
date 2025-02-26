@@ -332,6 +332,7 @@ function Registration({ closeModal }) {
 
     const historyNote = "Initial registration of an Applicant";
     const historyUpdate = {
+      status:"CV Sourced",
       updatedBy: auth.fullName || "Applicant",
       updatedAt: new Date(),
       note: historyNote,

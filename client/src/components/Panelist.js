@@ -421,18 +421,29 @@ const Panelist = () => {
         <>
           <option value='L1 Interview Cleared'>L1 Interview Cleared</option>
           <option value='L1 Interview Rejected'>L1 Interview Rejected</option>
+          <option value='L1 Interview Hold'>L1 Interview Hold</option>
+          
         </>
       )}
       {round.roundName === 'L2' && (
         <>
           <option value='L2 Interview Cleared'>L2 Interview Cleared</option>
           <option value='L2 Interview Rejected'>L2 Interview Rejected</option>
+          <option value='L2 Interview Hold'>L2 Interview Hold</option>
         </>
       )}
-      {round.roundName === 'HR' && (
+      {round.roundName === 'L3' && (
         <>
-          <option value='HR Interview Cleared'>HR Interview Cleared</option>
-          <option value='HR Interview Rejected'>HR Interview Rejected</option>
+          <option value='L3 Interview Cleared'>L3 Interview Cleared</option>
+          <option value='L3 Interview Rejected'>L3 Interview Rejected</option>
+          <option value='L3 Interview Hold'>L3 Interview Hold</option>
+        </>
+      )}
+       {round.roundName === 'L4' && (
+        <>
+          <option value='L4 Interview Cleared'>L4 Interview Cleared</option>
+          <option value='L4 Interview Rejected'>L4 Interview Rejected</option>
+          <option value='L4 Interview Hold'>L4 Interview Hold</option>
         </>
       )}
     </select>

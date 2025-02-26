@@ -158,6 +158,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       </p>
     );
   
+    const atsCleared = candidateData.atsCleared;
     const scores = candidateData.selectedCategory === "Technical" ? (
       <>
         {renderScoreRow("Psychometric", candidateData.psychometric)}
@@ -176,14 +177,18 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
   
     return (
       <>
-        {scores}
-        <div style={{ marginTop: "20px" }}>
-          <h4><strong>Test:</strong></h4>
-          <Button type="primary" onClick={() => handleTestStatusUpdate("Test Rejected")} style={{ background: "red", width: "30%", marginRight: "5%" }}>Rejected</Button>
-          <Button type="primary" onClick={() => handleTestStatusUpdate("Test Shortlisted")} style={{ background: "#00B4D2", width: "30%", marginRight: "5%" }}>Shortlisted</Button>
-          <Button type="primary" onClick={() => handleTestStatusUpdate("Re-Test")} style={{ background: "#007d93", width: "30%" }}>Re-Test</Button>
-        </div>
-      </>
+      {scores}
+      <div style={{ marginTop: "20px" }}>
+        {!candidateData.atsCleared && (
+          <>
+            <h4><strong>Test:</strong></h4>
+            <Button type="primary" onClick={() => handleTestStatusUpdate("Test Rejected")} style={{ background: "red", width: "30%", marginRight: "5%" }}>Rejected</Button>
+            <Button type="primary" onClick={() => handleTestStatusUpdate("Test Shortlisted")} style={{ background: "#00B4D2", width: "30%", marginRight: "5%" }}>Shortlisted</Button>
+            <Button type="primary" onClick={() => handleTestStatusUpdate("Re-Test")} style={{ background: "#007d93", width: "30%" }}>Re-Test</Button>
+          </>
+        )}
+      </div>
+    </>
     );
   };
 
@@ -199,13 +204,16 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       });
       await Promise.all(resetPromises);
     }
+
+    const updatedStatus = status === "Test Shortlisted" ? "L1 To be Scheduled" : status;
   
     try {
       const response = await axios.put(
         `${URL}/api/candidate/${candidateId}`,
         {
+          atsCleared: true,
           testStatus: status,
-          status: status,
+          status: updatedStatus,
           assessmentDone: status === "Re-Test" ? false : candidateData.assessmentDone,
           history: {
             note: `Test status updated to ${status}`,
@@ -229,7 +237,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           assessmentDone: status === "Re-Test" ? false : prevData.assessmentDone,
           history: [
             ...(prevData.history || []),
-            { note: `Test status updated to ${status}`, updatedBy: auth.fullName, updatedAt: new Date().toISOString() },
+            {status: status, note: `Test status updated to ${status}`, updatedBy: auth.fullName, updatedAt: new Date().toISOString() },
           ],
         }));
       } else {
@@ -256,6 +264,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           status: "Rejected",
           note: rejectionNote,
           history: {
+            status:"CV Rejected",
             note: `${rejectionNote}`,
             updatedBy: updatedBy,
             updatedAt: new Date(),
@@ -274,10 +283,10 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       setRejectionNote("");
       setCandidateData((prevData) => ({
         ...prevData,
-        status: "Rejected",
+        status: "CV Rejected",
         history: [
           ...(prevData.history || []),
-          { note: `Rejection reason: ${rejectionNote}`, updatedBy }
+          { status: "CV Rejected", note: `Rejection reason: ${rejectionNote}`, updatedBy }
         ]
       }));
     } catch (error) {
@@ -339,6 +348,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         {
           status,
           history: {
+            status: status,
             note: `Status updated to ${status}`,
             updatedBy: auth.fullName,
             updatedAt: new Date().toISOString(),
@@ -358,7 +368,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           status,
           history: [
             ...(prevData.history || []),
-            { note: `Status updated to ${status}`, updatedBy: auth.fullName, updatedAt: new Date().toISOString() },
+            { status: status, note: `Status updated to ${status}`, updatedBy: auth.fullName, updatedAt: new Date().toISOString() },
           ],
         }));
         // Call the callback function to update the status in CandidateCard
@@ -576,6 +586,10 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         {candidateData.history && candidateData.history.length > 0 ? (
           candidateData.history.map((historyItem, index) => (
             <div key={index} style={{ marginBottom: "10px" }}>
+              <p style={{color:"#00B4D2"}}>
+                <span style={labelStyle}>Status</span>
+                <span style={valueStyle}>: {historyItem.status}</span>
+              </p>
               <p>
                 <span style={labelStyle}>Updated By</span>
                 <span style={valueStyle}>: {historyItem.updatedBy}</span>
@@ -590,6 +604,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
                 <span style={labelStyle}>Note</span>
                 <span style={valueStyle}>: {historyItem.note}</span>
               </p>
+              <hr/>
             </div>
           ))
         ) : (

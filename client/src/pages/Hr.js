@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Tooltip, Button, Input, Modal } from "antd";
+import { Tooltip, Button, Input, Modal, Table } from "antd";
 import { FiGrid } from "react-icons/fi";
 import { FaTableList } from "react-icons/fa6";
 import axios from "axios";
@@ -8,12 +8,13 @@ import CandidateCard from "../components/CandidateCard";
 import CandidateTable from "../components/CandidateTable";
 import Registration from "../components/Registration";
 import Hotpicks from "../components/Hotpicks";
-
+import * as XLSX from "xlsx";
 
 const URL = process.env.REACT_APP_API_URL;
 const Hr = () => {
   const [view, setView] = useState("tile");
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isTotalModalVisible, setIsTotalModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { auth, token } = useAuth();
   const [candidates, setCandidates] = useState([]);
@@ -26,12 +27,28 @@ const Hr = () => {
     setIsModalVisible(false);
   };
 
+  const showTotalModal = () => {
+    setIsTotalModalVisible(true);
+  };
+
+  const closeTotalModal = () => {
+    setIsTotalModalVisible(false);
+  };
+
   const toggleView = () => {
     setView(view === "tile" ? "table" : "tile");
   };
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
+  };
+
+  const handleDownload = () => {
+    const filteredCandidatesForDownload = candidates.map(({ confirmPassword,history, round, resume, image,notification,role,empCount, _id, password, __v, roleId, ...rest }) => rest);
+    const worksheet = XLSX.utils.json_to_sheet(filteredCandidatesForDownload);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Candidates");
+    XLSX.writeFile(workbook, "candidates.xlsx");
   };
 
   useEffect(() => {
@@ -54,8 +71,15 @@ const Hr = () => {
   }, []);
 
   const filteredCandidates = candidates.filter((candidate) =>
-    candidate.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+    candidate.fullName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    !["CV Rejected", "Rejected", "Revoked"].some(status => candidate.status.includes(status))
   );
+
+  const columns = [
+    { title: 'Full Name', dataIndex: 'fullName', key: 'fullName' },
+    { title: 'Position', dataIndex: 'position', key: 'position' },
+    { title: 'Status', dataIndex: 'status', key: 'status' },
+  ];
 
   return (
     <div className="table-container">
@@ -63,6 +87,9 @@ const Hr = () => {
         <Tooltip title="Add Applicant" color="cyan">
           <Button onClick={showModal} type="text" className="add-button">
             Add New Candidate
+          </Button>
+          <Button onClick={showTotalModal} type="text" className="add-button">
+            Total Applicants: {candidates.length}
           </Button>
         </Tooltip>
         {view === "tile" && (
@@ -82,7 +109,7 @@ const Hr = () => {
           >
             Tile View
           </Button>
-          <span classname='btn-divider'>&nbsp; | &nbsp;</span>
+          <span className='btn-divider'>&nbsp; | &nbsp;</span>
           <Button onClick={toggleView} type='text' icon={<FaTableList />} className={view === 'table' ? 'active-button' : ''}>
             Grid View
           </Button>
@@ -109,6 +136,21 @@ const Hr = () => {
         title={<h2>Add New Applicant</h2>}
       >
         <Registration closeModal={closeModal} />
+      </Modal>
+      <Modal
+        open={isTotalModalVisible}
+        onCancel={closeTotalModal}
+        footer={[
+          <Button key="download" onClick={handleDownload}>
+            Download
+          </Button>,
+          <Button key="close" onClick={closeTotalModal}>
+            Close
+          </Button>,
+        ]}
+        width={1000}      
+      >
+        <Table dataSource={candidates} columns={columns} rowKey="id" />
       </Modal>
     </div>
   );
