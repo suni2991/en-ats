@@ -309,7 +309,7 @@ const Schedule = () => {
               format="DD-MM-YYYY"
               style={{ width: '100%' }}
               placeholder="Select Date"
-              disabledDate={disabledDate}
+              
             />
           </Form.Item>
 
@@ -357,7 +357,7 @@ const Schedule = () => {
           style={{ width: '100%', marginTop: '10px' }}
           format="DD-MM-YYYY"
           placeholder={['From Date', 'To Date']}
-          disabledDate={disabledDate}
+          
         />
       </Modal>
     </div>

@@ -10,6 +10,7 @@ import Postjob from "../components/Postjob";
 import JobPositionPieChart from "../components/JobPosition";
 import { Cell } from "recharts";
 import moment from "moment";
+import ViewJobModal from "./ViewJobModal";
 // import ViewJobModal from "./ViewJobModal";
 
 const URL = process.env.REACT_APP_API_URL;
@@ -263,7 +264,7 @@ const Dashboard = () => {
           rowKey={(record) => record._id}
           rowClassName={getRowClassName}
           title={() => (
-            <h1 style={{ marginBottom: "10px" }}>Jobs Sent for Approval pages dashboard</h1>
+            <h1 style={{ marginBottom: "10px" }}>Requisition Received and Sent for Approval </h1>
           )}
         />
       </div>
@@ -285,7 +286,7 @@ const Dashboard = () => {
         footer={null}
         width={800}
       >
-        <Viewjob selectedJob={selectedJob} setSelectedJob={setSelectedJob} isEditClicked={isEditClicked} setIsEditClicked={setIsEditClicked} setIsModalVisible={setIsModalVisible} isEditButtonDisabled={true} />
+        <ViewJobModal selectedJob={selectedJob} setSelectedJob={setSelectedJob} isEditClicked={isEditClicked} setIsEditClicked={setIsEditClicked} setIsModalVisible={setIsModalVisible} auth={auth} />
       </Modal>
 
 

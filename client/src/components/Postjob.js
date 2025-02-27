@@ -359,7 +359,7 @@ const Postjob = () => {
                 value={
                   formData.fullfilledBy ? moment(formData.fullfilledBy) : null
                 }
-                disabledDate={disabledDate}
+                
               />
           </div>
 

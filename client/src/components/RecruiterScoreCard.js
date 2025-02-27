@@ -47,9 +47,6 @@ const RecruiterScorecard = () => {
   const fetchData = async (mgrName) => {
     try {
       const response = await axios.get(`${URL}/api/mgr/${mgrName}/status-count`);
-      // const filteredData = response.data.filter(item => 
-      //   ['Processing', 'Shortlisted', 'Onboarded', 'Rejected', 'Backed Out'].includes(item.status)
-      // );
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -86,36 +83,39 @@ const RecruiterScorecard = () => {
   }, []);
 
   // Predefined background colors for HR cards
-  const hrCardColors = ['#e1f5fe', '#e8f5e9', '#fff9c4', '#fce4ec', '#f3e5f5'];
+  const hrCardColors = ['rgb(26, 39, 99)'];
   const pieColors = ['#61acc9', '#82ca9d', '#10679b', '#42b16f', '#6ac7c9']; // Define colors for the Pie chart
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', background:'#fff', padding:'20px', borderRadius:'2px',boxShadow: '0px 2px 4px rgb(38, 39, 130)'}}>
     
-      <div style={{ width: '30%', paddingRight: '20px' }}>
-        <h5 style={{ margin:'20px', fontSize:'20px', fontWeight:'bold', color:'#00B4D2' }}>Top Recruiters</h5>
-        <div style={{ padding: '10px'}}>
-          <ul className="hr-list">
-            {paginatedHrCounts.map((hr, index) => (
-              <li 
-                key={hr._id} 
-                className="hr-card" 
-                style={{ backgroundColor: hrCardColors[index % hrCardColors.length] }} // Assign different background colors to each HR card
-                onClick={() => handleSelectHr(hr._id, hr.email)} // Select the HR when clicked
-              >
-                <div className="hr-name">{hr._id} <span className="hr-candidate-count">{hr.candidateCount}</span></div>
-              </li>
-            ))}
-          </ul>
-          <Pagination 
-            current={currentPage}
-            pageSize={pageSize}
-            total={hrCounts.length}
-            onChange={handlePageChange}
-            style={{ marginTop: '20px', textAlign: 'center' }}
-          />
-        </div>
-      </div>  
+    <div style={{ width: '30%', paddingRight: '20px' }}>
+      <h5 style={{ margin:'20px', fontSize:'20px', fontWeight:'bold', color:'rgb(26, 39, 99)' }}>Top Recruiters</h5>
+      <div style={{ padding: '10px'}}>
+ 
+        <ul className="hr-list">
+          
+          {paginatedHrCounts.map((hr, index) => (
+            
+            <li 
+              key={hr._id} 
+              className={`hr-card ${selectedHrName === hr._id ? 'active' : ''}`} 
+              style={{ backgroundColor: hrCardColors[index % hrCardColors.length] }} 
+              onClick={() => handleSelectHr(hr._id, hr.email)}
+            >
+              <div className="hr-name">{hr._id} <span className="hr-candidate-count">{hr.candidateCount}</span></div>
+            </li>
+          ))}
+        </ul>
+        <Pagination 
+          current={currentPage}
+          pageSize={pageSize}
+          total={hrCounts.length}
+          onChange={handlePageChange}
+          style={{ marginTop: '20px', textAlign: 'center' }}
+        />
+      </div>
+    </div>  
       <div style={{ width: '50%' }}>
         <PieChart width={400} height={400}>
           <Pie
@@ -137,6 +137,7 @@ const RecruiterScorecard = () => {
         </PieChart>
       </div>
       <div style={{ width: '45%' }}>
+      <h5 style={{ marginBottom: '10px', fontSize: '18px', fontWeight: 'bold', color: 'rgb(26, 39, 99)' }}>Recruiter Name: {selectedHrName.toUpperCase()}</h5>
         <ul>
           {data.map((item) => (
             <li key={item.status}>

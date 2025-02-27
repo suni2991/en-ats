@@ -57,9 +57,8 @@ const AvailableSlotForm = ({ form, candidateId, initialValues, latestRequestedDa
           label="Available Slot Date"
           rules={[{ required: true, message: 'Please select the available slot date' }]}
         >
-          <DatePicker placeholder="Select Date" format="YYYY-MM-DD" disabledDate={disabledDate} />
+          <DatePicker placeholder="Select Date" format="YYYY-MM-DD"  />
         </Form.Item>
-
         <Form.Item
           name="fromTime"
           label="From Time"

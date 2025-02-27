@@ -247,7 +247,7 @@ const EditCandidate = ({ selectedCandidate, closeModal }) => {
                                         onChange={handleDateChange}
                                         placeholder="Choose Last Working Day"
                                         style={{ width: '100%', border: '1px solid #00B4D2', padding: '7px 5px' }}
-                                    // disabledDate={disabledDate} // Apply date restriction
+                                    //  // Apply date restriction
                                     />
                                 </div>
                             </div>

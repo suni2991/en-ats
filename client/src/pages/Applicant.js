@@ -82,6 +82,7 @@ const Applicant = () => {
 
     try {
       const historyUpdate = {
+        status: "Onboarded",
         updatedBy: "Admin",
         updatedAt: new Date(),
         note: "Onboarded Applicant allotted Enfuse email successfully",

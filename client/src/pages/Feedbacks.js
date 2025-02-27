@@ -48,6 +48,7 @@ const Feedback = () => {
     fetchCandidates();
   }, [auth.role, auth.fullName, token]);
 
+
   const handleUpdate = async () => {
     if (selectedCandidate) {
       try {
@@ -67,10 +68,18 @@ const Feedback = () => {
           updates.reason = reason;
         }
   
+        // Ensure historyUpdate is included in the updates
+        updates.historyUpdate = {
+          status: finalStatus,
+          updatedAt: new Date(),
+          updatedBy: auth.fullName,
+          note: `Applicant ${finalStatus}`,
+        };
+  
         // Update candidate data
         await axios.put(
           `${URL}/api/candidates/${selectedCandidate._id}`,
-          { ...updates, historyUpdate },
+          updates,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         message.success("Status updated successfully.");
@@ -250,7 +259,7 @@ const Feedback = () => {
               </Form.Item>
               {(documentationStatus === "Joined" || documentationStatus === "To Join") && (
                 <Form.Item label="Joining Date">
-                  <DatePicker onChange={handleJoiningDateChange} style={{ width: "100%" }} disabledDate={disabledDate} />
+                  <DatePicker onChange={handleJoiningDateChange} style={{ width: "100%" }}  />
                 </Form.Item>
               )}
               {documentationStatus === "Candidate Declined / Backout" && (

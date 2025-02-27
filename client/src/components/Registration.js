@@ -504,7 +504,7 @@ function Registration({ closeModal }) {
                 onChange={handleDateChange}
                 placeholder="Choose Last Working Day"
                 style={{ width: '320px', border: '1px solid #00B4D2', padding: '5px 10px 0 10px' }}
-              // disabledDate={disabledDate} // Apply date restriction
+              //  // Apply date restriction
               />
             </div>
 

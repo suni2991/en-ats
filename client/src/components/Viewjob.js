@@ -292,6 +292,7 @@ const Viewjob = ({ auth }) => {
 
       const updatedJob = {
         ...editFields,
+        status: selectedStatus || selectedJob.status,
         updatedAt: new Date(),
         updatedBy: auth.fullName,
         history: [...(selectedJob.history || []), historyEntry],

@@ -1,4 +1,3 @@
-
 import { Button, Col, DatePicker, Drawer, Input, List, message, Row, Select, Spin, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { Option } from 'antd/es/mentions';
@@ -249,24 +248,28 @@ const ViewJobModal = ({ selectedJob, setSelectedJob, isEditClicked, setIsEditCli
                                     margin: 0,
                                 }}
                             >
-                                {isEditClicked ? (
-                                    <Select
-                                        style={{ width: "100px" }}
-                                        key="status"
-                                        value={editFields.status}
-                                        onChange={(value) =>
-                                            setEditFields((prevFields) => ({
-                                                ...prevFields,
-                                                status: value,
-                                            }))
-                                        }
-                                    >
-                                        <Option value="REQ on Hold">REQ on Hold</Option>
-                                        <Option value="REQ Approved">REQ Approved</Option>
-                                        <Option value="REQ Fullfilled">REQ Fullfilled</Option>
-                                    </Select>
-                                ) : (
+                                {selectedJob.status === "Waiting for Approval" ? (
                                     selectedJob.status
+                                ) : (
+                                    isEditClicked ? (
+                                        <Select
+                                            style={{ width: "100px" }}
+                                            key="status"
+                                            value={editFields.status}
+                                            onChange={(value) =>
+                                                setEditFields((prevFields) => ({
+                                                    ...prevFields,
+                                                    status: value,
+                                                }))
+                                            }
+                                        >
+                                            <Option value="REQ on Hold">REQ on Hold</Option>
+                                            <Option value="REQ Approved">REQ Approved</Option>
+                                            <Option value="REQ Fullfilled">REQ Fullfilled</Option>
+                                        </Select>
+                                    ) : (
+                                        selectedJob.status
+                                    )
                                 )}
                             </h1>
                             <Tooltip title="Edit" color="cyan">
@@ -443,7 +446,7 @@ const ViewJobModal = ({ selectedJob, setSelectedJob, isEditClicked, setIsEditCli
                                                     }
                                                     onChange={handleDateChange}
                                                     format="YYYY-MM-DD"
-                                                    disabledDate={disabledDate}
+                                                    
                                                 />
                                             ) : (
                                                 selectedJob.fullfilledBy ? moment(selectedJob.fullfilledBy).format('DD-MM-YYYY') : 'N/A'

@@ -426,6 +426,18 @@ userRouter.get("/api/candidate/:status", async (req, res) => {
   res.json(docs);
 });
 
+userRouter.get("/api/candidates/onboarded", async (req, res) => {
+  try {
+    const statuses = ["Onboarded", "Joined"];
+    const docs = await Candidate.find({ status: { $in: statuses } });
+    res.json(docs);
+  } catch (error) {
+    console.error("Error fetching candidates with Onboarded or Joined status:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+
 userRouter.get("/api/candidates/:fullName", async (req, res) => {
   try {
     const fullName = req.params.fullName;
@@ -719,7 +731,7 @@ userRouter.put(
       if (role) {
         updates.role = role;
       }
-      if (selectedCategory) {
+      if (selectedCategory && selectedCategory !== "") {
         updates.selectedCategory = selectedCategory;
       }
 

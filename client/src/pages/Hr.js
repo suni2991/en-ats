@@ -71,9 +71,12 @@ const Hr = () => {
   }, []);
 
   const filteredCandidates = candidates.filter((candidate) =>
-    candidate.fullName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    !["CV Rejected", "Rejected", "Revoked"].some(status => candidate.status.includes(status))
+    (candidate.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    candidate.status?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    candidate.position?.toLowerCase().includes(searchQuery.toLowerCase())) &&
+    !["CV Rejected", "Rejected", "Revoked"].some(status => candidate.status?.includes(status))
   );
+
 
   const columns = [
     { title: 'Full Name', dataIndex: 'fullName', key: 'fullName' },
@@ -94,7 +97,7 @@ const Hr = () => {
         </Tooltip>
         {view === "tile" && (
           <Input
-            placeholder="Search Candidates"
+            placeholder="Search by Name, Position, Status"
             value={searchQuery}
             onChange={handleSearch}
             className="ant-searchIn"

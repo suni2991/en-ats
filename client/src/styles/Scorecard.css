@@ -47,21 +47,38 @@
     border: 1px solid #ddd;
     text-transform: capitalize;
     transition: background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    color: #f0f0f0;
   }
+
+ 
   
   .hr-card:hover {
-    background-color: #e0e0e0;
+    transform: translateX(10px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
+
+
+  .hr-card.active {
+    background-color: #00B4D2 !important; /* Highlight color for active recruiter */
+    font-weight: bold;
+    transform: translateX(10px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #030865;
+    font-weight: 800;
+    text-decoration: underline;
+  }
+  
+  
   .hr-name {
-    color: #333;
+    color: White;
     font-weight: bold;
   }
   
   .hr-candidate-count {
-    color: black;
-
+    color: rgb(255, 255, 255);
+    font-weight: 300;
     float: right;
   }
   
