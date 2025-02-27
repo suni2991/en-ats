@@ -27,6 +27,20 @@ const roundSchema = new Schema({
   meetingURL: { type: String },
 });
 
+const bulkUploadSchema = new Schema({
+  resumeStatus: {type: 'String', default: 'CV Sourced'},
+  testApplicability: {type: 'String'},
+  testScore: {type: 'String'},
+  l1Interviewer: {type: 'String'},
+  l1InterviewStatus: {type: 'String'},
+  l2Interviewer: {type: 'String'},
+  l2InterviewStatus: {type: 'String'},
+  l3Interviewer: {type: 'String'},
+  l3InterviewStatus: {type: 'String'},
+  candidateFinalStatus: {type: 'String'},
+  hrComments: {type: 'String'}
+})
+
 const availabilitySchema = new Schema({
   requestedDateRange: { type: [Date] },
   createAt: { type: Date, default: Date.now },
@@ -127,8 +141,9 @@ const candidateSchema = new mongoose.Schema({
   expectedSalary: { type: String },
   preferedLocation: { type: String },
   atsCleared: { type: Boolean, default: false },
-
+  bulkUpload: {type: bulkUploadSchema},
   testStatus:{type:String, enum:["Test Rejected", "Test Shortlisted", "Re-Test", "Test Feedback Awaited"]},
+  isBulkUploadData: {type: Boolean, default: false},
 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);

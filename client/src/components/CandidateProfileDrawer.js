@@ -96,19 +96,21 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
     setHistoryDrawerOpen(false);
   };
 
-  const renderResumeLink = (candidate) => {
-    if (candidate.resume) {
-      const downloadLink = `${URL}${candidate.resume}`;
-      return (
-        <a href={downloadLink} target="_blank" rel="noopener noreferrer" className='resume-link'>
-          {candidate.firstName} CV
-        </a>
-      );
-    } else {
-      return "Resume not available";
-    }
-  };
+  // const renderResumeLink = (candidate) => {
+  //   if (candidate.resume) {
+  //     const downloadLink = `${URL}${candidate.resume}`;
+  //     return (
+  //       <a href={downloadLink} target="_blank" rel="noopener noreferrer" className='resume-link'>
+  //         {candidate.firstName} CV
+  //       </a>
+  //     );
+  //   } else {
+  //     return "Resume not available";
+  //   }
+  // };
 
+  const renderResumeLink = (candidate) => {
+  };
   const updateScore = async (subject) => {
     try {
       const response = await axios.put(

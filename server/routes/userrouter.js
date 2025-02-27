@@ -353,6 +353,9 @@ userRouter.get(
     try {
       const candidatesByStatus = await Candidate.aggregate([
         {
+          $match: { role: "Applicant" }
+        },
+        {
           $group: {
             _id: "$status",
             count: { $sum: 1 },
@@ -363,12 +366,16 @@ userRouter.get(
       const formattedData = {
         Onboarded: 0,
         Rejected: 0,
-        Processing: 0,
-        Selected: 0,
+        "CV Sourced": 0,
+        "In Progress": 0
       };
 
       candidatesByStatus.forEach((candidate) => {
-        formattedData[candidate._id] = candidate.count;
+        if (candidate._id === "Onboarded" || candidate._id === "Rejected" || candidate._id === "CV Sourced") {
+          formattedData[candidate._id] = candidate.count;
+        } else {
+          formattedData["In Progress"] += candidate.count;
+        }
       });
 
       res.json([formattedData]);
@@ -1056,239 +1063,123 @@ const validateAndFormatDriveLink = (link) => {
   };
 };
 
-userRouter.post("/api/bulk-upload", bulkUpload, async (req, res) => {
+
+userRouter.post("/api/bulkupload", async (req, res) => {
+
   try {
-    const workbook = xlsx.readFile(req.file.path);
-    const sheetName = workbook.SheetNames[0]; // Assuming you want to read the first sheet
-    const worksheet = workbook.Sheets[sheetName];
+    const validRows = req.body.validRows;
 
-    try {
-      // const data = xlsx.utils.sheet_to_json(worksheet);
-      // console.log("data", data)
-      const processedLinks = [];
-      const invalidLinks = [];
-      const extractedUrls = [];
+    if (!validRows || validRows.length === 0) {
+      return res.status(400).json({ status: "ERROR", message: "No valid rows provided." });
+    }
 
-      const hyperlinks = [];
-      const data = [];
-      // const sheetNames = workbook.SheetNames;s
-      // Loop through each sheet
-      const range = xlsx.utils.decode_range(worksheet['!ref']); // Get the range of the sheet
+    // Iterate through each valid row
+    for (const validRow of validRows) {
+      const candidate = await Candidate.findOne({ email: validRow["Email ID"] });
+      validRow.bulkUpload = {};
 
-      // Loop through each cell in the range
-      for (let row = range.s.r + 1; row <= range.e.r; row++) { // Start from row 2
-        const rowData = { totalScores: {}, round: [] };
-        let roundNameHeader1;
-        let panelistName1;
-        let feedback1;
-        let roundNameHeader2;
-        let panelistName2;
-        let feedback2;
-        let roundNameHeader3;
-        let panelistName3;
-        let feedback3;
-        for (let col = range.s.c; col <= range.e.c; col++) {
-          const cellAddress = xlsx.utils.encode_cell({ r: row, c: col });
-          const cell = worksheet[cellAddress];
+      if (candidate) {
+        const nameParts = validRow["Candidate Name"].split(' ');
 
-          const headerRow = range.s.r;
+        validRow.isBulkUploadData = true;
+        validRow.fullName = validRow['Candidate Name'];
+        validRow.firstName = nameParts[0];
+        validRow.lastName = nameParts[nameParts.length - 1];
+        validRow.contact = validRow['Mobile Number'];
+        validRow.organisation = validRow['Organisation'];
+        validRow.designation = validRow['Role/Designation'];
+        validRow.totalExperience = validRow['Total Experience'];
+        validRow.relevantExperience = validRow['Relevant Experience'];
+        validRow.qualification = validRow['Education'];
+        validRow.salary = validRow['Salary'];
+        validRow.expectedSalary = validRow['Expected Salary'];
+        validRow.noticePeriod = validRow['Notice Period/ LWD'];
+        validRow.currentLocation = validRow['Current Location'];
+        validRow.preferedLocation = validRow['Prefered Location'];
+        validRow.bulkUpload.resumeStatus = validRow['Resume Status'];
+        validRow.bulkUpload.testApplicability = validRow['Test Applicability'];
+        validRow.bulkUpload.testStatus= validRow['Test Status'];
+        validRow.bulkUpload.testScore= validRow['Test Score'];
+        validRow.bulkUpload.l1Interviewer= validRow['L1 Interviewer'];
+        validRow.bulkUpload.l1InterviewStatus= validRow['L1 Interview Status'];
+        validRow.bulkUpload.l2Interviewer= validRow['L2 Interviewer'];
+        validRow.bulkUpload.l2InterviewStatus= validRow['L2 Interview Status'];
+        validRow.bulkUpload.l3Interviewer= validRow['L3 Interviewer'];
+        validRow.bulkUpload.l3InterviewStatus= validRow['L3 Interview Status'];
+        validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
+        validRow.bulkUpload.hrComments= validRow['HR Comments'];
+        validRow.resume = validRow['Resume Link'];
+        validRow.mgrName = validRow["HR Name"];
 
-          if (cell) {
-            const headerCellAddress = xlsx.utils.encode_cell({ r: headerRow, c: col });
-            const headerCell = worksheet[headerCellAddress];
-            const headerName = headerCell ? headerCell.v : null;
-
-            if (headerName === "Candidate Name") {
-              rowData.fullName = cell.v; // Name
-              const nameParts = cell.v.trim().split(' ');
-
-              // Assuming the first part is the first name and the last part is the last name
-              const firstName = nameParts[0];
-              const lastName = nameParts[nameParts.length - 1];
-              rowData.firstName = firstName;
-              rowData.lastName = lastName;
-            }
-
-            else if (headerName === "Organisation") {
-              rowData.organisation = cell.v;
-            }
-
-            else if (headerName === "Email ID") {
-              rowData.email = cell.v; // Email
-            }
-            else if (headerName === "Mobile Number") {
-              rowData.contact = cell.v; // Mobile Number
-            }
-            else if (headerName === "Organisation") {
-              rowData.organisation = cell.v; // Sr No
-            }
-            else if (headerName === "Role/Designation") {
-              rowData.position = cell.v; // Role/Designation
-            }
-            else if (headerName === "Total Years of Experience") {
-              rowData.totalExperience = convertYearsToNumber(cell.v); // totalExperience
-            }
-            else if (headerName === "Relevant Experience") {
-              rowData.relevantExperience = convertYearsToNumber(cell.v); // relevantExperience
-            }
-            else if (headerName === "Education") {
-              rowData.qualification = cell.v; // qualification
-            }
-            else if (headerName === "Salary") {
-              rowData.salary = cell.v; // salary
-            }
-            else if (headerName === "Expected Salary") {
-              rowData.expectedSalary = cell.v; // expectedSalary
-            }
-            else if (headerName === "Notice Period/ LWD") {
-              rowData.noticePeriod = cell.v; // noticePeriod
-            }
-            else if (headerName === "Current Location") {
-              rowData.currentLocation = cell.v; // currentLocation
-            }
-            else if (headerName === "Prefered Location") {
-              rowData.preferedLocation = cell.v; // preferedLocation
-            }
-            else if (headerName === "Resume Status") {
-              rowData.status = cell.v; // resume status
-            }
-            else if (headerName === "Test Applicabiilty") {
-              rowData.testApplicability = cell.v; // testApplicability(No)
-            }
-            else if (headerName === "Test Status") {
-              console.warn("psychometric.status", cell.v);
-              if (cell.v === "-") {
-              }
-
-              else {
-                rowData.totalScores.status = cell.v; // test status
-              }
-
-              if (cell.v === "Shortlisted") {
-                rowData.assessmentDone = true;
-              }
-            }
-            else if (headerName === "Test Score") {
-              if (cell.v === "-") {
-              } else {
-                rowData.totalScores.score = cell.v; // Default to -1 if conversion fails
-              }
-            }
-            else if (headerName === "L1 Interviewer") {
-              // Get the header name for column 16
-              const headerCellAddress = xlsx.utils.encode_cell({ r: range.s.r, c: col }); // Column 16
-              const headerCell = worksheet[headerCellAddress];
-
-              roundNameHeader1 = headerCell ? headerCell.v : null; // Get the header value or null if it doesn't exist
-              panelistName1 = cell.v;
-            }
-            else if (headerName === "L1 Interview Status") {
-              feedback1 = cell.v;
-            }
-            else if (headerName === "L2 Interviewer") {
-              // Get the header name for column 18
-              const headerCellAddress = xlsx.utils.encode_cell({ r: range.s.r, c: col }); // Column 16
-              const headerCell = worksheet[headerCellAddress];
-
-              roundNameHeader2 = headerCell ? headerCell.v : null; // Get the header value or null if it doesn't exist
-              panelistName2 = cell.v;
-            }
-            else if (headerName === "L2 Interview Status") {
-              feedback2 = cell.v;
-            }
-
-            else if (headerName === "L3 Interviewer") {
-              // Get the header name for column 20
-              const headerCellAddress = xlsx.utils.encode_cell({ r: range.s.r, c: col }); // Column 16
-              const headerCell = worksheet[headerCellAddress];
-
-              roundNameHeader3 = headerCell ? headerCell.v : null; // Get the header value or null if it doesn't exist
-              panelistName3 = cell.v;
-            }
-            else if (headerName === "L3 Interview Status") {
-              feedback3 = cell.v;
-            }
-
-            else if (headerName === "Candidate Final Status") {
-              if (cell.v !== "-") {
-                rowData.status = cell.v;
-              }
-            }
-            // Candidate Final Status	HR Comments	HR Name
-            else if (headerName === "HR Comments") {
-              rowData.notes = cell.v;
-            }
-            else if (headerName === "HR Name") {
-              rowData.mgrName = cell.v;
-            }
-            else if (headerName === "Resume Link" && cell.l) {
-              rowData.hyperlinkText = cell.v; // Hyperlink Text
-              rowData.resume = cell.l.Target; // Hyperlink URL
-            }
-          }
-
-        }
-        if (roundNameHeader1 && panelistName1 && feedback1) {
-          rowData.round.push({ roundName: roundNameHeader1, panelistName: panelistName1, feedback: feedback1 });
-        }
-        if (roundNameHeader2 && panelistName2 && feedback2) {
-          rowData.round.push({ roundName: roundNameHeader2, panelistName: panelistName2, feedback: feedback2 });
-        }
-        if (roundNameHeader3 && panelistName3 && feedback3) {
-          rowData.round.push({ roundName: roundNameHeader3, panelistName: panelistName3, feedback: feedback3 });
-        }
-        if (rowData.fullName) {
-          // data.push(rowData);
-          // Check if candidate exists by email or mobile number
-          const existingCandidate = await Candidate.findOne({
-            $or: [
-              { email: rowData.email },
-              { contact: rowData.contact }
-            ]
-          });
-
-          if (existingCandidate) {
-            // Update existing candidate
-            await Candidate.updateOne({ _id: existingCandidate._id }, { $set: rowData });
-          } else {
-            // Insert new candidate
-            await Candidate.create(rowData);
-          }
-        }
-
-
-      }
-      // if (data.length > 0) {
-      //   await Candidate.insertMany(data);
-      // }
-
-
-      res.status(200).json({ message: "bulk upload done", data });
-    } catch (error) {
-      console.error('Error parsing Excel data:', error);
-      // Check for specific errors like "unexpected field"
-      if (error.message.includes('unexpected field')) {
-        return res.status(400).json({
-          status: 'ERROR',
-          message: 'The uploaded Excel file contains unexpected fields. Please check the file format and try again.',
+        const manager = await Candidate.findOne({
+          firstName: validRow.mgrName,
+          role: 'HR'
         });
+        validRow.mgrEmail = manager.email;
+
+        // Update existing candidate
+        await Candidate.updateOne({ _id: candidate._id }, { $set: validRow });
+
       } else {
-        // Handle other parsing errors
-        return res.status(500).json({
-          status: 'ERROR',
-          message: 'An error occurred while processing the Excel file.',
+
+        console.log('inside else block');
+
+        const nameParts = validRow["Candidate Name"].split(' ');
+        console.log(nameParts);
+
+        validRow.isBulkUploadData = true;
+        validRow.fullName = validRow['Candidate Name'];
+        validRow.firstName = nameParts[0];
+        validRow.lastName = nameParts[nameParts.length - 1];
+        validRow.contact = validRow['Mobile Number'];
+        validRow.email = validRow['Email ID'];
+        validRow.organisation = validRow['Organisation'];
+        validRow.designation = validRow['Role/Designation'];
+        validRow.totalExperience = validRow['Total Experience'];
+        validRow.relevantExperience = validRow['Relevant Experience'];
+        validRow.qualification = validRow['Education'];
+        validRow.salary = validRow['Salary'];
+        validRow.expectedSalary = validRow['Expected Salary'];
+        validRow.noticePeriod = validRow['Notice Period/ LWD'];
+        validRow.currentLocation = validRow['Current Location'];
+        validRow.preferedLocation = validRow['Prefered Location'];
+        validRow.bulkUpload.resumeStatus = validRow['Resume Status'];
+        validRow.bulkUpload.testApplicability = validRow['Test Applicability'];
+        validRow.bulkUpload.testStatus= validRow['Test Status'];
+        validRow.bulkUpload.testScore= validRow['Test Score'];
+        validRow.bulkUpload.l1Interviewer= validRow['L1 Interviewer'];
+        validRow.bulkUpload.l1InterviewStatus= validRow['L1 Interview Status'];
+        validRow.bulkUpload.l2Interviewer= validRow['L2 Interviewer'];
+        validRow.bulkUpload.l2InterviewStatus= validRow['L2 Interview Status'];
+        validRow.bulkUpload.l3Interviewer= validRow['L3 Interviewer'];
+        validRow.bulkUpload.l3InterviewStatus= validRow['L3 Interview Status'];
+        validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
+        validRow.bulkUpload.hrComments= validRow['HR Comments'];
+        validRow.mgrName = validRow["HR Name"];
+        validRow.resume = validRow['Resume Link'];
+
+        const manager = await Candidate.findOne({
+          firstName: validRow.mgrName,
+          role: 'HR'
         });
+        validRow.mgrEmail = manager.email;
+
+        // Insert new candidate
+        await Candidate.create(validRow);
       }
     }
+
+    res.status(200).json({ data: 'data stored and updated.' });
+
   } catch (error) {
-    console.error('Error uploading excel file:', error);
+    console.error('Error uploading data from excel:', error);
     return res.status(500).json({
       status: 'ERROR',
-      message: 'An error occurred while uploading excel file.',
+      message: 'An error occurred while uploading data from excel file.',
     });
   }
-});
 
+});
 
 function convertYearsToNumber(yearsString) {
   // Use a regular expression to extract the numeric part
