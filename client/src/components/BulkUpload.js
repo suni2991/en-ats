@@ -13,25 +13,6 @@ const BulkUpload = () => {
     const [errorMessagesState, setErrorMessagesState] = useState([]);
     const [validRowsState, setvalidRowsState] = useState([]);
 
-    let validRecordsCount = 0
-
-    useEffect(() => {
-
-        console.log('Uploaded file: ', uploadedFile);
-
-    }, [uploadedFile]);
-
-    // const beforeUpload = (file) => {
-    //     const isValidType = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'text/csv';
-    //     if (!isValidType) {
-    //         message.error(`${file.name} is not a valid file. Please upload .xlsx or .csv files.`);
-    //     }
-    //     return isValidType || Upload.LIST_IGNORE;
-    // };
-
-
-
-
     const handleChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -87,8 +68,8 @@ const BulkUpload = () => {
                 let errorMessages = [];
                 let validRows = [];
                 let invalidRows = [];
-                // let validCount = 0;
                 let count = 0;
+                let validRecordsCount = 0;
 
                 jsonData.forEach((row, index) => {
                     let isValid = true;
@@ -166,195 +147,6 @@ const BulkUpload = () => {
 
     }
 
-
-    // const handleChange = (e) => {
-
-    //     console.log('file.originalName : ', e.target.name);
-
-
-    //     if (e.target.files && e.target.files[0]) {
-    //         const file = e.target.files[0];
-
-    //         const isValidType =
-    //             file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-    //             file.type === 'text/csv';
-
-    //         if (!isValidType) {
-    //             message.error(`${file.name} is not a valid file. Please upload .xlsx or .csv files.`);
-    //             setUploadedFile(null);
-    //             return;
-    //         }
-
-    //         // Read the file
-    //         const reader = new FileReader();
-    //         reader.readAsArrayBuffer(file);
-
-    //         reader.onload = (event) => {
-    //             const data = new Uint8Array(event.target.result);
-    //             const workbook = XLSX.read(data, { type: 'array' });
-    //             const sheetName = workbook.SheetNames[0];
-    //             const sheet = workbook.Sheets[sheetName];
-
-    //             // Convert to JSON
-    //             const jsonData = XLSX.utils.sheet_to_json(sheet);
-    //             console.log('jsonData', jsonData);
-
-    //             // Validate headers
-    //             const requiredHeaders = ["Sr No", "Candidate Name", "Mobile Number", "Email ID"];
-    //             console.log('requiredHeaders', requiredHeaders);
-
-    //             const fileHeaders = Object.keys(jsonData[0] || {});
-    //             console.log('fileHeaders', fileHeaders);
-
-    //             const missingHeaders = requiredHeaders.filter(header => !fileHeaders.includes(header));
-    //             console.log('missingHeaders', missingHeaders);
-
-    //             if (missingHeaders.length > 0) {
-    //                 message.error(`Missing required columns: ${missingHeaders.join(', ')}`);
-    //                 setUploadedFile(null);
-    //                 return;
-    //             }
-
-    //             // Validate Data
-    //             const srNoRegex = /^[0-9]+$/;
-    //             const nameRegex = /^[A-Za-z\s]+$/;
-    //             const emailRegex = /^[a-zA-Z0-9._%+-]+@(?!enfuse-solutions\.com$)[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
-    //             const contactRegex = /^[0-9]{10}$/;
-    //             const designationRegex = /^[A-Za-z\s]+$/;
-    //             const hrNameRegex = /^[A-Za-z\s]+$/;
-
-    //             let isValid = true;
-    //             let errorMessages = [];
-    //             // let validRows = [];
-
-    //             jsonData.forEach((row, index) => {
-
-    //                 let errors = [];
-
-    //                 if (!row["Sr No"] || !srNoRegex.test(row["Sr No"])) {
-    //                     errors.push('Invalid Sr No');
-    //                     // errorMessages.push(`Row ${index + 2}: Invalid Sr No, `);
-    //                     isValid = false;
-    //                 }
-    //                 if (!row["Candidate Name"] || !nameRegex.test(row["Candidate Name"])) {
-    //                     errors.push('Invalid Candidate Name');
-    //                     // errorMessages.push(`Row ${index + 2}: Invalid Candiadate Name, `);
-    //                     isValid = false;
-    //                 }
-    //                 if (!row["Mobile Number"] || !contactRegex.test(row["Mobile Number"])) {
-    //                     errors.push('Invalid Mobile Number');
-    //                     // errorMessages.push(`Row ${index + 2}: Invalid Mobile Number, `);
-    //                     isValid = false;
-    //                 }
-    //                 if (!row["Email ID"] || !emailRegex.test(row["Email ID"])) {
-    //                     errors.push('Invalid Email ID');
-    //                     // errorMessages.push(`Row ${index + 2}: Invalid Email, `);
-    //                     isValid = false;
-    //                 }
-    //                 if (!row["Role/Designation"] || !designationRegex.test(row["Role/Designation"])) {
-    //                     errors.push('Invalid Role/Designation');
-    //                     // errorMessages.push(`Row ${index + 2}: Invalid Designation, `);
-    //                     isValid = false;
-    //                 }
-    //                 if (!row["HR Name"] || !hrNameRegex.test(row["HR Name"])) {
-    //                     errors.push('Invalid HR Name');
-    //                     // errorMessages.push(`Row ${index + 2}: Invalid HR Name, `);
-    //                     isValid = false;
-    //                 }
-
-    //                 if (errors.length > 0) {
-    //                     errorMessages.push(`Row ${index + 2}: ${errors.join(", ")} `);
-    //                     // console.log('Invalid Rows : ', invalidRows);
-    //                 }
-
-    //             });
-
-
-    // // Process valid rows
-    // if (validRows.length > 0) {
-    //     console.log("Valid rows to insert:", validRows);
-    //     message.success(`${validRows.length} rows are valid and ready for submission.`);
-    // }
-
-
-    //             if (errorMessages && errorMessages.length > 0) {
-    //                 setErrorMessagesState(errorMessages);
-    //             } else {
-    //                 setErrorMessagesState(null);
-    //             }
-
-
-    //             if (!isValid) {
-    //                 // message.error(errorMessages.join("\n"), 10);
-    //                 setUploadedFile(null);
-    //                 return;
-    //             }
-
-    //             setUploadedFile(file);
-    //             setErrorMessagesState(null);
-    //             message.success("File uploaded and validated successfully!");
-
-    //         };
-
-    //         reader.onerror = () => {
-    //             message.error("Error reading file. Please try again.");
-    //         };
-    //     } else {
-    //         console.log('File selection canceled.');
-    //         setUploadedFile(null);
-    //     }
-    // }
-
-
-    // const handleChange = (e) => {
-    // console.log("file: ", file);
-    // // console.log("fileList: ", fileList);
-
-    // if (file.status === 'removed') {
-    //     setUploadedFile(null);
-    //     // setFileList([]);
-    // } else {
-    //     setUploadedFile(file);
-    //     // setFileList(fileList);
-    // }
-    // console.log('e.target:', e.target);
-
-
-    // if (e.target.files && e.target.files[0]) {
-    //     const file = e.target.files[0];
-    //     console.log('target.name: ', e.target.name);
-    //     console.log('target.files: ', e.target.files);
-    //     console.log('target.files[0]: ', e.target.files[0]);
-    //     console.log('target.files[0].name: ', e.target.files[0].name);
-
-    //     const isValidType =
-    //         file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-    //         file.type === 'text/csv';
-
-    //     if (!isValidType) {
-    //         message.error(`${file.name} is not a valid file. Please upload .xlsx or .csv files.`);
-    //         setUploadedFile(null);
-    //         return;
-    //     }
-    //     setUploadedFile(file);
-
-    // } else {
-    //     // Reset state if no file is selected (e.g., user cancels)
-    //     console.log('File selection canceled.');
-    //     setUploadedFile(null); // Reset the state
-    // }
-
-    // if (e.target.name === "xlsx" || e.target.name === "csv") {
-    //     const uploadFormData = new FormData();
-    //     uploadFormData.append(
-    //         e.target.name,
-    //         e.target.files[0],
-    //         e.target.files[0].name
-    //     );
-    // }
-    // };
-
-
     const handleSubmit = async (e) => {
 
         e.preventDefault();
@@ -364,83 +156,22 @@ const BulkUpload = () => {
             return;
         }
 
-        // const formData = new FormData();
-        // formData.append('sendRows', validRowsState);
-        // formData.append('bulkUploadFile', uploadedFile); // Attach the file
-
         try {
 
-            const response = await axios.post(`${URL}/bulkupload`, {validRows: validRowsState}, {
+            const response = await axios.post(`${URL}/bulkupload`, { validRows: validRowsState }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
             console.log('Response:', response.data);
-            message.success(`${validRecordsCount} Valid Records Uploaded Successfully.`);
+            message.success(`${validRowsState.length} Valid Records Uploaded Successfully.`);
             console.log('Uploaded rows handleSubmit:', validRowsState);
 
         } catch (error) {
             console.error('Error uploading file:', error);
         }
     }
-
-
-    // const handleSubmit = async (e) => {
-
-    //     e.preventDefault();
-
-    //     if (!uploadedFile) {
-    //         message.error('No file uploaded. Please upload a valid file before submitting.');
-    //         return;
-    //     }
-
-    //     const formData = new FormData();
-    //     formData.append('bulkUploadFile', uploadedFile); // Attach the file
-
-    //     try {
-
-    //         const response = await axios.post(`${URL}/bulk-upload`, formData, {
-    //             headers: {
-    //                 'Content-Type': 'multipart/form-data'
-    //             }
-    //         });
-
-    //         console.log('Response:', response.data);
-    //         message.success('File uploaded successfully.');
-    //         console.log('Uploaded file handleSubmit:', uploadedFile);
-
-    //     } catch (error) {
-    //         console.error('Error uploading file:', error);
-    //     }
-
-
-    // message.success('File uploaded successfully.');
-    // console.log('Uploaded file handleSubmit:', uploadedFile);    
-
-    // if (fileList.length === 0) {
-    //     message.error('No file uploaded. Please upload a valid file before submitting.');
-    //     return;
-    // }
-    // message.success('File uploaded successfully.');
-    // console.log('Uploaded files:', fileList);
-
-    // if(!fileList){
-    //     message.error('No file uploaded. Please upload a valid file before submitting.');
-    //     return;
-    // }
-
-    // message.success('File uploaded successfully.');
-    // console.log('Uploaded files:', fileList);
-
-    // if (!uploadedFile) {
-    //     message.error('No file uploaded. Please upload a valid file before submitting.');
-    //     return;
-    // }
-
-    // message.success('File uploaded successfully.');
-    // console.log('Uploaded file:', uploadedFile);
-    // }
 
     const handleDownloadTemplate = () => {
         console.log('Download Template.');
@@ -465,8 +196,6 @@ const BulkUpload = () => {
         // Write the file and trigger download
         XLSX.writeFile(workbook, "Candidate_Template.xlsx");
     }
-
-    // style={{ padding: '70px 15px', display: 'flex', justifyContent: 'center', alignItems: 'center', }}
 
     return (
         <>
@@ -505,7 +234,6 @@ const BulkUpload = () => {
             </div>
         </>
     )
-
 }
 
 export default BulkUpload;
