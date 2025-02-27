@@ -11,6 +11,7 @@ const BulkUpload = () => {
     const [fileList, setFileList] = useState();
     const [uploadedFile, setUploadedFile] = useState();
     const [errorMessagesState, setErrorMessagesState] = useState([]);
+    const [validRowsState, setvalidRowsState] = useState([]);
 
     useEffect(() => {
 
@@ -25,6 +26,9 @@ const BulkUpload = () => {
     //     }
     //     return isValidType || Upload.LIST_IGNORE;
     // };
+
+
+
 
     const handleChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -66,7 +70,6 @@ const BulkUpload = () => {
 
                 if (missingHeaders.length > 0) {
                     message.error(`Missing required columns: ${missingHeaders.join(', ')}`);
-                    setUploadedFile(null);
                     return;
                 }
 
@@ -78,86 +81,225 @@ const BulkUpload = () => {
                 const designationRegex = /^[A-Za-z\s]+$/;
                 const hrNameRegex = /^[A-Za-z\s]+$/;
 
-                let isValid = true;
+
                 let errorMessages = [];
-                // let validRows = [];
+                let validRows = [];
+                let invalidRows = [];
+                let count = 0;
 
                 jsonData.forEach((row, index) => {
-
-                    let errors = [];
+                    let isValid = true;
+                    let errors = []
 
                     if (!row["Sr No"] || !srNoRegex.test(row["Sr No"])) {
-                        errors.push('Invalid Sr No');
-                        // errorMessages.push(`Row ${index + 2}: Invalid Sr No, `);
+                        errors.push(`Invalid Sr No`);
                         isValid = false;
                     }
                     if (!row["Candidate Name"] || !nameRegex.test(row["Candidate Name"])) {
-                        errors.push('Invalid Candidate Name');
-                        // errorMessages.push(`Row ${index + 2}: Invalid Candiadate Name, `);
+                        errors.push(`Invalid Candiadate Name`);
                         isValid = false;
                     }
                     if (!row["Mobile Number"] || !contactRegex.test(row["Mobile Number"])) {
-                        errors.push('Invalid Mobile Number');
-                        // errorMessages.push(`Row ${index + 2}: Invalid Mobile Number, `);
+                        errors.push(`Invalid Mobile Number`);
                         isValid = false;
                     }
                     if (!row["Email ID"] || !emailRegex.test(row["Email ID"])) {
-                        errors.push('Invalid Email ID');
-                        // errorMessages.push(`Row ${index + 2}: Invalid Email, `);
+                        errors.push(`Invalid Email`);
                         isValid = false;
                     }
                     if (!row["Role/Designation"] || !designationRegex.test(row["Role/Designation"])) {
-                        errors.push('Invalid Role/Designation');
-                        // errorMessages.push(`Row ${index + 2}: Invalid Designation, `);
+                        errors.push(`Invalid Designation`);
                         isValid = false;
                     }
                     if (!row["HR Name"] || !hrNameRegex.test(row["HR Name"])) {
-                        errors.push('Invalid HR Name');
-                        // errorMessages.push(`Row ${index + 2}: Invalid HR Name, `);
+                        errors.push(`Invalid HR Name`);
                         isValid = false;
                     }
 
-                    if (errors.length > 0) {
-                        errorMessages.push(`Row ${index + 2}: ${errors.join(", ")} `);
-                        // console.log('Invalid Rows : ', invalidRows);
+                    if (isValid) {
+                        validRows.push(row);
+                    }
+                    else {
+                        invalidRows.push(row);
+                        count++;
+                        // errorMessages.push(errors);
                     }
 
+                    if (errors && errors.length > 0) {
+                        errorMessages.push(`Row ${index + 2}: ${errors.join(', ')}`);
+                    } else {
+                        setErrorMessagesState([]);
+                    }
                 });
-
-                // // Process valid rows
-                // if (validRows.length > 0) {
-                //     console.log("Valid rows to insert:", validRows);
-                //     message.success(`${validRows.length} rows are valid and ready for submission.`);
-                // }
-
 
                 if (errorMessages && errorMessages.length > 0) {
                     setErrorMessagesState(errorMessages);
+                    message.warning(`${count} rows have errors and were not included.`);
                 } else {
                     setErrorMessagesState(null);
                 }
 
+                console.log("Valid Rows:", validRows);
+                console.log("Invalid Rows:", invalidRows);
 
-                if (!isValid) {
-                    // message.error(errorMessages.join("\n"), 10);
-                    setUploadedFile(null);
-                    return;
+                if (validRows.length > 0) {
+                    setvalidRowsState(validRows); // Store only valid rows
+                    message.success("Valid rows can be uploaded!");
+                } else {
+                    message.error("No valid rows found in the file.");
+                    setvalidRowsState(null);
                 }
-
-                setUploadedFile(file);
-                setErrorMessagesState(null);
-                message.success("File uploaded and validated successfully!");
-
             };
 
             reader.onerror = () => {
                 message.error("Error reading file. Please try again.");
             };
+
         } else {
             console.log('File selection canceled.');
-            setUploadedFile(null);
+            setvalidRowsState(null);
         }
+
     }
+
+
+    // const handleChange = (e) => {
+
+    //     console.log('file.originalName : ', e.target.name);
+
+
+    //     if (e.target.files && e.target.files[0]) {
+    //         const file = e.target.files[0];
+
+    //         const isValidType =
+    //             file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+    //             file.type === 'text/csv';
+
+    //         if (!isValidType) {
+    //             message.error(`${file.name} is not a valid file. Please upload .xlsx or .csv files.`);
+    //             setUploadedFile(null);
+    //             return;
+    //         }
+
+    //         // Read the file
+    //         const reader = new FileReader();
+    //         reader.readAsArrayBuffer(file);
+
+    //         reader.onload = (event) => {
+    //             const data = new Uint8Array(event.target.result);
+    //             const workbook = XLSX.read(data, { type: 'array' });
+    //             const sheetName = workbook.SheetNames[0];
+    //             const sheet = workbook.Sheets[sheetName];
+
+    //             // Convert to JSON
+    //             const jsonData = XLSX.utils.sheet_to_json(sheet);
+    //             console.log('jsonData', jsonData);
+
+    //             // Validate headers
+    //             const requiredHeaders = ["Sr No", "Candidate Name", "Mobile Number", "Email ID"];
+    //             console.log('requiredHeaders', requiredHeaders);
+
+    //             const fileHeaders = Object.keys(jsonData[0] || {});
+    //             console.log('fileHeaders', fileHeaders);
+
+    //             const missingHeaders = requiredHeaders.filter(header => !fileHeaders.includes(header));
+    //             console.log('missingHeaders', missingHeaders);
+
+    //             if (missingHeaders.length > 0) {
+    //                 message.error(`Missing required columns: ${missingHeaders.join(', ')}`);
+    //                 setUploadedFile(null);
+    //                 return;
+    //             }
+
+    //             // Validate Data
+    //             const srNoRegex = /^[0-9]+$/;
+    //             const nameRegex = /^[A-Za-z\s]+$/;
+    //             const emailRegex = /^[a-zA-Z0-9._%+-]+@(?!enfuse-solutions\.com$)[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
+    //             const contactRegex = /^[0-9]{10}$/;
+    //             const designationRegex = /^[A-Za-z\s]+$/;
+    //             const hrNameRegex = /^[A-Za-z\s]+$/;
+
+    //             let isValid = true;
+    //             let errorMessages = [];
+    //             // let validRows = [];
+
+    //             jsonData.forEach((row, index) => {
+
+    //                 let errors = [];
+
+    //                 if (!row["Sr No"] || !srNoRegex.test(row["Sr No"])) {
+    //                     errors.push('Invalid Sr No');
+    //                     // errorMessages.push(`Row ${index + 2}: Invalid Sr No, `);
+    //                     isValid = false;
+    //                 }
+    //                 if (!row["Candidate Name"] || !nameRegex.test(row["Candidate Name"])) {
+    //                     errors.push('Invalid Candidate Name');
+    //                     // errorMessages.push(`Row ${index + 2}: Invalid Candiadate Name, `);
+    //                     isValid = false;
+    //                 }
+    //                 if (!row["Mobile Number"] || !contactRegex.test(row["Mobile Number"])) {
+    //                     errors.push('Invalid Mobile Number');
+    //                     // errorMessages.push(`Row ${index + 2}: Invalid Mobile Number, `);
+    //                     isValid = false;
+    //                 }
+    //                 if (!row["Email ID"] || !emailRegex.test(row["Email ID"])) {
+    //                     errors.push('Invalid Email ID');
+    //                     // errorMessages.push(`Row ${index + 2}: Invalid Email, `);
+    //                     isValid = false;
+    //                 }
+    //                 if (!row["Role/Designation"] || !designationRegex.test(row["Role/Designation"])) {
+    //                     errors.push('Invalid Role/Designation');
+    //                     // errorMessages.push(`Row ${index + 2}: Invalid Designation, `);
+    //                     isValid = false;
+    //                 }
+    //                 if (!row["HR Name"] || !hrNameRegex.test(row["HR Name"])) {
+    //                     errors.push('Invalid HR Name');
+    //                     // errorMessages.push(`Row ${index + 2}: Invalid HR Name, `);
+    //                     isValid = false;
+    //                 }
+
+    //                 if (errors.length > 0) {
+    //                     errorMessages.push(`Row ${index + 2}: ${errors.join(", ")} `);
+    //                     // console.log('Invalid Rows : ', invalidRows);
+    //                 }
+
+    //             });
+
+
+    // // Process valid rows
+    // if (validRows.length > 0) {
+    //     console.log("Valid rows to insert:", validRows);
+    //     message.success(`${validRows.length} rows are valid and ready for submission.`);
+    // }
+
+
+    //             if (errorMessages && errorMessages.length > 0) {
+    //                 setErrorMessagesState(errorMessages);
+    //             } else {
+    //                 setErrorMessagesState(null);
+    //             }
+
+
+    //             if (!isValid) {
+    //                 // message.error(errorMessages.join("\n"), 10);
+    //                 setUploadedFile(null);
+    //                 return;
+    //             }
+
+    //             setUploadedFile(file);
+    //             setErrorMessagesState(null);
+    //             message.success("File uploaded and validated successfully!");
+
+    //         };
+
+    //         reader.onerror = () => {
+    //             message.error("Error reading file. Please try again.");
+    //         };
+    //     } else {
+    //         console.log('File selection canceled.');
+    //         setUploadedFile(null);
+    //     }
+    // }
 
 
     // const handleChange = (e) => {
@@ -208,61 +350,93 @@ const BulkUpload = () => {
     // }
     // };
 
+
     const handleSubmit = async (e) => {
 
         e.preventDefault();
 
-        if (!uploadedFile) {
-            message.error('No file uploaded. Please upload a valid file before submitting.');
+        if (!validRowsState || validRowsState.length === 0) {
+            message.error('No file uploaded. Please upload a file with valid rows!');
             return;
         }
 
-        const formData = new FormData();
-        formData.append('file', uploadedFile); // Attach the file
+        // const formData = new FormData();
+        // formData.append('sendRows', validRowsState);
+        // formData.append('bulkUploadFile', uploadedFile); // Attach the file
 
         try {
 
-            const response = await axios.post(`${URL}/bulk-upload`, formData, {
+            const response = await axios.post(`${URL}/bulkupload`, {validRows: validRowsState}, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'application/json'
                 }
             });
 
             console.log('Response:', response.data);
-            message.success('File uploaded successfully.');
-            console.log('Uploaded file handleSubmit:', uploadedFile);
+            message.success('Valid Rows Uploaded Successfully.');
+            console.log('Uploaded rows handleSubmit:', validRowsState);
 
         } catch (error) {
             console.error('Error uploading file:', error);
         }
-
-
-        // message.success('File uploaded successfully.');
-        // console.log('Uploaded file handleSubmit:', uploadedFile);    
-
-        // if (fileList.length === 0) {
-        //     message.error('No file uploaded. Please upload a valid file before submitting.');
-        //     return;
-        // }
-        // message.success('File uploaded successfully.');
-        // console.log('Uploaded files:', fileList);
-
-        // if(!fileList){
-        //     message.error('No file uploaded. Please upload a valid file before submitting.');
-        //     return;
-        // }
-
-        // message.success('File uploaded successfully.');
-        // console.log('Uploaded files:', fileList);
-
-        // if (!uploadedFile) {
-        //     message.error('No file uploaded. Please upload a valid file before submitting.');
-        //     return;
-        // }
-
-        // message.success('File uploaded successfully.');
-        // console.log('Uploaded file:', uploadedFile);
     }
+
+
+    // const handleSubmit = async (e) => {
+
+    //     e.preventDefault();
+
+    //     if (!uploadedFile) {
+    //         message.error('No file uploaded. Please upload a valid file before submitting.');
+    //         return;
+    //     }
+
+    //     const formData = new FormData();
+    //     formData.append('bulkUploadFile', uploadedFile); // Attach the file
+
+    //     try {
+
+    //         const response = await axios.post(`${URL}/bulk-upload`, formData, {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data'
+    //             }
+    //         });
+
+    //         console.log('Response:', response.data);
+    //         message.success('File uploaded successfully.');
+    //         console.log('Uploaded file handleSubmit:', uploadedFile);
+
+    //     } catch (error) {
+    //         console.error('Error uploading file:', error);
+    //     }
+
+
+    // message.success('File uploaded successfully.');
+    // console.log('Uploaded file handleSubmit:', uploadedFile);    
+
+    // if (fileList.length === 0) {
+    //     message.error('No file uploaded. Please upload a valid file before submitting.');
+    //     return;
+    // }
+    // message.success('File uploaded successfully.');
+    // console.log('Uploaded files:', fileList);
+
+    // if(!fileList){
+    //     message.error('No file uploaded. Please upload a valid file before submitting.');
+    //     return;
+    // }
+
+    // message.success('File uploaded successfully.');
+    // console.log('Uploaded files:', fileList);
+
+    // if (!uploadedFile) {
+    //     message.error('No file uploaded. Please upload a valid file before submitting.');
+    //     return;
+    // }
+
+    // message.success('File uploaded successfully.');
+    // console.log('Uploaded file:', uploadedFile);
+    // }
 
     const handleDownloadTemplate = () => {
         console.log('Download Template.');
@@ -298,7 +472,7 @@ const BulkUpload = () => {
                     <br />
                     <form>
                         <div style={{ marginLeft: '30%' }}>
-                            <input style={{ fontSize: '19px', alignItems: 'center', backgroundColor: 'white', border: '1px solid', marginBottom: '5px', borderRadius: '6px' }} type="file" required onChange={handleChange} accept=".xlsx, .csv" placeholder=".xlsx, .csv" ></input>
+                            <input style={{ fontSize: '19px', alignItems: 'center', backgroundColor: 'white', border: '1px solid', marginBottom: '5px', borderRadius: '6px' }} name='bulkUploadFile' type="file" required onChange={handleChange} accept=".xlsx, .csv" placeholder=".xlsx, .csv" ></input>
                         </div>
                         <div style={{ width: '300px', marginLeft: '32.5%', display: 'flex', justifyContent: 'center' }}>
                             <Button type="submit" className="form-btn" onClick={handleSubmit}>

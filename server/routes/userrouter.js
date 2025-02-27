@@ -420,8 +420,8 @@ userRouter.get(
 userRouter.put('/candidate/:id', async (req, res) => {
   try {
     const _id = req.params.id;
-    const { note, status, history } = req.body; 
-    const result = await Candidate.findByIdAndUpdate(_id, {note, status, $push: { history }}, { new: true });
+    const { note, status, history } = req.body;
+    const result = await Candidate.findByIdAndUpdate(_id, { note, status, $push: { history } }, { new: true });
     if (!result) {
       res.json({
         status: "FAILED",
@@ -994,7 +994,8 @@ const fileFilter = (req, file, cb) => {
 const bulkUpload = multer({
   storage: storageCV,
   fileFilter: fileFilter,
-}).single("file");
+}).single("bulkUploadFile");
+
 const validateAndFormatDriveLink = (link) => {
   if (!link) return null;
 
@@ -1224,14 +1225,10 @@ userRouter.post("/bulk-upload", bulkUpload, async (req, res) => {
             await Candidate.create(rowData);
           }
         }
-
-
       }
       // if (data.length > 0) {
       //   await Candidate.insertMany(data);
       // }
-
-
       res.status(200).json({ message: "bulk upload done", data });
     } catch (error) {
       console.error('Error parsing Excel data:', error);
@@ -1258,6 +1255,134 @@ userRouter.post("/bulk-upload", bulkUpload, async (req, res) => {
   }
 });
 
+userRouter.post("/bulkupload", async (req, res) => {
+
+  try {
+    const validRows = req.body.validRows;
+    console.log(validRows);
+
+    if (!validRows || validRows.length === 0) {
+      return res.status(400).json({ status: "ERROR", message: "No valid rows provided." });
+    }
+
+    // Iterate through each valid row
+    for (const validRow of validRows) {
+
+
+      const candidate = await Candidate.findOne({ email: validRow["Email ID"] });
+
+      console.log('Before inserting/ updating candidate');
+      console.log('i.e. before if condition ');
+
+      validRow.bulkUpload = {};
+
+      if (candidate) {
+        console.log('inside if block');
+
+        const nameParts = validRow["Candidate Name"].split(' ');
+        console.log(nameParts);
+
+        validRow.isBulkUploadData = true;
+        validRow.fullName = validRow['Candidate Name'];
+        validRow.firstName = nameParts[0];
+        validRow.lastName = nameParts[nameParts.length - 1];
+        validRow.contact = validRow['Mobile Number'];
+        // validRow.email = validRow['Email ID'];
+        validRow.organisation = validRow['Organisation'];
+        validRow.designation = validRow['Role/Designation'];
+        validRow.totalExperience = validRow['Total Experience'];
+        validRow.relevantExperience = validRow['Relevant Experience'];
+        validRow.qualification = validRow['Education'];
+        validRow.salary = validRow['Salary'];
+        validRow.expectedSalary = validRow['Expected Salary'];
+        validRow.noticePeriod = validRow['Notice Period/ LWD'];
+        validRow.currentLocation = validRow['Current Location'];
+        validRow.preferedLocation = validRow['Prefered Location'];
+        validRow.bulkUpload.resumeStatus = validRow['Resume Status'];
+        validRow.bulkUpload.testApplicability = validRow['Test Applicability'];
+        validRow.bulkUpload.testStatus= validRow['Test Status'];
+        validRow.bulkUpload.testScore= validRow['Test Score'];
+        validRow.bulkUpload.l1Interviewer= validRow['L1 Interviewer'];
+        validRow.bulkUpload.l1InterviewStatus= validRow['L1 Interview Status'];
+        validRow.bulkUpload.l2Interviewer= validRow['L2 Interviewer'];
+        validRow.bulkUpload.l2InterviewStatus= validRow['L2 Interview Status'];
+        validRow.bulkUpload.l3Interviewer= validRow['L3 Interviewer'];
+        validRow.bulkUpload.l3InterviewStatus= validRow['L3 Interview Status'];
+        validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
+        validRow.bulkUpload.hrComments= validRow['HR Comments'];
+        validRow.resume = validRow['Resume Link'];
+        // validRow.status = validRow['Resume Status'];
+        validRow.mgrName = validRow["HR Name"];
+
+        const manager = await Candidate.findOne({
+          firstName: validRow.mgrName,
+          role: 'HR'
+        });
+        validRow.mgrEmail = manager.email;
+
+        // Update existing candidate
+        await Candidate.updateOne({ _id: candidate._id }, { $set: validRow });
+
+      } else {
+
+        console.log('inside else block');
+
+        const nameParts = validRow["Candidate Name"].split(' ');
+        console.log(nameParts);
+
+        validRow.isBulkUploadData = true;
+        validRow.fullName = validRow['Candidate Name'];
+        validRow.firstName = nameParts[0];
+        validRow.lastName = nameParts[nameParts.length - 1];
+        validRow.contact = validRow['Mobile Number'];
+        validRow.email = validRow['Email ID'];
+        validRow.organisation = validRow['Organisation'];
+        validRow.designation = validRow['Role/Designation'];
+        validRow.totalExperience = validRow['Total Experience'];
+        validRow.relevantExperience = validRow['Relevant Experience'];
+        validRow.qualification = validRow['Education'];
+        validRow.salary = validRow['Salary'];
+        validRow.expectedSalary = validRow['Expected Salary'];
+        validRow.noticePeriod = validRow['Notice Period/ LWD'];
+        validRow.currentLocation = validRow['Current Location'];
+        validRow.preferedLocation = validRow['Prefered Location'];
+        validRow.bulkUpload.resumeStatus = validRow['Resume Status'];
+        validRow.bulkUpload.testApplicability = validRow['Test Applicability'];
+        validRow.bulkUpload.testStatus= validRow['Test Status'];
+        validRow.bulkUpload.testScore= validRow['Test Score'];
+        validRow.bulkUpload.l1Interviewer= validRow['L1 Interviewer'];
+        validRow.bulkUpload.l1InterviewStatus= validRow['L1 Interview Status'];
+        validRow.bulkUpload.l2Interviewer= validRow['L2 Interviewer'];
+        validRow.bulkUpload.l2InterviewStatus= validRow['L2 Interview Status'];
+        validRow.bulkUpload.l3Interviewer= validRow['L3 Interviewer'];
+        validRow.bulkUpload.l3InterviewStatus= validRow['L3 Interview Status'];
+        validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
+        validRow.bulkUpload.hrComments= validRow['HR Comments'];
+        validRow.mgrName = validRow["HR Name"];
+        validRow.resume = validRow['Resume Link'];
+
+        const manager = await Candidate.findOne({
+          firstName: validRow.mgrName,
+          role: 'HR'
+        });
+        validRow.mgrEmail = manager.email;
+
+        // Insert new candidate
+        await Candidate.create(validRow);
+      }
+    }
+
+    res.status(200).json({ data: 'data stored and updated.' });
+
+  } catch (error) {
+    console.error('Error uploading data from excel:', error);
+    return res.status(500).json({
+      status: 'ERROR',
+      message: 'An error occurred while uploading data from excel file.',
+    });
+  }
+
+});
 
 function convertYearsToNumber(yearsString) {
   // Use a regular expression to extract the numeric part

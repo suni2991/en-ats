@@ -67,8 +67,8 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/login" element={<Home />} />
-          <Route path="/job/:id" element={<ApproveJobDetails />} />
-          <Route path="/register-job/:positionId" element={<JobRegistration />} />
+          {/* <Route path="/job/:id" element={<ApproveJobDetails />} />
+          <Route path="/register-job/:positionId" element={<JobRegistration />} /> */}
           {/* <Route path="/bulkupload" element={<BulkUpload />}/> */}
 
 

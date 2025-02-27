@@ -28,12 +28,12 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
       setisPutCVOnHoldButtonDisabled(true);
       setIsRejectCVButtonDisabled(true);
     }
-    else if(candidateData.status === 'CV On Hold'){
+    else if (candidateData.status === 'CV On Hold') {
       setIsShortlistCVButtonDisabled(false);
       setisPutCVOnHoldButtonDisabled(true);
       setIsRejectCVButtonDisabled(false);
     }
-    else{
+    else {
       setIsShortlistCVButtonDisabled(false);
       setisPutCVOnHoldButtonDisabled(false);
       setIsRejectCVButtonDisabled(false);
@@ -122,8 +122,13 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
   };
 
   const renderResumeLink = (candidate) => {
+    let downloadLink;
     if (candidate.resume) {
-      const downloadLink = `${URL}${candidate.resume}`;
+      if (candidate.resume.includes("google.com")) {
+        downloadLink = candidate.resume;
+      } else {
+        downloadLink = `${URL}${candidate.resume}`;
+      }
       return (
         <a href={downloadLink} target="_blank" rel="noopener noreferrer" className='resume-link'>
           {candidate.firstName} CV
@@ -333,7 +338,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId }) => {
 
   const handleSendEmail = async () => {
 
-    const updatedBy = auth.fullName; 
+    const updatedBy = auth.fullName;
 
     const emailData = {
       role: candidateData.role,

@@ -15,6 +15,20 @@ const historySchema = new Schema({
   note: { type: String },
 });
 
+const bulkUploadSchema = new Schema({
+  resumeStatus: {type: 'String', default: 'CV Sourced'},
+  testApplicability: {type: 'String'},
+  testScore: {type: 'String'},
+  l1Interviewer: {type: 'String'},
+  l1InterviewStatus: {type: 'String'},
+  l2Interviewer: {type: 'String'},
+  l2InterviewStatus: {type: 'String'},
+  l3Interviewer: {type: 'String'},
+  l3InterviewStatus: {type: 'String'},
+  candidateFinalStatus: {type: 'String'},
+  hrComments: {type: 'String'}
+})
+
 const roundSchema = new Schema({
   roundName: { type: String, required: false },
   panelistName: { type: String },
@@ -90,6 +104,7 @@ const candidateSchema = new mongoose.Schema({
   },
   password: { type: String },
   confirmPassword: { type: String },
+  isBulkUploadData: {type: Boolean, default: false},
   role: {
     type: String,
     enum: ["Applicant", "HR", "Admin", "Enfusian", "Panelist", "HiringManager"],
@@ -107,12 +122,14 @@ const candidateSchema = new mongoose.Schema({
   joiningDate: { type: Date },
   district: { type: String },
   city: { type: String },
-  selectedCategory: { type: String, enum: ["Technical", "Non-Technical"] },
+  designation: {type: String},
+  selectedCategory: { type: String, enum: ["Technical", "Non-Technical", "No- Screening"] },
   mgrName: { type: String },
   mgrEmail: { type: String },
   notes: { type: String },
   availability: { type: String },
   round: [roundSchema],
+  bulkUpload: {type: bulkUploadSchema},
   evaluationDetails: { type: Boolean, default: false },
   dob: { type: Date },
   meetingDate: { type: Date },
