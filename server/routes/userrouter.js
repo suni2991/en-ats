@@ -1216,7 +1216,7 @@ userRouter.post("/bulk-upload", bulkUpload, async (req, res) => {
           }
         }
       }
-      
+
       res.status(200).json({ message: "bulk upload done", data });
 
     } catch (error) {
@@ -1292,7 +1292,7 @@ userRouter.post("/bulkupload", async (req, res) => {
         validRow.mgrName = validRow["HR Name"];
 
         const manager = await Candidate.findOne({
-          firstName: validRow.mgrName,
+          fullName: validRow.mgrName,
           role: 'HR'
         });
         validRow.mgrEmail = manager.email;
@@ -1301,11 +1301,7 @@ userRouter.post("/bulkupload", async (req, res) => {
         await Candidate.updateOne({ _id: candidate._id }, { $set: validRow });
 
       } else {
-
-        console.log('inside else block');
-
         const nameParts = validRow["Candidate Name"].split(' ');
-        console.log(nameParts);
 
         validRow.isBulkUploadData = true;
         validRow.fullName = validRow['Candidate Name'];
@@ -1339,7 +1335,7 @@ userRouter.post("/bulkupload", async (req, res) => {
         validRow.resume = validRow['Resume Link'];
 
         const manager = await Candidate.findOne({
-          firstName: validRow.mgrName,
+          fullName: validRow.mgrName,
           role: 'HR'
         });
         validRow.mgrEmail = manager.email;
