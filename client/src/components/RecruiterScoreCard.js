@@ -12,7 +12,7 @@ const RecruiterScorecard = () => {
   const [hrCounts, setHrCounts] = useState([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [candidates, setCandidates] = useState([]);
+  const [candidates, setCandidates] = useState({});
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,11 +68,26 @@ const RecruiterScorecard = () => {
     fetchData(fullName);
   };
 
-  const handleStatusClick = (status, names) => {
+  const handleStatusClick = (status, names, positions) => {
+    if (!names || !positions || names.length !== positions.length) {
+           positions = names.map(() => 'No Position');
+    }
+  
     setSelectedStatus(status);
-    setCandidates(names);
+  
+    const groupedCandidates = names.reduce((acc, name, index) => {
+      const position = positions[index] || 'No Position';
+      if (!acc[position]) {
+        acc[position] = [];
+      }
+      acc[position].push(name);
+      return acc;
+    }, {});
+  
+    setCandidates(groupedCandidates);
     setDrawerVisible(true);
   };
+
 
   const handleDrawerClose = () => {
     setDrawerVisible(false);
@@ -83,7 +98,7 @@ const RecruiterScorecard = () => {
   }, []);
 
   // Predefined background colors for HR cards
-  const hrCardColors = ['rgb(26, 39, 99)'];
+  const hrCardColors = ['rgb(170, 170, 170)'];
   const pieColors = ['#61acc9', '#82ca9d', '#10679b', '#42b16f', '#6ac7c9']; // Define colors for the Pie chart
 
   return (
@@ -141,7 +156,7 @@ const RecruiterScorecard = () => {
         <ul>
           {data.map((item) => (
             <li key={item.status}>
-              <a href="#!" onClick={() => handleStatusClick(item.status, item.names)}>
+              <a href="#!" onClick={() => handleStatusClick(item.status, item.names, item.positions)}>
                 {item.status}: {item.count}
               </a>
             </li>
@@ -157,8 +172,19 @@ const RecruiterScorecard = () => {
         width={300}
       >
         <ul>
-          {candidates.map((candidate, index) => (
-            <li key={index}>{candidate}</li>
+          {Object.entries(candidates).map(([position, names], index) => (
+            <li key={index}>
+              {position !== 'No Position' && (
+                <>
+                  <strong style={{color: "#00B4D2", fontWeight:"bold"}}>{position}</strong>  <br />
+                </>
+              )}
+              <ul>
+                {names.map((name, idx) => (
+                  <li key={idx} style={{marginLeft: "10px"}}>{name}</li>
+                ))}
+              </ul>
+            </li>
           ))}
         </ul>
       </Drawer>

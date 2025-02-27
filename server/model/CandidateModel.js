@@ -122,7 +122,7 @@ const candidateSchema = new mongoose.Schema({
   joiningDate: { type: Date },
   district: { type: String },
   city: { type: String },
-  selectedCategory: { type: String, enum: ["Technical", "Non-Technical", "No-Screening"] },
+  selectedCategory: { type: String, enum: ["Technical", "Non-Technical", "No-Test"] },
   mgrName: { type: String },
   mgrEmail: { type: String },
   notes: { type: String },

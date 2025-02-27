@@ -61,12 +61,13 @@
 
 
   .hr-card.active {
-    background-color: #00B4D2 !important; /* Highlight color for active recruiter */
+    background-color:  #030865 !important; /* Highlight color for active recruiter */
     font-weight: bold;
     transform: translateX(10px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border: 2px solid #030865;
-    font-weight: 800;
+    font-weight: bolder;
+    font-size: 18px;
     text-decoration: underline;
   }
   

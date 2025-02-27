@@ -561,8 +561,7 @@ userRouter.put(
   async (req, res) => {
     try {
       const candidateId = req.params.id;
-      const { roundIndex, feedback, feedbackProvided, skills, history } =
-        req.body;
+      const { roundIndex, feedback, feedbackProvided, skills, panelistName } = req.body;
 
       if (
         roundIndex === undefined ||
@@ -592,7 +591,7 @@ userRouter.put(
 
       candidate.history.push({
         status: candidate.status,
-        updatedBy: req.user.id, // Assuming you have user info in req.user
+        updatedBy: panelistName, // Use panelistName from frontend
         updatedAt: new Date(),
         note: "Feedback updated",
       });
@@ -605,6 +604,58 @@ userRouter.put(
     }
   }
 );
+
+// userRouter.put(
+//   "/api/update-feedback/:id",
+//   // authenticate,
+//   // checkPermission("update_feedback_data"),
+//   async (req, res) => {
+//     try {
+//       const candidateId = req.params.id;
+//       const { roundIndex, feedback, feedbackProvided, skills, history } =
+//         req.body;
+
+//       if (
+//         roundIndex === undefined ||
+//         feedback === undefined ||
+//         feedbackProvided === undefined
+//       ) {
+//         return res.status(400).json({
+//           message: "RoundIndex, feedback, and feedbackProvided are required",
+//         });
+//       }
+
+//       const candidate = await Candidate.findById(candidateId);
+//       if (!candidate) {
+//         return res.status(404).json({ message: "Candidate not found" });
+//       }
+
+//       if (roundIndex < 0 || roundIndex >= candidate.round.length) {
+//         return res.status(400).json({ message: "Invalid round index" });
+//       }
+
+//       candidate.round[roundIndex].feedback = feedback;
+//       candidate.round[roundIndex].feedbackProvided = feedbackProvided;
+
+//       if (skills && Array.isArray(skills)) {
+//         candidate.round[roundIndex].skills = skills;
+//       }
+
+//       candidate.history.push({
+//         status: candidate.status,
+//         updatedBy: req.user.id, // Assuming you have user info in req.user
+//         updatedAt: new Date(),
+//         note: "Feedback updated",
+//       });
+
+//       await candidate.save();
+//       res.status(200).json(candidate);
+//     } catch (error) {
+//       console.error("Error updating feedback:", error);
+//       res.status(500).json({ message: "Internal server error" });
+//     }
+//   }
+// );
 
 userRouter.get(
   "/api/panelists/enfusian",
@@ -819,7 +870,8 @@ userRouter.get("/api/mgr/:mgrName/status-count", async (req, res) => {
         $group: {
           _id: "$status",
           count: { $sum: 1 },
-          names: { $push: "$fullName" } // Collecting the full names of the candidates
+          names: { $push: "$fullName" },
+          positions: { $push: "$position"} // Collecting the full names of the candidates
         }
       },
       {
@@ -827,7 +879,8 @@ userRouter.get("/api/mgr/:mgrName/status-count", async (req, res) => {
           _id: 0,
           status: "$_id",
           count: 1,
-          names: 1
+          names: 1,
+          positions: 1
         }
       }
     ]);
@@ -1112,7 +1165,7 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.mgrName = validRow["HR Name"];
 
         const manager = await Candidate.findOne({
-          firstName: validRow.mgrName,
+          fullName: validRow.mgrName,
           role: 'HR'
         });
         validRow.mgrEmail = manager.email;
@@ -1121,11 +1174,7 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         await Candidate.updateOne({ _id: candidate._id }, { $set: validRow });
 
       } else {
-
-        console.log('inside else block');
-
         const nameParts = validRow["Candidate Name"].split(' ');
-        console.log(nameParts);
 
         validRow.isBulkUploadData = true;
         validRow.fullName = validRow['Candidate Name'];
@@ -1159,7 +1208,7 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.resume = validRow['Resume Link'];
 
         const manager = await Candidate.findOne({
-          firstName: validRow.mgrName,
+          fullName: validRow.mgrName,
           role: 'HR'
         });
         validRow.mgrEmail = manager.email;

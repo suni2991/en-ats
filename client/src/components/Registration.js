@@ -562,7 +562,7 @@ function Registration({ closeModal }) {
                 <option value="">Choose One</option>
                 <option value="Technical">Technical</option>
                 <option value="Non-Technical">Non-Technical</option>
-                <option value="No-Screening">No-Screening</option>
+                <option value="No-Test">No-Test</option>
               </select>
             </div>
             <div>

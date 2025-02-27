@@ -254,7 +254,7 @@ const Feedback = () => {
                   <Option value="Candidate Declined / Backout">Candidate Declined / Backout</Option>
                   <Option value="To Join">To Join</Option>
                   <Option value="Offer Revoked">Offer Revoked</Option>
-                  <Option value="To Join/ Serving Notice Period">To Join/ Serving Notice Period</Option>
+                  
                 </Select>
               </Form.Item>
               {(documentationStatus === "Joined" || documentationStatus === "To Join") && (

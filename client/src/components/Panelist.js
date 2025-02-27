@@ -48,7 +48,7 @@ const Panelist = () => {
       }));
 
       // Get the latest round for each of L1, L2, and HR
-      const roundNames = ['L1', 'L2', 'HR'];
+      const roundNames = ['L1-HR', 'L2', 'L3', 'L4'];
       const filteredRounds = roundNames.map(roundName => {
         const latestRound = candidateData.round
           .filter(round => round.roundName === roundName)
@@ -181,6 +181,7 @@ const Panelist = () => {
       roundIndex: roundIndex,
       feedback: updatedRounds[roundIndex].feedback, // Ensure feedback is included
       feedbackProvided: updatedRounds[roundIndex].feedbackProvided, // Ensure feedbackProvided is included
+      panelistName: updatedRounds[roundIndex].panelistName, // Include panelistName
       roundDetails: {
         roundName: updatedRounds[roundIndex].roundName,
         panelistName: updatedRounds[roundIndex].panelistName,
@@ -208,6 +209,7 @@ const Panelist = () => {
           case 'L2 Interview Cleared':
             newStatus = 'L2 Interview Cleared';
             break;
+
           case 'L1 Interview Rejected':
             newStatus = 'L1 Interview Rejected';
             break;
@@ -220,11 +222,37 @@ const Panelist = () => {
           case 'HR Interview Cleared':
             newStatus = 'HR Interview Cleared';
             break;
+          case 'L3 Interview Rejected':
+            newStatus = 'L3 Interview Rejected';
+            break;
+          case 'L3 Interview Cleared':
+            newStatus = 'L3 Interview Cleared';
+            break;
+          case 'L3 Interview Hold':
+            newStatus = 'L3 Interview Hold';
+            break;
+          
+          case 'L2 Interview Hold':
+            newStatus = 'L2 Interview Hold';
+            break;
+          case 'L1 Interview Hold':
+            newStatus = 'L1 Interview Hold';
+            break;
+            case 'L4 Interview Rejected':
+              newStatus = 'L4 Interview Rejected';
+              break;
+            case 'L4 Interview Cleared':
+              newStatus = 'L4 Interview Cleared';
+              break;
+            case 'L4 Interview Hold':
+              newStatus = 'L4 Interview Hold';
+              break;
           default:
             newStatus = 'Processing';
         }
 
         const historyUpdate = {
+          status: newStatus,
           updatedBy: auth.fullName,
           updatedAt: new Date(),
           note: `Status updated to ${newStatus} based on ${feedback} feedback.`
@@ -332,13 +360,13 @@ const Panelist = () => {
       {candidateData && (
         <>
           <strong>
-            <p style={{ fontWeight: 'bold', fontSize: 18, color: '#00B4D2' }}>Candidate Name: {candidateData.fullName} for the role {candidateData.position}</p><br/>
-            <p style={{ fontWeight: 'bold', fontSize: 16}}>Total Experience: {candidateData.totalExperience}</p>
-            <p style={{ fontWeight: 'bold', fontSize: 16}}>Availability / Notice Period: {candidateData.noticePeriod}</p><br/>
+            <p style={{ fontWeight: 'bold', fontSize: 18, color: '#00B4D2' }}>Candidate Name: {candidateData.fullName} for the role {candidateData.position}</p><br />
+            <p style={{ fontWeight: 'bold', fontSize: 16 }}>Total Experience: {candidateData.totalExperience}</p>
+            <p style={{ fontWeight: 'bold', fontSize: 16 }}>Availability / Notice Period: {candidateData.noticePeriod}</p><br />
           </strong>
         </>
       )}
-      <Tabs style={{backgroundColor: 'white', padding: '10px', borderRadius: '8px'}}>
+      <Tabs style={{ backgroundColor: 'white', padding: '10px', borderRadius: '8px' }}>
         <TabPane tab="Scores" key="scores">
           <Table
             columns={scoreColumns}
@@ -350,31 +378,15 @@ const Panelist = () => {
         {rounds.map((round, index) => (
           <TabPane tab={round.roundName} key={index}>
             {/* <div style={{ display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'space-between' }}> */}
-              <p style={{ fontWeight: 'bold', fontSize: 14}}>Interviewed by {round.panelistName} on {new Date(round.interviewDate).toLocaleDateString()}</p>
-              {/* <center>
-                <Tooltip title="Technical Skills" color="cyan">
-                  <button className='table-btn'
-                    style={{
-                      //   background: "#13c2c2",
-                      marginRight: "30px",
-                      //   color: "#FFF",
-                      float: "right",
-                    }}
-                    onClick={() => console.log("Technical Skills Logged.")}
-                  // disabled={!data.length} // Disable if there's no data to download
-                  >
-                    <MdGrading />
-                  </button>
-                </Tooltip>
-              </center> */}
-            {/* </div> */}
+            <p style={{ fontWeight: 'bold', fontSize: 14 }}>Interviewed by {round.panelistName} on {new Date(round.interviewDate).toLocaleDateString()}</p>
+           
             {
               round.feedbackProvided && (
                 <p style={{ color: 'red', fontWeight: 'bold', fontSize: 14 }}>Feedback is already given for this round</p>
               )
             }
-            <p style={{ fontWeight: 'bold', fontSize: 14}}> Feedback Provided: {round.feedbackProvided ? 'Yes' : 'Not yet'}</p>
-            <br/>
+            <p style={{ fontWeight: 'bold', fontSize: 14 }}> Feedback Provided: {round.feedbackProvided ? 'Yes' : 'Not yet'}</p>
+            <br />
 
             <table className='panelistTable'>
               <thead>
@@ -413,42 +425,42 @@ const Panelist = () => {
             </table>
 
             {index === rounds.length - 1 && !round.feedbackProvided && (
-  <div className='panelistTable'>
-    <label htmlFor='feedback'>Final Feedback:</label>
-    <select name='feedback' value={formData.feedback} onChange={handleChange}>
-      <option value=''>Select Feedback</option>
-      {round.roundName === 'L1' && (
-        <>
-          <option value='L1 Interview Cleared'>L1 Interview Cleared</option>
-          <option value='L1 Interview Rejected'>L1 Interview Rejected</option>
-          <option value='L1 Interview Hold'>L1 Interview Hold</option>
-          
-        </>
-      )}
-      {round.roundName === 'L2' && (
-        <>
-          <option value='L2 Interview Cleared'>L2 Interview Cleared</option>
-          <option value='L2 Interview Rejected'>L2 Interview Rejected</option>
-          <option value='L2 Interview Hold'>L2 Interview Hold</option>
-        </>
-      )}
-      {round.roundName === 'L3' && (
-        <>
-          <option value='L3 Interview Cleared'>L3 Interview Cleared</option>
-          <option value='L3 Interview Rejected'>L3 Interview Rejected</option>
-          <option value='L3 Interview Hold'>L3 Interview Hold</option>
-        </>
-      )}
-       {round.roundName === 'L4' && (
-        <>
-          <option value='L4 Interview Cleared'>L4 Interview Cleared</option>
-          <option value='L4 Interview Rejected'>L4 Interview Rejected</option>
-          <option value='L4 Interview Hold'>L4 Interview Hold</option>
-        </>
-      )}
-    </select>
-  </div>
-)}
+              <div className='panelistTable'>
+                <label htmlFor='feedback'>Final Feedback:</label>
+                <select name='feedback' value={formData.feedback} onChange={handleChange}>
+                  <option value=''>Select Feedback</option>
+                  {round.roundName === 'L1' && (
+                    <>
+                      <option value='L1 Interview Cleared'>L1 Interview Cleared</option>
+                      <option value='L1 Interview Rejected'>L1 Interview Rejected</option>
+                      <option value='L1 Interview Hold'>L1 Interview Hold</option>
+
+                    </>
+                  )}
+                  {round.roundName === 'L2' && (
+                    <>
+                      <option value='L2 Interview Cleared'>L2 Interview Cleared</option>
+                      <option value='L2 Interview Rejected'>L2 Interview Rejected</option>
+                      <option value='L2 Interview Hold'>L2 Interview Hold</option>
+                    </>
+                  )}
+                  {round.roundName === 'L3' && (
+                    <>
+                      <option value='L3 Interview Cleared'>L3 Interview Cleared</option>
+                      <option value='L3 Interview Rejected'>L3 Interview Rejected</option>
+                      <option value='L3 Interview Hold'>L3 Interview Hold</option>
+                    </>
+                  )}
+                  {round.roundName === 'L4' && (
+                    <>
+                      <option value='L4 Interview Cleared'>L4 Interview Cleared</option>
+                      <option value='L4 Interview Rejected'>L4 Interview Rejected</option>
+                      <option value='L4 Interview Hold'>L4 Interview Hold</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            )}
 
             {index === rounds.length - 1 && !round.feedbackProvided && (
               <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>

@@ -138,6 +138,10 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
   };
 
   const renderScores = () => {
+    if (candidateData.selectedCategory === "No-Test") {
+      return <center><h1> No-Test</h1></center>;
+    }
+
     if (!candidateData?.assessmentDone) {
       return <p>No assessment data available.</p>;
     }

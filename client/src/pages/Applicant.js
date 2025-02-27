@@ -94,6 +94,7 @@ const Applicant = () => {
           email,
           status: "Onboarded",
           historyUpdate,
+          role: "Enfusian",
         },
         {
           headers: {
