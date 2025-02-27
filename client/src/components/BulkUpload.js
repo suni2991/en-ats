@@ -13,6 +13,8 @@ const BulkUpload = () => {
     const [errorMessagesState, setErrorMessagesState] = useState([]);
     const [validRowsState, setvalidRowsState] = useState([]);
 
+    let validRecordsCount = 0
+
     useEffect(() => {
 
         console.log('Uploaded file: ', uploadedFile);
@@ -85,6 +87,7 @@ const BulkUpload = () => {
                 let errorMessages = [];
                 let validRows = [];
                 let invalidRows = [];
+                // let validCount = 0;
                 let count = 0;
 
                 jsonData.forEach((row, index) => {
@@ -118,6 +121,7 @@ const BulkUpload = () => {
 
                     if (isValid) {
                         validRows.push(row);
+                        validRecordsCount++;
                     }
                     else {
                         invalidRows.push(row);
@@ -134,7 +138,7 @@ const BulkUpload = () => {
 
                 if (errorMessages && errorMessages.length > 0) {
                     setErrorMessagesState(errorMessages);
-                    message.warning(`${count} rows have errors and were not included.`);
+                    message.warning(`${count} records have errors and were not included.`);
                 } else {
                     setErrorMessagesState(null);
                 }
@@ -144,9 +148,9 @@ const BulkUpload = () => {
 
                 if (validRows.length > 0) {
                     setvalidRowsState(validRows); // Store only valid rows
-                    message.success("Valid rows can be uploaded!");
+                    message.success(`${validRecordsCount} Valid records can be uploaded!`);
                 } else {
-                    message.error("No valid rows found in the file.");
+                    message.error("No valid records found in the file.");
                     setvalidRowsState(null);
                 }
             };
@@ -373,7 +377,7 @@ const BulkUpload = () => {
             });
 
             console.log('Response:', response.data);
-            message.success('Valid Rows Uploaded Successfully.');
+            message.success(`${validRecordsCount} Valid Records Uploaded Successfully.`);
             console.log('Uploaded rows handleSubmit:', validRowsState);
 
         } catch (error) {

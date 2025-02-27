@@ -222,10 +222,7 @@ userRouter.get("/getCandidateById/:id", authenticate, checkPermission("view_cand
     try {
 
       const { id } = req.params;
-      console.log('Candidate id: ', id);
-
       const candidateData = await Candidate.findOne({ _id: id });
-      console.log('candidateData', candidateData);
 
       res.status(200).json(candidateData);
 
@@ -241,13 +238,8 @@ userRouter.patch("/updateCandidateData/:id", authenticate, checkPermission("view
     try {
 
       const _id = req.params.id;
-      console.log('Candidate id: ', _id);
-
       const selectedCategory = req.body.selectedCategory;
-      console.log('selectedCategory: ', selectedCategory);
-
       const updatedCandidate = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
-      console.log('updatedCandidate: ', updatedCandidate);
 
       if (!updatedCandidate) {
         res.json({
@@ -1031,15 +1023,13 @@ userRouter.post("/bulk-upload", bulkUpload, async (req, res) => {
     const worksheet = workbook.Sheets[sheetName];
 
     try {
-      // const data = xlsx.utils.sheet_to_json(worksheet);
-      // console.log("data", data)
       const processedLinks = [];
       const invalidLinks = [];
       const extractedUrls = [];
 
       const hyperlinks = [];
       const data = [];
-      // const sheetNames = workbook.SheetNames;s
+
       // Loop through each sheet
       const range = xlsx.utils.decode_range(worksheet['!ref']); // Get the range of the sheet
 
@@ -1226,10 +1216,9 @@ userRouter.post("/bulk-upload", bulkUpload, async (req, res) => {
           }
         }
       }
-      // if (data.length > 0) {
-      //   await Candidate.insertMany(data);
-      // }
+      
       res.status(200).json({ message: "bulk upload done", data });
+
     } catch (error) {
       console.error('Error parsing Excel data:', error);
       // Check for specific errors like "unexpected field"
@@ -1259,7 +1248,6 @@ userRouter.post("/bulkupload", async (req, res) => {
 
   try {
     const validRows = req.body.validRows;
-    console.log(validRows);
 
     if (!validRows || validRows.length === 0) {
       return res.status(400).json({ status: "ERROR", message: "No valid rows provided." });
@@ -1267,27 +1255,17 @@ userRouter.post("/bulkupload", async (req, res) => {
 
     // Iterate through each valid row
     for (const validRow of validRows) {
-
-
       const candidate = await Candidate.findOne({ email: validRow["Email ID"] });
-
-      console.log('Before inserting/ updating candidate');
-      console.log('i.e. before if condition ');
-
       validRow.bulkUpload = {};
 
       if (candidate) {
-        console.log('inside if block');
-
         const nameParts = validRow["Candidate Name"].split(' ');
-        console.log(nameParts);
 
         validRow.isBulkUploadData = true;
         validRow.fullName = validRow['Candidate Name'];
         validRow.firstName = nameParts[0];
         validRow.lastName = nameParts[nameParts.length - 1];
         validRow.contact = validRow['Mobile Number'];
-        // validRow.email = validRow['Email ID'];
         validRow.organisation = validRow['Organisation'];
         validRow.designation = validRow['Role/Designation'];
         validRow.totalExperience = validRow['Total Experience'];
@@ -1311,7 +1289,6 @@ userRouter.post("/bulkupload", async (req, res) => {
         validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
         validRow.bulkUpload.hrComments= validRow['HR Comments'];
         validRow.resume = validRow['Resume Link'];
-        // validRow.status = validRow['Resume Status'];
         validRow.mgrName = validRow["HR Name"];
 
         const manager = await Candidate.findOne({
