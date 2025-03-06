@@ -315,8 +315,8 @@ jobRouter.get(
           },
         },
       ]);
-      console.log("vacancyStatusCounts:");
-      console.log(vacancyStatusCounts);
+      // console.log("vacancyStatusCounts:");
+      // console.log(vacancyStatusCounts);
       res.json(vacancyStatusCounts);
     } catch (err) {
       console.error(err);

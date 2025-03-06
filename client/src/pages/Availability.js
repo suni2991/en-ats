@@ -177,6 +177,7 @@ const Availability = () => {
       >
         <AvailabilityForm
           form={form}
+          closeModal={handleCancel}
           candidateId={candidateId}
           initialValues={selectedSlot ? {
             availableDate: moment(selectedSlot.availableDate),

@@ -1,20 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Col, Row, Pagination } from 'antd';
 import CandidateProfileDrawer from './CandidateProfileDrawer'; // Adjust the import path as necessary
+import axios from 'axios';
+import useAuth from '../hooks/useAuth';
+
+const URL = process.env.REACT_APP_API_URL;
 
 const CandidateCard = ({ candidates }) => {
+
+  const {token} = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
+  const [selectedCandidate, setSelectedCandidate] = useState({});
+
   const pageSize = 16;
 
   const startIndex = (currentPage - 1) * pageSize;
   const currentCandidates = candidates.slice(startIndex, startIndex + pageSize);
 
-  const openDrawer = (candidateId) => {
+  // useEffect(() => {}, [selectedCandidate])
+  
+
+  const openDrawer = async (candidateId) => {
     setSelectedCandidateId(candidateId);
+    console.log(candidateId);
+    // console.log('token', token);
+    const candidteUniqueId = candidateId;
+    
+    const candidateData = await axios.get(`${URL}/api/getCandidateById/${candidteUniqueId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (candidateData) {
+      console.log('candidateData: ',candidateData.data);
+      const candidate = candidateData.data;
+      setSelectedCandidate(candidate);
+    }
     setDrawerVisible(true);
   };
+
+  const onUpdateStatus = (candidateId, status) => { 
+    const currentCandidate = currentCandidates.find(candidate => candidate._id === candidateId );
+    currentCandidate.status = status;
+
+    setSelectedCandidate(prevData =>({
+      ...prevData,
+      status: status
+    }));
+  }
 
   const closeDrawer = () => {
     setDrawerVisible(false);
@@ -49,7 +85,7 @@ const CandidateCard = ({ candidates }) => {
               {/* <p><strong>LWD:</strong> {new Date(candidate.lwd).toLocaleDateString()}</p> */}
               <p><strong>LWD:</strong> {candidate.lwd ? new Date(candidate.lwd).toLocaleDateString() : " Not Updated "}</p>
 
-              <p><strong>Status:</strong> <span style={{ fontWeight: 'bold' }}>{candidate.status}</span></p>
+              <p><strong>Status:</strong> <span style={{ fontWeight: 'bold' }} >{candidate.status}</span></p>
             </Card>
           </Col>
         ))}
@@ -62,7 +98,7 @@ const CandidateCard = ({ candidates }) => {
         style={{
           textAlign: "right",
           marginTop: "20px",
-          paddingTop: '10px', 
+          paddingTop: '10px',
           background: "#fff",
           maxWidth: "100%",
           height: "50px",
@@ -73,6 +109,7 @@ const CandidateCard = ({ candidates }) => {
         open={drawerVisible}
         onClose={closeDrawer}
         candidateId={selectedCandidateId}
+        onUpdateStatus={onUpdateStatus}
       />
     </div>
   );

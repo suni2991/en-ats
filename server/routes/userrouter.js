@@ -244,14 +244,14 @@ userRouter.get(
 
 userRouter.get("/api/getCandidateById/:id", authenticate, checkPermission("view_candidates_report"),
   async (req, res) => {
-
     try {
+      console.log('Hi From the getCandidateById');
 
       const { id } = req.params;
       console.log('Candidate id: ', id);
 
       const candidateData = await Candidate.findOne({ _id: id });
-      console.log('candidateData', candidateData);
+      // console.log('candidateData', candidateData);
 
       res.status(200).json(candidateData);
 
@@ -261,33 +261,33 @@ userRouter.get("/api/getCandidateById/:id", authenticate, checkPermission("view_
     }
   });
 
-  userRouter.get(
-    "/api/panel/ADMIN",
-    authenticate,
-    // checkPermission("view_panelist_details_by_admin"),
-    async (req, res) => {
-      try {
-        const statuses = [
-          "HR Interview Cleared", 
-          "Selected", 
-          "Onboarded", 
-          "Rejected", 
-          "Document_Processing", 
-          "Hold", 
-          "Offered", 
-          "Drop-off"
-        ];
-        const candidates = await Candidate.find({
-          status: { $in: statuses },
-          role: "Applicant",
-        });
-        res.json(candidates);
-      } catch (error) {
-        console.error("Error retrieving candidates:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
+userRouter.get(
+  "/api/panel/ADMIN",
+  authenticate,
+  // checkPermission("view_panelist_details_by_admin"),
+  async (req, res) => {
+    try {
+      const statuses = [
+        "HR Interview Cleared",
+        "Selected",
+        "Onboarded",
+        "Rejected",
+        "Document_Processing",
+        "Hold",
+        "Offered",
+        "Drop-off"
+      ];
+      const candidates = await Candidate.find({
+        status: { $in: statuses },
+        role: "Applicant",
+      });
+      res.json(candidates);
+    } catch (error) {
+      console.error("Error retrieving candidates:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-  );
+  }
+);
 
 userRouter.patch("/api/updateCandidateData/:id", authenticate, checkPermission("view_candidates_report"),
   async (req, res) => {
@@ -491,18 +491,20 @@ userRouter.put("/api/candidate/:id", async (req, res) => {
   try {
     const _id = req.params.id;
     const result = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
-    if (!result) {
-      res.json({
-        status: "FAILED",
-        message: "record is not updated successfully"
-      })
-    }
-    else {
-      res.json({
+    // console.log('result', result);
+    if (result) {
+      res.status(200).json({
         status: "SUCCESS",
         message: "records updated successfully",
         data: result
       })
+    }
+    else {
+      res.json({
+        status: "FAILED",
+        message: "record is not updated successfully"
+      })
+
     }
   }
   catch (e) {
@@ -762,7 +764,12 @@ userRouter.put(
   authenticate,
   checkPermission("update_candidate_by_id"),
   async (req, res) => {
-    const { id } = req.params;
+
+    const { requestBody } = req.body;
+    console.log('requestBody', req.body.requestBody);
+    console.log('requestBody.skills', req.body.requestBody.roundDetails.skills.map(round => round));
+
+    const _id = req.params.id;
     const {
       email,
       status,
@@ -793,7 +800,7 @@ userRouter.put(
         updates.selectedCategory = selectedCategory;
       }
 
-      const candidate = await Candidate.findByIdAndUpdate(id, updates, {
+      const candidate = await Candidate.findByIdAndUpdate({ _id, updates, round: requestBody.roundDetails }, {
         new: true,
       });
 
@@ -846,6 +853,7 @@ userRouter.post("/api/candidates/:id/availability", async (req, res) => {
 // GET endpoint to fetch availability slots
 userRouter.get("/api/candidates/:id/availability", async (req, res) => {
   const { id } = req.params;
+  console.log('Hi from availability API');
 
   try {
     const candidate = await Candidate.findById(id).select("availableSlots");
@@ -859,19 +867,69 @@ userRouter.get("/api/candidates/:id/availability", async (req, res) => {
   }
 });
 
+// userRouter.get("/api/mgr/:mgrName/status-count", async (req, res) => {
+//   try {
+//     const mgrName = req.params.mgrName;
+
+//     // Aggregate the data to count the status of candidates and gather their names under the specified mgrName
+//     const statusCounts = await Candidate.aggregate([
+//       { $match: { mgrName: mgrName } },
+//       {
+//         $group: {
+//           _id: "$status",
+//           count: { $sum: 1 },
+//           names: { $push: "$fullName" },
+//           positions: { $push: "$position" } // Collecting the full names of the candidates
+//         }
+//       },
+//       {
+//         $project: {
+//           _id: 0,
+//           status: "$_id",
+//           count: 1,
+//           names: 1,
+//           positions: 1
+//         }
+//       }
+//     ]);
+
+//     res.status(200).json(statusCounts);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Server Error' });
+//   }
+// });
+
+
 userRouter.get("/api/mgr/:mgrName/status-count", async (req, res) => {
   try {
-    const mgrName = req.params.mgrName;
+    // const mgrName = req.params.mgrName;
+
+    const { mgrName } = req.params;
+    const { startDate, endDate } = req.query;
+
+    console.log('startDate', startDate);
+    console.log('endDate', endDate);
+
+    let matchQuery = { mgrName };
+
+    // Add date filtering only if both dates are provided
+    if (startDate && endDate) {
+      matchQuery.dateCreated = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
 
     // Aggregate the data to count the status of candidates and gather their names under the specified mgrName
     const statusCounts = await Candidate.aggregate([
-      { $match: { mgrName: mgrName } },
+      { $match: matchQuery },
       {
         $group: {
           _id: "$status",
           count: { $sum: 1 },
           names: { $push: "$fullName" },
-          positions: { $push: "$position"} // Collecting the full names of the candidates
+          positions: { $push: "$position" } // Collecting the full names of the candidates
         }
       },
       {
@@ -891,6 +949,9 @@ userRouter.get("/api/mgr/:mgrName/status-count", async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
+
+
 
 userRouter.put("/api/panelists/slot/:panelistEmail", async (req, res) => {
   try {
@@ -913,8 +974,6 @@ userRouter.put("/api/panelists/slot/:panelistEmail", async (req, res) => {
 
     // Update the slot's booked status
     panelist.availableSlots[slotIndex].booked = booked;
-
-
 
     // Save the updated panelist
     await panelist.save();
@@ -1126,6 +1185,13 @@ userRouter.post("/api/bulkupload", async (req, res) => {
       return res.status(400).json({ status: "ERROR", message: "No valid rows provided." });
     }
 
+    const password = Math.random().toString(36).slice(-8);
+
+    const encryptedPassword = CryptoJS.AES.encrypt(
+      password,
+      process.env.PASSWORD_SECRET_KEY
+    ).toString();
+
     // Iterate through each valid row
     for (const validRow of validRows) {
       const candidate = await Candidate.findOne({ email: validRow["Email ID"] });
@@ -1140,7 +1206,7 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.lastName = nameParts[nameParts.length - 1];
         validRow.contact = validRow['Mobile Number'];
         validRow.organisation = validRow['Organisation'];
-        validRow.designation = validRow['Role/Designation'];
+        validRow.position = validRow['Role/Designation'];
         validRow.totalExperience = validRow['Total Experience'];
         validRow.relevantExperience = validRow['Relevant Experience'];
         validRow.qualification = validRow['Education'];
@@ -1151,16 +1217,16 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.preferedLocation = validRow['Prefered Location'];
         validRow.bulkUpload.resumeStatus = validRow['Resume Status'];
         validRow.bulkUpload.testApplicability = validRow['Test Applicability'];
-        validRow.bulkUpload.testStatus= validRow['Test Status'];
-        validRow.bulkUpload.testScore= validRow['Test Score'];
-        validRow.bulkUpload.l1Interviewer= validRow['L1 Interviewer'];
-        validRow.bulkUpload.l1InterviewStatus= validRow['L1 Interview Status'];
-        validRow.bulkUpload.l2Interviewer= validRow['L2 Interviewer'];
-        validRow.bulkUpload.l2InterviewStatus= validRow['L2 Interview Status'];
-        validRow.bulkUpload.l3Interviewer= validRow['L3 Interviewer'];
-        validRow.bulkUpload.l3InterviewStatus= validRow['L3 Interview Status'];
-        validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
-        validRow.bulkUpload.hrComments= validRow['HR Comments'];
+        validRow.bulkUpload.testStatus = validRow['Test Status'];
+        validRow.bulkUpload.testScore = validRow['Test Score'];
+        validRow.bulkUpload.l1Interviewer = validRow['L1 Interviewer'];
+        validRow.bulkUpload.l1InterviewStatus = validRow['L1 Interview Status'];
+        validRow.bulkUpload.l2Interviewer = validRow['L2 Interviewer'];
+        validRow.bulkUpload.l2InterviewStatus = validRow['L2 Interview Status'];
+        validRow.bulkUpload.l3Interviewer = validRow['L3 Interviewer'];
+        validRow.bulkUpload.l3InterviewStatus = validRow['L3 Interview Status'];
+        validRow.status = validRow['Candidate Final Status'];
+        validRow.bulkUpload.hrComments = validRow['HR Comments'];
         validRow.resume = validRow['Resume Link'];
         validRow.mgrName = validRow["HR Name"];
 
@@ -1194,16 +1260,16 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.preferedLocation = validRow['Prefered Location'];
         validRow.bulkUpload.resumeStatus = validRow['Resume Status'];
         validRow.bulkUpload.testApplicability = validRow['Test Applicability'];
-        validRow.bulkUpload.testStatus= validRow['Test Status'];
-        validRow.bulkUpload.testScore= validRow['Test Score'];
-        validRow.bulkUpload.l1Interviewer= validRow['L1 Interviewer'];
-        validRow.bulkUpload.l1InterviewStatus= validRow['L1 Interview Status'];
-        validRow.bulkUpload.l2Interviewer= validRow['L2 Interviewer'];
-        validRow.bulkUpload.l2InterviewStatus= validRow['L2 Interview Status'];
-        validRow.bulkUpload.l3Interviewer= validRow['L3 Interviewer'];
-        validRow.bulkUpload.l3InterviewStatus= validRow['L3 Interview Status'];
-        validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
-        validRow.bulkUpload.hrComments= validRow['HR Comments'];
+        validRow.bulkUpload.testStatus = validRow['Test Status'];
+        validRow.bulkUpload.testScore = validRow['Test Score'];
+        validRow.bulkUpload.l1Interviewer = validRow['L1 Interviewer'];
+        validRow.bulkUpload.l1InterviewStatus = validRow['L1 Interview Status'];
+        validRow.bulkUpload.l2Interviewer = validRow['L2 Interviewer'];
+        validRow.bulkUpload.l2InterviewStatus = validRow['L2 Interview Status'];
+        validRow.bulkUpload.l3Interviewer = validRow['L3 Interviewer'];
+        validRow.bulkUpload.l3InterviewStatus = validRow['L3 Interview Status'];
+        validRow.status = validRow['Candidate Final Status'];
+        validRow.bulkUpload.hrComments = validRow['HR Comments'];
         validRow.mgrName = validRow["HR Name"];
         validRow.resume = validRow['Resume Link'];
 
@@ -1212,6 +1278,9 @@ userRouter.post("/api/bulkupload", async (req, res) => {
           role: 'HR'
         });
         validRow.mgrEmail = manager.email;
+
+        validRow.password = encryptedPassword; // Set the encrypted password
+        validRow.confirmPassword = password;
 
         // Insert new candidate
         await Candidate.create(validRow);

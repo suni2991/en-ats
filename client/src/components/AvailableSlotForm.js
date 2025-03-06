@@ -5,7 +5,7 @@ import moment from 'moment';
 
 const { Title } = Typography;
 
-const AvailableSlotForm = ({ form, candidateId, initialValues, latestRequestedDateRange }) => {
+const AvailableSlotForm = ({ form, candidateId, initialValues, latestRequestedDateRange, closeModal }) => {
   const [loading, setLoading] = useState(false);
 
   const disabledDate = (current) => {
@@ -30,8 +30,9 @@ const AvailableSlotForm = ({ form, candidateId, initialValues, latestRequestedDa
         },
       };
 
-      await axios.post(`http://localhost:5041/candidates/${candidateId}/availability`, payload);
+      await axios.post(`http://localhost:5041/api/candidates/${candidateId}/availability`, payload);
       message.success('Available slot and notification submitted successfully');
+      closeModal();
       form.resetFields();
     } catch (error) {
       console.error('Failed to submit:', error);

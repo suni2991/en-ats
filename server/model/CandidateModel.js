@@ -5,7 +5,7 @@ const { Schema } = mongoose; // Destructure Schema from mongoose
 const skillSchema = new Schema({
   name: { type: String, required: true },
   rating: { type: Number, required: true },
-  comments: { type: String },
+  comments: { type: String, required: true },
 });
 
 const historySchema = new Schema({
@@ -23,6 +23,7 @@ const roundSchema = new Schema({
   interviewDt: { type: String },
   feedbackProvided: { type: Boolean, default: false },
   skills: [skillSchema],
+  extraComments: { type: String },
   feedback: { type: String },
   meetingURL: { type: String },
 });

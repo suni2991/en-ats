@@ -21,9 +21,6 @@ const authenticate = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(bearerToken, JWT_SECRET);
-    // console.log("decoded.userID : ");
-    // console.log(decoded.userId);
-    
     req.user = await CandidateModel.findOne({ _id: decoded.userId });
     if (!req.user) {
       return res.status(404).send("User not found");
@@ -44,8 +41,7 @@ const checkPermission = (permissionData) => {
     }
     try {
       const role = await RoleModel.findOne({ _id: roleId });
-      // console.log("role: ");
-      // console.log(role);
+
       // Check if the role is found
       if (!role) {
         return res.status(404).json({ error: "Role not found" });
@@ -58,9 +54,6 @@ const checkPermission = (permissionData) => {
         },
         { _id: 1 }
       );
-
-      // console.log("selected permission: ");
-      // console.log(selectedPermission);
 
       // Check if selectedPermission is found
       if (!selectedPermission) {

@@ -20,6 +20,7 @@ const Panelist = () => {
     noticePeriod: '',
     panelistName: '',
     feedback: '',
+    comments: '',
     role: 'Applicant',
   });
   const [isFeedbackGiven, setIsFeedbackGiven] = useState(false);
@@ -34,6 +35,10 @@ const Panelist = () => {
     // e.preventDefault();
     navigateTo("/feedbacks")
   }
+
+  useEffect(() => {
+    console.log('formData', formData);
+  }, [formData])
 
   useEffect(() => {
     if (candidateData) {
@@ -79,8 +84,6 @@ const Panelist = () => {
       }
     }
   }, [candidateData]);
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -136,6 +139,27 @@ const Panelist = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Loop through rounds
+    const isInvalid = rounds.some((round) => {
+      return round.skills.some((skill) => {
+        if (!formData[`${skill.name.toLowerCase()}Comments`]?.trim()) {
+          message.error("Comments field is required!");
+          return true; // Stops execution immediately
+        }
+
+        if (!rating[skill.name.toLowerCase()]) {
+          message.error("Rating out of 5 field is required!");
+          return true; // Stops execution immediately
+        }
+
+        return false;
+      });
+    });
+
+    if (isInvalid) {
+      return; // Stop form submission if validation fails
+    }
+
     if (!candidateData || !candidateData._id) {
       Swal.fire({
         title: "Error",
@@ -147,6 +171,9 @@ const Panelist = () => {
     }
 
     const { feedback, panelistName } = formData;
+
+    // console.log('rating', rating);
+
 
     if (!feedback) {
       Swal.fire({
@@ -167,7 +194,7 @@ const Panelist = () => {
           interviewDate: round.interviewDate || new Date(), // Include interview date
           skills: round.skills.map(skill => ({
             ...skill,
-            rating: rating[skill.name.toLowerCase()] || 0,
+            rating: rating[skill.name.toLowerCase()],
             comments: formData[`${skill.name.toLowerCase()}Comments`] || skill.comments,
           })),
           feedback: feedback // Include feedback
@@ -231,22 +258,22 @@ const Panelist = () => {
           case 'L3 Interview Hold':
             newStatus = 'L3 Interview Hold';
             break;
-          
+
           case 'L2 Interview Hold':
             newStatus = 'L2 Interview Hold';
             break;
           case 'L1 Interview Hold':
             newStatus = 'L1 Interview Hold';
             break;
-            case 'L4 Interview Rejected':
-              newStatus = 'L4 Interview Rejected';
-              break;
-            case 'L4 Interview Cleared':
-              newStatus = 'L4 Interview Cleared';
-              break;
-            case 'L4 Interview Hold':
-              newStatus = 'L4 Interview Hold';
-              break;
+          case 'L4 Interview Rejected':
+            newStatus = 'L4 Interview Rejected';
+            break;
+          case 'L4 Interview Cleared':
+            newStatus = 'L4 Interview Cleared';
+            break;
+          case 'L4 Interview Hold':
+            newStatus = 'L4 Interview Hold';
+            break;
           default:
             newStatus = 'Processing';
         }
@@ -260,6 +287,7 @@ const Panelist = () => {
 
         const statusUpdate = {
           status: newStatus,
+          requestBody: requestBody,
           historyUpdate: historyUpdate
         };
 
@@ -379,7 +407,7 @@ const Panelist = () => {
           <TabPane tab={round.roundName} key={index}>
             {/* <div style={{ display: 'flex', flexDirection: 'row', alignItems: "center", justifyContent: 'space-between' }}> */}
             <p style={{ fontWeight: 'bold', fontSize: 14 }}>Interviewed by {round.panelistName} on {new Date(round.interviewDate).toLocaleDateString()}</p>
-           
+
             {
               round.feedbackProvided && (
                 <p style={{ color: 'red', fontWeight: 'bold', fontSize: 14 }}>Feedback is already given for this round</p>
@@ -392,8 +420,9 @@ const Panelist = () => {
               <thead>
                 <tr>
                   <th>Questions</th>
-                  <th>Rating out of 5</th>
-                  <th>Feedback</th>
+                  <th>Rating out of 5<span style={{ color: 'red' }}> *</span></th>
+                  <th>Comments<span style={{ color: 'red' }}> *</span></th>
+                  {/* <th>Extra Comments</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -407,18 +436,64 @@ const Panelist = () => {
                         disabled={round.feedbackProvided || index !== rounds.length - 1}
                       />
                     </td>
+                    {/* <td>
+                      <Input.TextArea
+                        name = {`${skill.name.toLowerCase()}panelistFeedback`}
+                        // name = {skill.panelistFeedback}
+                        // value = {skill.panelistFeedback}
+                        value={formData[`${skill.name.toLowerCase()}panelistFeedback`] || (skill.panelistFeedback && skill.panelistFeedback !== 'No Feedback' ? skill.panelistFeedback : '')}
+                        onChange={(e) => {
+                          console.log('skill.name', skill.name.slice(0, 19));
+                          console.log('e.target.name', e.target.name);  
+                          console.log('e.target.value', e.target.value);
+                          
+                          // setFormData({
+                          //     ...formData,
+                          //     [e.target.name]: e.target.value,
+                          //   })
+
+                          setFormData({
+                            ...formData,
+                            [`${skill.name.toLowerCase()}panelistFeedback`]: e.target.value,
+                          })
+                        }
+                        }
+                        disabled={round.feedbackProvided || index !== rounds.length - 1}
+                        required
+                      />
+                    </td> */}
                     <td>
                       <Input.TextArea
+                        required={true}
                         value={formData[`${skill.name.toLowerCase()}Comments`] || (skill.comments && skill.comments !== 'No comments' ? skill.comments : '')}
-                        onChange={(e) =>
+                        onChange={(e) => {
+
+                          console.log('e.target.valuecomments', e.target.value);
+
                           setFormData({
                             ...formData,
                             [`${skill.name.toLowerCase()}Comments`]: e.target.value,
                           })
-                        }
+                        }}
                         disabled={round.feedbackProvided || index !== rounds.length - 1}
                       />
                     </td>
+                    {/* <td>
+                      <Input.TextArea
+                        value={formData[`${skill.name.toLowerCase()}extraComments`] || (skill.extraComments && skill.extraComments !== 'No comments' ? skill.extraComments : '')}
+                        onChange={(e) => {
+
+                          console.log('e.target.valueExtraComments', e.target.value);
+
+                          setFormData({
+                            ...formData,
+                            [`${skill.name.toLowerCase()}extraComments`]: e.target.value,
+                          })
+                        }
+                        }
+                        disabled={round.feedbackProvided || index !== rounds.length - 1}
+                      />
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -426,6 +501,8 @@ const Panelist = () => {
 
             {index === rounds.length - 1 && !round.feedbackProvided && (
               <div className='panelistTable'>
+                <label htmlFor='extraComments'>Extra Comments:</label>
+                <Input.TextArea name='extraComments' value={formData.extraComments} onChange={handleChange}/>
                 <label htmlFor='feedback'>Final Feedback:</label>
                 <select name='feedback' value={formData.feedback} onChange={handleChange}>
                   <option value=''>Select Feedback</option>

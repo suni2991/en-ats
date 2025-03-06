@@ -41,7 +41,7 @@ emailRouter.post(
   (req, res) => {
     const { role, fullName, email, source, mgrName, mgrEmail, position, reference, selectedCategory, currentLocation, lwd } = req.body;
     // const { confirmPassword } = req.body;
-  
+
     try {
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -102,7 +102,7 @@ emailRouter.post(
   // authenticate,
   // checkPermission("job_approve_email"),
   (req, res) => {
-    const { fullName, email, position} = req.body;
+    const { fullName, email, position } = req.body;
     try {
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -163,52 +163,51 @@ emailRouter.post("/api/user/credentials", (req, res) => {
 
   try {
 
-      const transporter = nodemailer.createTransport({
-          
-          service: "gmail",
-          auth: {
-              user: process.env.EMAIL,
-              pass: process.env.EMAIL_PASSWORD
-          }
-      });
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
 
-      const mailOptions = {
-          from: process.env.EMAIL,
-          to: email,
-          cc: mgrEmail,
-          subject: "Enfuse Welcomes You",
-          html: compiledTemplate1.render({ role, email, fullName, confirmPassword }),
-          attachments: [
-              {
-                  filename: 'enfuse-logo.png',
-                  path: './views/enfuse-logo.png',
-                  cid: "enfuse-logo"
-              },
-              {
-                  filename: 'welcome.jpg',
-                  path: './views/welcome.jpg',
-                  cid: "welcome"
-              },
-              {
-                filename: "enfuse-logo.png",
-                path: "./views/enfuse-logo.png",
-                cid: "enfuse-logo",
-              },
-          ]
-      };
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: mgrEmail,
+      cc: mgrEmail,
+      subject: "Enfuse Welcomes You",
+      html: compiledTemplate1.render({ role, email, fullName, confirmPassword }),
+      attachments: [
+        {
+          filename: 'enfuse-logo.png',
+          path: './views/enfuse-logo.png',
+          cid: "enfuse-logo"
+        },
+        {
+          filename: 'welcome.jpg',
+          path: './views/welcome.jpg',
+          cid: "welcome"
+        },
+        {
+          filename: "enfuse-logo.png",
+          path: "./views/enfuse-logo.png",
+          cid: "enfuse-logo",
+        },
+      ]
+    };
 
-      transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-              console.log("Error" + error)
-          } else {
-              console.log("Email sent:" + info.response);
-              res.status(201).json({ status: 201, info })
-          }
-      })
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("Error" + error)
+      } else {
+        console.log("Email sent:" + info.response);
+        res.status(201).json({ status: 201, info })
+      }
+    })
 
   } catch (error) {
-      console.log("Error" + error);
-      res.status(401).json({ status: 401, error })
+    console.log("Error" + error);
+    res.status(401).json({ status: 401, error })
   }
 });
 
@@ -231,7 +230,7 @@ emailRouter.post(
       const mailOptions = {
         from: process.env.EMAIL,
         to: toEmail,
-        
+
         subject: "Approval Request for New Job Position",
         html: compiledTemplate2.render({
           position,
@@ -280,8 +279,8 @@ emailRouter.put(
   (req, res) => {
 
     console.log('entered put job/approval');
-    
-    const {_id, position, department, postedBy, vacancies, experience, jobId, jobLocation, description, toEmail, status } = req.body;
+
+    const { _id, position, department, postedBy, vacancies, experience, jobId, jobLocation, description, toEmail, status } = req.body;
 
     try {
       const transporter = nodemailer.createTransport({
@@ -294,7 +293,7 @@ emailRouter.put(
 
       const mailOptions = {
         from: process.env.EMAIL,
-       
+
         to: toEmail,
         subject: "Status update for the Job Position Requested",
         html: compiledTemplate10.render({
@@ -370,9 +369,9 @@ emailRouter.post(
         to: panelistEmail,
         subject: "Request for Available Slot",
         html: compiledTemplate3.render({
-          candidateName, 
-          message, 
-          postedBy, 
+          candidateName,
+          message,
+          postedBy,
           fromDate,  // Pass formatted fromDate
           toDate     // Pass formatted toDate
         }),
@@ -433,10 +432,10 @@ emailRouter.post(
       const mailOptions = {
         from: process.env.EMAIL,
         to: panelistEmail,
-        
+
         subject: "Interview Slot Blocked",
         html: compiledTemplate4.render({
-          candidateName, candidateEmail, candidatePosition, roundName, meetingURL, interviewDt, panelistName,   
+          candidateName, candidateEmail, candidatePosition, roundName, meetingURL, interviewDt, panelistName,
         }),
         attachments: [
           {
@@ -478,7 +477,7 @@ emailRouter.post(
   // authenticate,
   // checkPermission("request_for_slot"),
   (req, res) => {
-    const { candidateName, candidateEmail, candidatePosition, panelistEmail, panelistName, roundName,meetingURL, interviewDt}= req.body;
+    const { candidateName, candidateEmail, candidatePosition, panelistEmail, panelistName, roundName, meetingURL, interviewDt } = req.body;
 
     try {
       const transporter = nodemailer.createTransport({
@@ -494,11 +493,11 @@ emailRouter.post(
         to: candidateEmail,
         subject: "Interview Slot Blocked",
         html: compiledTemplate6.render({
-          candidateName, 
-          candidateEmail, 
-          candidatePosition, 
-          roundName, 
-          interviewDt, 
+          candidateName,
+          candidateEmail,
+          candidatePosition,
+          roundName,
+          interviewDt,
           panelistName,
           meetingURL
         }),
@@ -544,7 +543,7 @@ emailRouter.post(
   // authenticate,
   // checkPermission("request_for_slot"),
   (req, res) => {
-    const { candidateName, candidateEmail,postedBy, candidatePosition, panelistName, roundName, interviewDate, feedback, hrEmail,hrName, status } = req.body;
+    const { candidateName, candidateEmail, postedBy, candidatePosition, panelistName, roundName, interviewDate, feedback, hrEmail, hrName, status } = req.body;
 
     try {
       const transporter = nodemailer.createTransport({
@@ -558,7 +557,7 @@ emailRouter.post(
       const mailOptions = {
         from: process.env.EMAIL,
         to: hrEmail,
-        
+
         subject: `Update on Interview Feedback ${candidateName} for ${candidatePosition}`,
         html: compiledTemplate5.render({
           candidateName, candidateEmail, candidatePosition, roundName, interviewDate, panelistName, feedback, postedBy, status, hrName
@@ -602,7 +601,7 @@ emailRouter.post(
   // authenticate,
   // checkPermission("request_for_slot"),
   (req, res) => {
-    const { candidateName, candidateEmail}= req.body;
+    const { candidateName, candidateEmail } = req.body;
 
     try {
       const transporter = nodemailer.createTransport({
@@ -616,7 +615,7 @@ emailRouter.post(
       const mailOptions = {
         from: process.env.EMAIL,
         to: candidateEmail,
-        
+
         subject: `Application Rejected`,
         html: compiledTemplate8.render({
           candidateName
@@ -660,7 +659,7 @@ emailRouter.post(
   // authenticate,
   // checkPermission("request_for_slot"),
   (req, res) => {
-    const { candidateName, candidateEmail,postedBy, candidatePosition, panelistName, roundName, interviewDate, feedback, hrEmail,hrName, status } = req.body;
+    const { candidateName, candidateEmail, postedBy, candidatePosition, panelistName, roundName, interviewDate, feedback, hrEmail, hrName, status } = req.body;
 
     try {
       const transporter = nodemailer.createTransport({
@@ -674,7 +673,7 @@ emailRouter.post(
       const mailOptions = {
         from: process.env.EMAIL,
         to: candidateEmail,
-        
+
         subject: `Update on Interview Feedback ${candidateName} for ${candidatePosition}`,
         html: compiledTemplate7.render({
           candidateName, candidatePosition, roundName, interviewDate, panelistName, feedback, postedBy, status, hrName

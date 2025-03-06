@@ -10,10 +10,29 @@ const URL = process.env.REACT_APP_API_URL;
 const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) => {
   const [candidateData, setCandidateData] = useState({});
   const [loading, setLoading] = useState(true);
+  // const [isShortlistCVButtonDisabled, setIsShortlistCVButtonDisabled] = useState(false);
+  const [isCVOnHoldButtonDisabled, setIsCVOnHoldButtonDisabled] = useState(false);
+  const [isAwaitigFeedbackButtonDisabled, setIsAwaitinigFeedbackButtonDisabled] = useState(false);
+  // const [isRejectCVButtonDisabled, setIsRejectCVButtonDisabled] = useState(false);
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
   const { token, auth, role } = useAuth();
   const [rejectionModalVisible, setRejectionModalVisible] = useState(false);
   const [rejectionNote, setRejectionNote] = useState("");
+
+  useEffect(() => {
+    if (candidateData.status === "CV on Hold") {
+      setIsCVOnHoldButtonDisabled(true);
+      setIsAwaitinigFeedbackButtonDisabled(false);
+    }
+    else if (candidateData.status === "Awaiting Feedback") {
+      setIsAwaitinigFeedbackButtonDisabled(true);
+      setIsCVOnHoldButtonDisabled(false);
+    }
+    else{
+      setIsAwaitinigFeedbackButtonDisabled(false);
+      setIsCVOnHoldButtonDisabled(false);
+    }
+  }, [candidateData])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,8 +134,8 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
     try {
       const response = await axios.put(
         `${URL}/api/candidate/${candidateId}/reset-scores`,
-        { subject }, 
-         // Only send the subject name
+        { subject },
+        // Only send the subject name
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -145,7 +164,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
     if (!candidateData?.assessmentDone) {
       return <p>No assessment data available.</p>;
     }
-  
+
     const renderScoreRow = (subject, subjectData) => (
       <p key={subject}>
         {subject}:{" "}
@@ -163,7 +182,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         )}
       </p>
     );
-  
+
     const atsCleared = candidateData.atsCleared;
     const scores = candidateData.selectedCategory === "Technical" ? (
       <>
@@ -180,21 +199,21 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         {renderScoreRow("Quantitative", candidateData.quantitative)}
       </>
     );
-  
+
     return (
       <>
-      {scores}
-      <div style={{ marginTop: "20px" }}>
-        {!candidateData.atsCleared && (
-          <>
-            <h4><strong>Test:</strong></h4>
-            <Button type="primary" onClick={() => handleTestStatusUpdate("Test Rejected")} style={{ background: "red", width: "30%", marginRight: "5%" }}>Rejected</Button>
-            <Button type="primary" onClick={() => handleTestStatusUpdate("Test Shortlisted")} style={{ background: "#00B4D2", width: "30%", marginRight: "5%" }}>Shortlisted</Button>
-            <Button type="primary" onClick={() => handleTestStatusUpdate("Re-Test")} style={{ background: "#007d93", width: "30%" }}>Re-Test</Button>
-          </>
-        )}
-      </div>
-    </>
+        {scores}
+        <div style={{ marginTop: "20px" }}>
+          {!candidateData.atsCleared && (
+            <>
+              <h4><strong>Test:</strong></h4>
+              <Button type="primary" onClick={() => handleTestStatusUpdate("Test Rejected")} style={{ background: "red", width: "30%", marginRight: "5%" }}>Rejected</Button>
+              <Button type="primary" onClick={() => handleTestStatusUpdate("Test Shortlisted")} style={{ background: "#00B4D2", width: "30%", marginRight: "5%" }}>Shortlisted</Button>
+              <Button type="primary" onClick={() => handleTestStatusUpdate("Re-Test")} style={{ background: "#007d93", width: "30%" }}>Re-Test</Button>
+            </>
+          )}
+        </div>
+      </>
     );
   };
 
@@ -212,7 +231,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
     }
 
     const updatedStatus = status === "Test Shortlisted" ? "L1 To be Scheduled" : status;
-  
+
     try {
       const response = await axios.put(
         `${URL}/api/candidate/${candidateId}`,
@@ -243,7 +262,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           assessmentDone: status === "Re-Test" ? false : prevData.assessmentDone,
           history: [
             ...(prevData.history || []),
-            {status: status, note: `Test status updated to ${status}`, updatedBy: auth.fullName, updatedAt: new Date().toISOString() },
+            { status: status, note: `Test status updated to ${status}`, updatedBy: auth.fullName, updatedAt: new Date().toISOString() },
           ],
         }));
       } else {
@@ -260,17 +279,17 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       message.warning("Please provide a note for the rejection.");
       return;
     }
-  
+
     const updatedBy = auth.fullName; // Replace with actual user role if dynamic
 
     try {
       await axios.put(
         `${URL}/api/candidate/${candidateId}`,
         {
-          status: "Rejected",
+          status: "CV Rejected",
           note: rejectionNote,
           history: {
-            status:"CV Rejected",
+            status: "CV Rejected",
             note: `${rejectionNote}`,
             updatedBy: updatedBy,
             updatedAt: new Date(),
@@ -283,7 +302,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           },
         }
       );
-  
+      onUpdateStatus(candidateId, 'CV Rejected');
       message.success("Candidate status updated to 'Rejected'");
       setRejectionModalVisible(false);
       setRejectionNote("");
@@ -295,12 +314,17 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           { status: "CV Rejected", note: `Rejection reason: ${rejectionNote}`, updatedBy }
         ]
       }));
+
+      // setIsShortlistCVButtonDisabled(true);
+      // setIsAwaitinigFeedbackButtonDisabled(true);
+      // setIsCVOnHoldButtonDisabled(true);
+      // setIsRejectCVButtonDisabled(true);
     } catch (error) {
       console.error("Error rejecting candidate:", error);
       message.error("Error updating candidate status.");
     }
   };
-  
+
 
   const renderRejectionModal = () => (
     <Modal
@@ -319,7 +343,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         placeholder="Enter rejection reason"
         required
       />
-      
+
     </Modal>
   );
 
@@ -332,7 +356,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         email: candidateData.email,
         fullName: candidateData.fullName,
       };
-  
+
       try {
         // Send email credentials
         const emailResponse = await axios.post(`${URL}/api/user/credentials`, emailData);
@@ -346,7 +370,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         message.error("Error sending email.");
       }
     }
-  
+
     // Update candidate's status
     try {
       const updateResponse = await axios.put(
@@ -368,6 +392,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         }
       );
       if (updateResponse.status === 200) {
+        // console.log('inside if updateResponse.status === 200')
         message.success(`Candidate status updated to '${status}'`);
         setCandidateData((prevData) => ({
           ...prevData,
@@ -379,6 +404,24 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         }));
         // Call the callback function to update the status in CandidateCard
         onUpdateStatus(candidateId, status);
+
+        // if (status === 'CV Shortlisted') {
+        // setIsShortlistCVButtonDisabled(true);
+        // setIsAwaitinigFeedbackButtonDisabled(true);
+        // setIsCVOnHoldButtonDisabled(true);
+        // setIsRejectCVButtonDisabled(true);
+        // }
+
+        if (status === 'CV on Hold') {
+          setIsAwaitinigFeedbackButtonDisabled(false);
+          setIsCVOnHoldButtonDisabled(true);
+        }
+
+        if (status === 'Awaiting Feedback') {
+          setIsCVOnHoldButtonDisabled(false);
+          setIsAwaitinigFeedbackButtonDisabled(true);
+        }
+
       } else {
         message.error("Failed to update candidate status.");
       }
@@ -387,7 +430,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       message.error("Error updating candidate status.");
     }
   };
-  
+
 
   return (
     <>
@@ -562,15 +605,15 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         </Collapse>
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          {(candidateData.status && (candidateData.status.includes("CV") || candidateData.status.includes("Awaiting"))) && (
+          {(candidateData.status && (candidateData.status.includes("CV Sourced") || candidateData.status.includes("Awaiting") || candidateData.status.includes("Hold"))) && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%", marginBottom: "10px" }}>
-                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("CV Shortlisted")} style={{ background: "#00B4D2", width: "48%" }}>CV Shortlisted</Button>
-                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("Awaiting Feedback")} style={{ background: "#00B4D2", width: "48%" }}>Awaiting Feedback</Button>
+                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("CV Shortlisted")} style={{ background: "#00B4D2", width: "48%" }} >Shortlist CV</Button>
+                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("Awaiting Feedback")} style={{ background: "#00B4D2", width: "48%" }} disabled={isAwaitigFeedbackButtonDisabled}>Awaiting Feedback</Button>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("CV on Hold")} style={{ background: "#007d93", width: "48%" }}>CV on Hold</Button>
-                <Button type="primary" onClick={() => setRejectionModalVisible(true)} style={{ background: "red", width: "48%" }}>CV Rejected</Button>
+                <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("CV on Hold")} style={{ background: "#007d93", width: "48%" }} disabled={isCVOnHoldButtonDisabled}>CV on Hold</Button>
+                <Button type="primary" onClick={() => setRejectionModalVisible(true)} style={{ background: "red", width: "48%" }} >Reject CV</Button>
               </div>
             </div>
           )}
@@ -592,7 +635,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         {candidateData.history && candidateData.history.length > 0 ? (
           candidateData.history.map((historyItem, index) => (
             <div key={index} style={{ marginBottom: "10px" }}>
-              <p style={{color:"#00B4D2"}}>
+              <p style={{ color: "#00B4D2" }}>
                 <span style={labelStyle}>Status</span>
                 <span style={valueStyle}>: {historyItem.status}</span>
               </p>
@@ -610,7 +653,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
                 <span style={labelStyle}>Note</span>
                 <span style={valueStyle}>: {historyItem.note}</span>
               </p>
-              <hr/>
+              <hr />
             </div>
           ))
         ) : (
