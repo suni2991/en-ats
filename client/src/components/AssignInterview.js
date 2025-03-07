@@ -227,6 +227,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
       round: {
         ...prevData.round,
         bookedSlot: slot, // Store the actual slot object
+        interviewDate: slot.date,
         interviewDt: formattedInterviewDetails, // Store the formatted string for display
       },
     }));
@@ -409,7 +410,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
 
         <Form.Item label="Round" name="round">
           <Select onChange={handleRoundChange} value={formData.round.roundName}>
-            <Option value="L1">L1 - HR Round</Option>
+            <Option value="L1-HR">L1 - HR Round</Option>
             <Option value="L2">L2 Round</Option>
             <Option value="L3">L3 Round</Option>
             <Option value="L4">L4 - Client Round</Option>
