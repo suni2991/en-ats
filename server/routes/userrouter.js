@@ -245,16 +245,9 @@ userRouter.get(
 userRouter.get("/api/getCandidateById/:id", authenticate, checkPermission("view_candidates_report"),
   async (req, res) => {
     try {
-      console.log('Hi From the getCandidateById');
-
       const { id } = req.params;
-      console.log('Candidate id: ', id);
-
       const candidateData = await Candidate.findOne({ _id: id });
-      // console.log('candidateData', candidateData);
-
       res.status(200).json(candidateData);
-
     } catch (error) {
       console.log('Error updating candidate: ', error);
       res.status(500).json({ message: "Server error" });
@@ -295,10 +288,7 @@ userRouter.patch("/api/updateCandidateData/:id", authenticate, checkPermission("
     try {
 
       const _id = req.params.id;
-      console.log('Candidate id: ', _id);
-
       const updatedCandidate = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
-      console.log('updatedCandidate: ', updatedCandidate);
 
       if (!updatedCandidate) {
         res.json({
@@ -491,7 +481,6 @@ userRouter.put("/api/candidate/:id", async (req, res) => {
   try {
     const _id = req.params.id;
     const result = await Candidate.findByIdAndUpdate(_id, req.body, { new: true });
-    // console.log('result', result);
     if (result) {
       res.status(200).json({
         status: "SUCCESS",
@@ -563,7 +552,7 @@ userRouter.put(
   async (req, res) => {
     try {
       const candidateId = req.params.id;
-      const { roundIndex, feedback, feedbackProvided, skills, panelistName } = req.body;
+      const { roundIndex, feedback, feedbackProvided, extraComments, skills, panelistName } = req.body;
 
       if (
         roundIndex === undefined ||
@@ -585,6 +574,7 @@ userRouter.put(
       }
 
       candidate.round[roundIndex].feedback = feedback;
+      candidate.round[roundIndex].extraComments = extraComments;
       candidate.round[roundIndex].feedbackProvided = feedbackProvided;
 
       if (skills && Array.isArray(skills)) {
@@ -765,10 +755,6 @@ userRouter.put(
   checkPermission("update_candidate_by_id"),
   async (req, res) => {
 
-    const { requestBody } = req.body;
-    console.log('requestBody', req.body.requestBody);
-    console.log('requestBody.skills', req.body.requestBody.roundDetails.skills.map(round => round));
-
     const _id = req.params.id;
     const {
       email,
@@ -799,6 +785,10 @@ userRouter.put(
       if (selectedCategory && selectedCategory !== "") {
         updates.selectedCategory = selectedCategory;
       }
+      // if (roundIndex >= 0)
+      // {
+      //   for
+      // }
 
       const candidate = await Candidate.findByIdAndUpdate({ _id, updates, round: requestBody.roundDetails }, {
         new: true,
@@ -853,8 +843,6 @@ userRouter.post("/api/candidates/:id/availability", async (req, res) => {
 // GET endpoint to fetch availability slots
 userRouter.get("/api/candidates/:id/availability", async (req, res) => {
   const { id } = req.params;
-  console.log('Hi from availability API');
-
   try {
     const candidate = await Candidate.findById(id).select("availableSlots");
     if (!candidate) {
@@ -907,9 +895,6 @@ userRouter.get("/api/mgr/:mgrName/status-count", async (req, res) => {
 
     const { mgrName } = req.params;
     const { startDate, endDate } = req.query;
-
-    console.log('startDate', startDate);
-    console.log('endDate', endDate);
 
     let matchQuery = { mgrName };
 

@@ -10,9 +10,16 @@ const { TabPane } = Tabs;
 const URL = process.env.REACT_APP_API_URL;
 
 const Panelist = () => {
+
+  const navigateTo = useNavigate();
+  const location = useLocation();
+  const auth = location.state.auth;
+  const candidateData = location.state.passCandidate;
+  const { token } = useAuth();
+
   const [rounds, setRounds] = useState([]);
   const [rating, setRating] = useState({});
-  const [categoryScores, setCategoryScores] = useState([]);
+  // const [categoryScores, setCategoryScores] = useState([]);
   const [formData, setFormData] = useState({
     position: '',
     fullName: '',
@@ -24,21 +31,13 @@ const Panelist = () => {
     role: 'Applicant',
   });
   const [isFeedbackGiven, setIsFeedbackGiven] = useState(false);
-  const { token } = useAuth();
 
-  const navigateTo = useNavigate();
-  const location = useLocation();
-  const auth = location.state.auth;
-  const candidateData = location.state.passCandidate;
 
   const handleBackButton = (e) => {
     // e.preventDefault();
     navigateTo("/feedbacks")
   }
 
-  useEffect(() => {
-    console.log('formData', formData);
-  }, [formData])
 
   useEffect(() => {
     if (candidateData) {
@@ -49,7 +48,7 @@ const Panelist = () => {
         totalExperience: candidateData.totalExperience || '',
         noticePeriod: candidateData.noticePeriod || '',
         panelistName: candidateData.panelistName || '',
-        feedback: '',
+        feedback: candidateData.feedback || '',
       }));
 
       // Get the latest round for each of L1, L2, and HR
@@ -58,24 +57,18 @@ const Panelist = () => {
         const latestRound = candidateData.round
           .filter(round => round.roundName === roundName)
           .sort((a, b) => new Date(b.interviewDate) - new Date(a.interviewDate))[0]; // sort by date and get latest
-        console.log("Latest Round: ");
-        console.log(latestRound);
         return latestRound;
       }).filter(Boolean); // Filter out undefined values
-      console.log("Filtered Rounds:");
-      console.log(filteredRounds);
 
       setRounds(filteredRounds);
 
       // Initialize skill ratings
       const skillsData = filteredRounds.reduce((acc, round) => {
         round.skills.forEach(skill => {
-          acc[skill.name.toLowerCase()] = skill.rating;
+          acc[`${skill.name.toLowerCase()}_${round.roundName}`] = skill.rating;
         });
         return acc;
       }, {});
-      console.log("Skills Data: ");
-      console.log(skillsData);
       setRating(skillsData);
 
       // Check if feedback is already given for all rounds
@@ -142,13 +135,14 @@ const Panelist = () => {
     // Loop through rounds
     const isInvalid = rounds.some((round) => {
       return round.skills.some((skill) => {
-        if (!formData[`${skill.name.toLowerCase()}Comments`]?.trim()) {
-          message.error("Comments field is required!");
-          return true; // Stops execution immediately
-        }
 
         if (!rating[skill.name.toLowerCase()]) {
           message.error("Rating out of 5 field is required!");
+          return true; // Stops execution immediately
+        }
+
+        if (!formData[`${skill.name.toLowerCase()}Comments${round.roundName}`]?.trim()) {
+          message.error("Comments field is required!");
           return true; // Stops execution immediately
         }
 
@@ -172,9 +166,6 @@ const Panelist = () => {
 
     const { feedback, panelistName } = formData;
 
-    // console.log('rating', rating);
-
-
     if (!feedback) {
       Swal.fire({
         title: "Error",
@@ -194,8 +185,8 @@ const Panelist = () => {
           interviewDate: round.interviewDate || new Date(), // Include interview date
           skills: round.skills.map(skill => ({
             ...skill,
-            rating: rating[skill.name.toLowerCase()],
-            comments: formData[`${skill.name.toLowerCase()}Comments`] || skill.comments,
+            rating: rating[`${skill.name.toLowerCase()}_${round.roundName}`],
+            comments: formData[`${skill.name.toLowerCase()}Comments${round.roundName}`] || skill.comments,
           })),
           feedback: feedback // Include feedback
         };
@@ -206,17 +197,18 @@ const Panelist = () => {
     const roundIndex = rounds.length - 1;
     const requestBody = {
       roundIndex: roundIndex,
-      feedback: updatedRounds[roundIndex].feedback, // Ensure feedback is included
-      feedbackProvided: updatedRounds[roundIndex].feedbackProvided, // Ensure feedbackProvided is included
-      panelistName: updatedRounds[roundIndex].panelistName, // Include panelistName
-      roundDetails: {
-        roundName: updatedRounds[roundIndex].roundName,
-        panelistName: updatedRounds[roundIndex].panelistName,
-        interviewDate: updatedRounds[roundIndex].interviewDate,
-        feedback: updatedRounds[roundIndex].feedback,
-        feedbackProvided: updatedRounds[roundIndex].feedbackProvided,
-        skills: updatedRounds[roundIndex].skills, // Include updated skills with ratings and comments
-      },
+      extraComments: formData.extraComments,
+      // feedback: updatedRounds[roundIndex].feedback, // Ensure feedback is included
+      // feedbackProvided: updatedRounds[roundIndex].feedbackProvided, // Ensure feedbackProvided is included
+      // panelistName: updatedRounds[roundIndex].panelistName, // Include panelistName
+      // roundDetails: {
+      roundName: updatedRounds[roundIndex].roundName,
+      panelistName: updatedRounds[roundIndex].panelistName,
+      interviewDate: updatedRounds[roundIndex].interviewDate,
+      feedback: updatedRounds[roundIndex].feedback,
+      feedbackProvided: updatedRounds[roundIndex].feedbackProvided,
+      skills: updatedRounds[roundIndex].skills, // Include updated skills with ratings and comments
+      // },
     };
 
     try {
@@ -350,12 +342,13 @@ const Panelist = () => {
     }
   };
 
-  const handleRateChange = (value, name) => {
+  const handleRateChange = (value, skillName, roundName) => {
     setRating((prevRating) => ({
       ...prevRating,
-      [name.toLowerCase()]: value
+      [`${skillName.toLowerCase()}_${roundName}`]: value, // Store per round
     }));
   };
+
 
   const scoreData = candidateData.selectedCategory === "Technical" ? [
     { name: 'Psychometric', score: candidateData.psychometric === -1 ? 0 : candidateData.psychometric },
@@ -430,70 +423,26 @@ const Panelist = () => {
                   <tr key={idx}>
                     <td>{skill.name}</td>
                     <td>
-                      <Rate
-                        value={rating[skill.name.toLowerCase()] || 0}
-                        onChange={(value) => handleRateChange(value, skill.name)}
-                        disabled={round.feedbackProvided || index !== rounds.length - 1}
-                      />
+                        <Rate
+                          value={rating[`${skill.name.toLowerCase()}_${round.roundName}`] || 0}
+                          onChange={(value) => handleRateChange(value, skill.name, round.roundName )}
+                          disabled={round.feedbackProvided || index !== rounds.length - 1}
+                        />
                     </td>
-                    {/* <td>
-                      <Input.TextArea
-                        name = {`${skill.name.toLowerCase()}panelistFeedback`}
-                        // name = {skill.panelistFeedback}
-                        // value = {skill.panelistFeedback}
-                        value={formData[`${skill.name.toLowerCase()}panelistFeedback`] || (skill.panelistFeedback && skill.panelistFeedback !== 'No Feedback' ? skill.panelistFeedback : '')}
-                        onChange={(e) => {
-                          console.log('skill.name', skill.name.slice(0, 19));
-                          console.log('e.target.name', e.target.name);  
-                          console.log('e.target.value', e.target.value);
-                          
-                          // setFormData({
-                          //     ...formData,
-                          //     [e.target.name]: e.target.value,
-                          //   })
-
-                          setFormData({
-                            ...formData,
-                            [`${skill.name.toLowerCase()}panelistFeedback`]: e.target.value,
-                          })
-                        }
-                        }
-                        disabled={round.feedbackProvided || index !== rounds.length - 1}
-                        required
-                      />
-                    </td> */}
                     <td>
                       <Input.TextArea
                         required={true}
-                        value={formData[`${skill.name.toLowerCase()}Comments`] || (skill.comments && skill.comments !== 'No comments' ? skill.comments : '')}
+                        value={formData[`${skill.name.toLowerCase()}Comments${round.roundName}`] || (skill.comments && skill.comments !== 'No comments' ? skill.comments : '')}
                         onChange={(e) => {
-
-                          console.log('e.target.valuecomments', e.target.value);
 
                           setFormData({
                             ...formData,
-                            [`${skill.name.toLowerCase()}Comments`]: e.target.value,
+                            [`${skill.name.toLowerCase()}Comments${round.roundName}`]: e.target.value,
                           })
                         }}
                         disabled={round.feedbackProvided || index !== rounds.length - 1}
                       />
                     </td>
-                    {/* <td>
-                      <Input.TextArea
-                        value={formData[`${skill.name.toLowerCase()}extraComments`] || (skill.extraComments && skill.extraComments !== 'No comments' ? skill.extraComments : '')}
-                        onChange={(e) => {
-
-                          console.log('e.target.valueExtraComments', e.target.value);
-
-                          setFormData({
-                            ...formData,
-                            [`${skill.name.toLowerCase()}extraComments`]: e.target.value,
-                          })
-                        }
-                        }
-                        disabled={round.feedbackProvided || index !== rounds.length - 1}
-                      />
-                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -502,16 +451,15 @@ const Panelist = () => {
             {index === rounds.length - 1 && !round.feedbackProvided && (
               <div className='panelistTable'>
                 <label htmlFor='extraComments'>Extra Comments:</label>
-                <Input.TextArea name='extraComments' value={formData.extraComments} onChange={handleChange}/>
+                <Input.TextArea name='extraComments' value={formData.extraComments} onChange={handleChange} />
                 <label htmlFor='feedback'>Final Feedback:</label>
                 <select name='feedback' value={formData.feedback} onChange={handleChange}>
                   <option value=''>Select Feedback</option>
-                  {round.roundName === 'L1' && (
+                  {round.roundName === 'L1-HR' && (
                     <>
-                      <option value='L1 Interview Cleared'>L1 Interview Cleared</option>
-                      <option value='L1 Interview Rejected'>L1 Interview Rejected</option>
-                      <option value='L1 Interview Hold'>L1 Interview Hold</option>
-
+                      <option value='L1 Interview Cleared'>L1-HR Interview Cleared</option>
+                      <option value='L1 Interview Rejected'>L1-HR Interview Rejected</option>
+                      <option value='L1 Interview Hold'>L1-HR Interview Hold</option>
                     </>
                   )}
                   {round.roundName === 'L2' && (

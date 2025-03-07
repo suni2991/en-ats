@@ -25,7 +25,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
   const [candidateData, setCandidateData] = useState({});
   const [formData, setFormData] = useState({
     round: {
-      roundName: 'L1',
+      roundName: 'L1-HR',
       panelistName: '',
       interviewDate: null,
       feedbackProvided: false,
@@ -138,7 +138,7 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
             // Optionally reset the roundName if the user cancels
             setFormData((prevData) => ({
               ...prevData,
-              round: { ...prevData.round, roundName: 'L1' }, // Reset to a default value or previous round
+              round: { ...prevData.round, roundName: 'L1-HR' }, // Reset to a default value or previous round
             }));
           },
           okButtonProps: {
@@ -166,15 +166,11 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
     }
   };
 
-
-
-
-
   const handleDrawerClose = () => {
     onClose();
     setFormData({
       round: {
-        roundName: 'L1',
+        roundName: 'L1-HR',
         panelistName: '',
         interviewDate: null,
         feedbackProvided: false,

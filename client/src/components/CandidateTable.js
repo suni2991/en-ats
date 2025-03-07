@@ -29,10 +29,6 @@ const CandidateTable = ({ auth, token }) => {
     setReloadData(true);
   };
 
-  useEffect(() => {
-    console.log('token', token);
-  }, [])
-
   const handleView = (row) => {
     setSelectedCandidate(row);
     setShowDrawer(false);
@@ -45,21 +41,11 @@ const CandidateTable = ({ auth, token }) => {
     setProfileOpen(false);
   };
 
-
   const handleEditCandidate = (row) => {
     setSelectedCandidate(row);
-    console.log('Edit Candidate.');
-    console.log('Candidate: ', row);
     setIsEditModalVisible(true);
     // navigateTo('/editCandidate', { state: row });
   }
-
-  // const handeDeleteCandidate = (row) => {
-
-  //   console.log('row._id', row._id);
-    
-
-  // }
 
   const renderResumeLink = (row) => {
     if (row.resume) {
