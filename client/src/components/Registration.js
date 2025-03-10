@@ -12,8 +12,8 @@ import useAuth from "../hooks/useAuth";
 
 const URL = process.env.REACT_APP_API_URL;
 function Registration({ closeModal }) {
-  const { token } = useAuth();
-  const { auth } = useAuth();
+  const { token, auth } = useAuth();
+
   const [positions, setPositions] = useState([]);
 
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -347,7 +347,7 @@ function Registration({ closeModal }) {
       createdAt: createdAt,
       mgrName: selectedHrName,
       mgrEmail: selectedHrEmail,
-      reference: formData.reference,
+      reference: auth.email ? formData.reference : "From Explore Page",
       currentLocation: formData.city,
       history: [historyUpdate],
       position: formData.position || positionId,
@@ -491,10 +491,12 @@ function Registration({ closeModal }) {
               <label>Resume<span className='require'>*</span></label>
               <input type="file" name="resume" path={formData.resume} required onChange={handleChange} accept=".pdf, .doc" placeholder=".pdf, .doc" ></input>
             </div>
+            {auth.email && (
             <div>
               <label>Reference</label>
-              <input type="text" name="reference" value={formData.reference} onChange={handleChange} placeholder="Enter Referred By Name"></input></div>
-
+              <input type="text" name="reference" value={formData.reference} onChange={handleChange} placeholder="Enter Referred By Name"></input>
+            </div>
+            )}
             <div>
               <label>Last Working Day</label>
               <DatePicker
@@ -568,10 +570,11 @@ function Registration({ closeModal }) {
             <div>
               <label>Source<span className='require'>*</span></label>
               <input type="text" name="source" value={formData.source} required onChange={handleChange} placeholder="Source (e.g., Online Ad, Career Site)"></input></div>
-
+            {auth.email && (
             <div style={{ marginTop: '10px' }}>
               <HrDropdown onSelect={handleSelectHr} onSelectHr={handleSelectHr} required onChange={(value, option) => handleSelectHr(option.fullName, option.email)} />
             </div>
+            )}
           </div>
         </div>
         <div id='btnWrapper'>

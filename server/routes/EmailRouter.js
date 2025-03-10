@@ -54,6 +54,7 @@ emailRouter.post(
       const mailOptions = {
         from: process.env.EMAIL,
         to: mgrEmail,
+      
         subject: `Received Direct Application for ${position}`,
         html: compiledTemplate.render({
           role,
@@ -712,5 +713,39 @@ emailRouter.post(
     }
   }
 );
+
+emailRouter.post('/api/send-link', (req, res) => {
+  const { email, link } = req.body;
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: 'Here is your Registraion link',
+      html: `<p>Please click on the following link to Register: <a href="${link}">${link}</a></p>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Error' + error);
+        res.status(500).json({ error: 'Failed to send email' });
+      } else {
+        console.log('Email sent:' + info.response);
+        res.status(201).json({ status: 201, info });
+      }
+    });
+  } catch (error) {
+    console.log('Error' + error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 module.exports = emailRouter;

@@ -61,14 +61,14 @@ const candidateSchema = new mongoose.Schema({
   id: { type: Number },
   firstName: { type: String },
   lastName: { type: String },
-  fullName: { type: String, required: true },
+  fullName: { type: String },
   organisation: { type: String },
   qualification: { type: String },
   totalExperience: { type: Number },
   relevantExperience: { type: Number },
   noticePeriod: { type: String },
   contact: { type: Number },
-  email: { type: String, unique: false },
+  email: { type: String, unique: false, required: true },
   position: { type: String },
   currentLocation: { type: String },
   image: { type: String, default: "" },
@@ -144,6 +144,7 @@ const candidateSchema = new mongoose.Schema({
   bulkUpload: {type: bulkUploadSchema},
   testStatus:{type:String, enum:["Test Rejected", "Test Shortlisted", "Re-Test", "Test Feedback Awaited"]},
   isBulkUploadData: {type: Boolean, default: false},
+  isCampusDrive: {type: Boolean, default: false},
 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);

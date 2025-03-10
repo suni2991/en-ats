@@ -105,6 +105,65 @@ jobRouter.get(
   }
 );
 
+jobRouter.get('/api/jobs', async (req, res) => {
+  try {
+      const { status } = req.query;
+      const jobs = await Job.find({ status: status });
+      res.json(jobs);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+});
+
+
+jobRouter.get(
+  "/api/holdjobs",
+  authenticate,
+  // checkPermission("view_pending_jobs"),
+  async (req, res) => {
+    const { mgrRole, fullName } = req.query;
+
+    try {
+      let jobPosts;
+      if (mgrRole === "HR" || mgrRole === "Admin") {
+        jobPosts = await Job.find({
+          status: { $in: ["Hold"] },
+        });
+      } else if (mgrRole === "Hiring-Manager") {
+
+        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "Hiring-Manager" });
+        console.log("hiringManager department: ");
+        console.log(hiringManager.department);
+        jobs = await Job.find({
+          department: hiringManager.department,
+          // updateBy: fullNameRegex,
+          status: { $nin: ["Hold"] },
+        });
+        console.log("jobs: ");
+        console.log(jobs);
+
+
+        // const fullNameRegex = new RegExp(fullName, "i");
+        // jobPosts = await Job.find({
+        //   updateBy: fullNameRegex,
+        //   status: { $in: ["Approval Pending", "Denied"] },
+        // });
+      } else {
+        const fullNameRegex = new RegExp(fullName, "i");
+        jobPosts = await Job.find({
+          postedBy: fullNameRegex,
+          status: { $in: ["Hold"] },
+        });
+      }
+      res.status(200).json(jobPosts);
+    } catch (error) {
+      console.error("Error fetching job posts:", error);
+      res.status(500).json({ error: "Error fetching job posts" });
+
+    }
+  }
+);
+
 jobRouter.get(
   "/api/pendingjobs",
   authenticate,
@@ -225,6 +284,59 @@ jobRouter.delete(
 );
 
 // Removed. Should be deleted
+jobRouter.get(
+  "/api/positions",
+  // authenticate,
+  // checkPermission("view_all_positions"),
+  async (req, res) => {
+    try {
+      const jobs = await Job.find();
+
+      const candidates = await Candidate.aggregate([
+        { $group: { _id: "$position", count: { $sum: 1 } } },
+      ]);
+
+      const consolidatedData = {};
+
+      jobs.forEach((job) => {
+        consolidatedData[job.position] = {
+          position: job.position,
+          department: job.department,
+          description: job.description,
+          responsibilities: job.responsibilities,
+          jobLocation: job.jobLocation,
+          vacancies: job.vacancies,
+          registeredCandidates: 0,
+
+          experience: job.experience,
+
+          postedAt: job.postedAt,
+          status: job.status,
+        };
+      });
+
+      candidates.forEach((candidate) => {
+        const position = candidate._id;
+        if (consolidatedData[position]) {
+          consolidatedData[position].registeredCandidates = candidate.count;
+        } else {
+          consolidatedData[position] = {
+            position,
+            vacancies: 0,
+            registeredCandidates: candidate.count,
+          };
+        }
+      });
+
+      const result = Object.values(consolidatedData);
+
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching positions data", error });
+    }
+  }
+);
+
 jobRouter.get(
   "/api/positions",
   authenticate,

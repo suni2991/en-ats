@@ -60,7 +60,8 @@ userRouter.post(
         reference,
         source,
         availableSlots,
-        testStatus
+        testStatus,
+        isCampusDrive
       } = req.body;
 
       const encryptedPassword = CryptoJS.AES.encrypt(
@@ -129,6 +130,7 @@ userRouter.post(
         reference,
         source,
         availableSlots,
+        isCampusDrive
       };
 
       if (roleId) {
@@ -859,19 +861,68 @@ userRouter.get("/api/candidates/:id/availability", async (req, res) => {
   }
 });
 
+// userRouter.get("/api/mgr/:mgrName/status-count", async (req, res) => {
+//   try {
+//     const mgrName = req.params.mgrName;
+
+//     // Aggregate the data to count the status of candidates and gather their names under the specified mgrName
+//     const statusCounts = await Candidate.aggregate([
+//       { $match: { mgrName: mgrName } },
+//       {
+//         $group: {
+//           _id: "$status",
+//           count: { $sum: 1 },
+//           names: { $push: "$fullName" },
+//           positions: { $push: "$position"} // Collecting the full names of the candidates
+//         }
+//       },
+//       {
+//         $project: {
+//           _id: 0,
+//           status: "$_id",
+//           count: 1,
+//           names: 1,
+//           positions: 1
+//         }
+//       }
+//     ]);
+
+//     res.status(200).json(statusCounts);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Server Error' });
+//   }
+// });
+
 userRouter.get("/api/mgr/:mgrName/status-count", async (req, res) => {
   try {
-    const mgrName = req.params.mgrName;
+    // const mgrName = req.params.mgrName;
+
+    const { mgrName } = req.params;
+    const { startDate, endDate } = req.query;
+
+    console.log('startDate', startDate);
+    console.log('endDate', endDate);
+
+    let matchQuery = { mgrName };
+
+    // Add date filtering only if both dates are provided
+    if (startDate && endDate) {
+      matchQuery.dateCreated = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
 
     // Aggregate the data to count the status of candidates and gather their names under the specified mgrName
     const statusCounts = await Candidate.aggregate([
-      { $match: { mgrName: mgrName } },
+      { $match: matchQuery },
       {
         $group: {
           _id: "$status",
           count: { $sum: 1 },
           names: { $push: "$fullName" },
-          positions: { $push: "$position"} // Collecting the full names of the candidates
+          positions: { $push: "$position" } // Collecting the full names of the candidates
         }
       },
       {

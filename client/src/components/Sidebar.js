@@ -59,6 +59,11 @@ const Sidebar = ({ children }) => {
       icon: <LuMonitorCheck />,
     },
     {
+      path: "/questionaire",
+      name: "Campus Drive",
+      icon: <LuMonitorCheck />,
+    },
+    {
       path: "/admins",
       name: "Role management",
       icon: <FaAdn />,
@@ -141,6 +146,7 @@ const Sidebar = ({ children }) => {
           if (auth.role === "Admin") {
             return (
               (item.name === "Role management" ||
+                item.name === "Campus Drive" ||
                 item.name === "Statistics" ||
                 item.name === "ATS" ||
                 item.name === "Dashboard" ||
@@ -162,6 +168,7 @@ const Sidebar = ({ children }) => {
           } else if (auth.role === "HR") {
             return (
               (item.name === "ATS" ||
+                item.name === "Campus Drive" ||
                 item.name === "Dashboard" ||
                 item.name === "Scores" ||
                 item.name === "Statistics" ||

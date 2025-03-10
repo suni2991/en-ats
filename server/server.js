@@ -9,6 +9,9 @@ const app = express();
 const emailRouter = require("./routes/EmailRouter");
 const jobRouter = require("./routes/JobPostRouter.js");
 const userRouter = require("./routes/userrouter.js");
+const questionRouter = require("./routes/QuestionRouter.js");
+const settingsRouter = require("./routes/SettingsRouter.js");
+const campusRouter = require("./routes/CampusRouter.js");
 
 const path = require("path");
 const multer = require("multer");
@@ -33,19 +36,14 @@ main().catch((err) => {
   console.error("Error connecting to MongoDB:", err);
 });
 
-// app.use((req, res, next) => {
-//   if (req.originalUrl === "/api/login") {
-//     next();
-//   } else if (req.originalUrl === "/viewjobs") {
-//     next();
-//   } else {
-//     CheckTokenMiddleware(req, res, next);
-//   }
-// });
 
 app.use(userRouter);
 app.use(emailRouter);
 app.use(jobRouter);
+app.use(questionRouter);
+app.use(settingsRouter);
+app.use(campusRouter);
+
 
 const imageFilter = (req, file, cb) => {
   let filename = file.originalname;
@@ -183,6 +181,7 @@ app.use((err, req, res, next) => {
   }
   next();
 });
+
 
 app.listen(5041, () => {
   console.log("server started at 5041");

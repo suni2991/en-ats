@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Modal, Spin, Table, Tooltip } from "antd";
+import { Button, Input, Modal, Spin, Table, Tooltip, Select } from "antd";
 import { FiGrid } from "react-icons/fi";
 import { FaTableList } from "react-icons/fa6";
 import axios from "axios";
@@ -14,7 +14,7 @@ import ViewJobModal from "./ViewJobModal";
 // import ViewJobModal from "./ViewJobModal";
 
 const URL = process.env.REACT_APP_API_URL;
-
+const { Option } = Select;
 const Dashboard = () => {
   const { auth } = useAuth();
   const [view, setView] = useState("tile");
@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [pendingJobs, setPendingJobs] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("REQ Approved");
   const [jobs, setJobs] = useState([]);
   const { token } = useAuth();
 
@@ -121,6 +122,17 @@ const Dashboard = () => {
     setIsEditClicked(false);
   };
 
+  const getStatusCounts = (jobs) => {
+    const statusCounts = jobs.reduce((acc, job) => {
+      acc[job.status] = (acc[job.status] || 0) + 1;
+      return acc;
+    }, {});
+    return statusCounts;
+  };
+  
+  const statusCounts = getStatusCounts(jobs);
+  const selectedStatusCount = statusCounts[selectedStatus] || 0;
+
   const closeModal = () => {
     setIsAddNewJobModalVisible(false);
   };
@@ -135,9 +147,10 @@ const Dashboard = () => {
 
   const filteredJobs = jobs.filter(
     (job) =>
-      job.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (job.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.jobLocation.toLowerCase().includes(searchQuery.toLowerCase())
+      job.jobLocation.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      job.status === selectedStatus
   );
 
   const capitalizeFirstLetter = (string) => {
@@ -206,7 +219,19 @@ const Dashboard = () => {
             Add New Job
           </Button>
         </Tooltip>
-
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Select
+            defaultValue="REQ Approved"
+            style={{ width: 200 }}
+            onChange={(value) => setSelectedStatus(value)}
+          >
+            <Option value="Closed">Closed</Option>
+            <Option value="REQ Approved">REQ Approved</Option>
+            <Option value="REQ on Hold">REQ on Hold</Option>
+            <Option value="REQ Fullfilled">REQ Fullfilled</Option>
+          </Select>
+          <span style={{ marginLeft: '10px' }}>Count: {selectedStatusCount}</span>
+        </div>
         {view === "tile" && (
           <Input
             placeholder="Search jobs"
@@ -235,7 +260,7 @@ const Dashboard = () => {
       <br />
       <div>
         {view === "tile" ? (
-          <JobDashboard jobs={filteredJobs} />
+          <JobDashboard jobs={filteredJobs} selectedStatus={selectedStatus} />
         ) : (
           <Viewjob auth={auth} />
         )}
@@ -259,7 +284,7 @@ const Dashboard = () => {
         style={{ width: "99.5%", marginLeft: "5px", height: "auto" }}
       >
         <Table
-          dataSource={pendingJobs}
+          dataSource={filteredJobs}
           columns={columns}
           rowKey={(record) => record._id}
           rowClassName={getRowClassName}

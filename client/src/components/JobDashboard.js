@@ -22,21 +22,41 @@ const statusColors = {
 };
 
 const URL = process.env.REACT_APP_API_URL;
-const JobDashboard = ({ jobs }) => {
+const JobDashboard = ({ jobs, selectedStatus }) => {
   const [candidateCounts, setCandidateCounts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedJob, setSelectedJob] = useState(null);
   const [applicants, setApplicants] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+
   const pageSize = 16;
   const { token } = useAuth();
+
+  useEffect(() => {
+    const fetchJobsByStatus = async () => {
+      try {
+        const response = await axios.get(`${URL}/api/jobs`, {
+          params: { status: selectedStatus },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFilteredJobs(response.data);
+      } catch (error) {
+        console.error("Error fetching jobs by status:", error);
+      }
+    };
+
+    fetchJobsByStatus();
+  }, [selectedStatus, token]);
 
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
         const response = await axios.get(`${URL}/api/positions`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
           },
         });
         const countsObject = response.data.reduce((acc, job) => {
@@ -110,7 +130,9 @@ const JobDashboard = ({ jobs }) => {
   };
 
   const startIndex = (currentPage - 1) * pageSize;
-  const currentJobs = jobs.slice(startIndex, startIndex + pageSize);
+  const currentJobs = filteredJobs.slice(startIndex, startIndex + pageSize);
+  // const startIndex = (currentPage - 1) * pageSize;
+  // const currentJobs = jobs.slice(startIndex, startIndex + pageSize);
 
   const columns = [
     {

@@ -4,21 +4,22 @@ import axios from "axios";
 import "../styles/Explore.css";
 import Registration from "../components/Registration";
 import { useNavigate } from "react-router-dom";
-import logo from "../Assests/enfuse-logo.png";
+import { FaRegDotCircle } from "react-icons/fa";
 
 const { Panel } = Collapse;
 
 const Explore = () => {
   const [jobs, setJobs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedPanel, setExpandedPanel] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
-  const jobsPerPage = 5;
+  const jobsPerPage = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get("http://localhost:5041/viewjobs")
+      .get("http://52.44.231.112:5041/api/viewjobs")
       .then((response) => {
         const activeJobs = response.data.filter(
           (job) => job.status === "Active"
@@ -38,18 +39,20 @@ const Explore = () => {
     setSelectedJob(null);
   };
 
+  const handlePanelChange = (key) => {
+    setExpandedPanel(key === expandedPanel ? null : key);
+  };
+
   return (
     <div className="explore-page">
-      <div>
-
-      <img src={logo} alt="Company Logo" /> <p>Explore jobs from EnFuse</p>
-      </div>
+     
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Collapse
             accordion
             bordered={false}
             style={{ background: "transparent" }}
+            activeKey={expandedPanel}
           >
             {jobs
               .slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage)
@@ -69,22 +72,24 @@ const Explore = () => {
                       </div>
                       <Button
                         shape="circle"
-                        icon="+"
-                        className="expand-button"
+                        icon={<span className={`expand-icon ${expandedPanel === job._id ? 'expanded' : ''}`}>{expandedPanel === job._id ? "-" : "+"}</span>}
+                        className="expand-button no-hover"
+                        onClick={() => handlePanelChange(job._id)}
                       />
                     </div>
                   }
                   style={{
                     borderRadius: "10px",
                     background: "#fff",
-                    marginBottom: "5px",
+                    marginBottom: "20px",
                     padding: "5px",
-                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                   
+                    boxShadow: "0 0 8px rgba(0, 0, 0, .17)",
                   }}
                 >
-                  <div style={{ padding: "10px" }}>
+                  <div style={{ padding: "10px 0px" }}>
                     <p>
-                      <span className="bold-text">Experience: </span>
+                      <span className="bold-text">Years of Experience: </span>
                       {job.experience}+
                     </p>
                     <p>
@@ -95,25 +100,34 @@ const Explore = () => {
                         ? job.primarySkills
                         : "N/A"}
                     </p>
-                    <p style={{ textAlign: 'justify' }}>
-                    <span className="bold-text">Description: </span>
-  {job.description.replace(/^Job description:\s*/, "")}
+                    <p style={{ textAlign: "justify" }}>
+  <span className="bold-text">Description: </span>
+  {job.description.includes("•") && !job.description.includes("Role:") && !job.description.includes("Location:") ? (
+    job.description
+      .replace(/^Job description:\s*/, "")
+      .split(/[\r\n•]+/)
+      .map((line, index) => (
+        <React.Fragment key={index}>
+          {line.trim() && (
+            <span className="bullet-text">
+              <FaRegDotCircle style={{ marginRight: "10px" , color:"#1560a5" }} />
+              {line.trim()}
+            </span>
+          )}
+          <br />
+        </React.Fragment>
+      ))
+  ) : (
+    <span>{job.description.replace(/^Job description:\s*/, "")}</span>
+  )}
 </p>
-
                     <Button
                       type="primary"
-                      style={{
-                        backgroundColor: "#00B4D2",
-                        color: "white",
-                        transition:
-                          "transform 0.2s ease, background-color 0.2s ease",
-                        height: "auto",
-                        margin: "20px 10px", // Adjust height for centering
-                        // padding: '8px 16px', // Button padding to look even
-                      }}
+                      className="btn-apply"
+                      
                       onClick={() => showApplyModal(job)}
                     >
-                      Apply Now
+                      APPLY NOW
                     </Button>
                   </div>
                 </Panel>
@@ -135,7 +149,7 @@ const Explore = () => {
       </Row>
 
       <Modal
-        title={`Apply for ${selectedJob?.position}`}
+        title={`Apply For A Position`}
         open={modalVisible}
         onCancel={handleCancel}
         footer={null}

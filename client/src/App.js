@@ -34,7 +34,10 @@ import ImageCarousel from "./components/ImageCarousel.js";
 import JobRegistration from "./pages/JobRegistration.js";
 import BulkUpload from "./components/BulkUpload.js";
 import EditCandidate from "./components/EditCandidate.js";
-
+import Questionaire from "./pages/Questionaire.js";
+import QuestionList from "./components/QuestionList.js";
+import QuestionForm from "./components/QuestionForm.js";
+import EditTopic from './components/EditTopic.js';
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -93,6 +96,10 @@ const App = () => {
             <Route path='/provideFeedback/:id' element={<Sidebar><Panelist /></Sidebar>} />
             <Route path="/bulkupload" element={<Sidebar><BulkUpload /></Sidebar>} />
             <Route path="/editCandidate" element={<Sidebar><EditCandidate /></Sidebar>} />
+            <Route path='/questionaire' element={<Sidebar><Questionaire /></Sidebar>} />
+            <Route path='/questions/all' element={<Sidebar><QuestionList /></Sidebar>} />
+            <Route path='/topic/edit/:id' element={<EditTopic />} />
+            <Route path='/question/edit/:id' element={<Sidebar><QuestionForm /></Sidebar>} />
           </Route>
           {/* <Route path="/editCandidate" element={<EditCandidate />}/> */}
         </Routes>
