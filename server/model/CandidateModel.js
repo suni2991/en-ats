@@ -145,6 +145,7 @@ const candidateSchema = new mongoose.Schema({
   bulkUpload: {type: bulkUploadSchema},
   testStatus:{type:String, enum:["Test Rejected", "Test Shortlisted", "Re-Test", "Test Feedback Awaited"]},
   isBulkUploadData: {type: Boolean, default: false},
+  isCampusDriveCandidate: {type: Boolean, default: false},
 });
 
 const Candidate = mongoose.model("Candidate", candidateSchema);

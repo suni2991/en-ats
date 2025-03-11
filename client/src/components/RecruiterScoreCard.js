@@ -169,8 +169,8 @@ const RecruiterScorecard = () => {
           />
         </div>
       </div>
-      <div style={{ width: '50%' }}>
-        <PieChart width={400} height={400}>
+      <div style={{ width: '50%'}}>
+        <PieChart width={400} height={485}>
           <Pie
             data={data}
             dataKey="count"

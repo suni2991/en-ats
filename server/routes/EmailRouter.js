@@ -1,6 +1,7 @@
 const express = require("express");
 const emailRouter = new express.Router();
 const nodemailer = require("nodemailer");
+const CryptoJS = require("crypto-js");
 const Hogan = require("hogan.js");
 const fs = require("fs");
 const moment = require("moment");
@@ -8,6 +9,7 @@ const {
   authenticate,
   checkPermission,
 } = require("../middleware/PermissionMiddleware");
+const Candidate = require("../model/CandidateModel");
 //const { dirname } = require("path");
 
 const template = fs.readFileSync("./views/directApplicant.hjs", "utf-8");
@@ -154,15 +156,47 @@ emailRouter.post(
   }
 );
 
-emailRouter.post("/api/user/credentials", (req, res) => {
+emailRouter.post("/api/user/credentials", async (req, res) => {
+  const { candidates } = req.body;
   const { role } = req.body;
   const { confirmPassword } = req.body;
   const { email } = req.body;
-  const { mgrEmail } = req.body;
   const { fullName } = req.body;
 
-  try {
+  const normalizeCandidate = async (candidate) => {
+    try {
 
+      const mgrName = candidate['HR Name'];
+      console.log('mgrName', mgrName);
+      const manager = await Candidate.findOne({
+        fullName: mgrName,
+        role: 'HR'
+      });
+
+      const mgrEmail = manager ? manager.email : null;
+      console.log('mgrEmail',mgrEmail);
+      
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        candidate.password,
+        process.env.PASSWORD_SECRET_KEY
+      ).toString();
+
+      return {
+        position: candidate['Role/Designation'],
+        email: candidate['Email ID'],
+        password: encryptedPassword,
+        confirmPassword: candidate.password,
+        fullName: candidate['Candidate Name'],
+        mgrName: mgrName,
+        mgrEmail: mgrEmail
+      }
+    } catch (err) {
+      console.error('Error in normalizeCandidate:', err);
+      return null; // Return null to prevent breaking the loop
+    }
+  };
+
+  try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -170,6 +204,59 @@ emailRouter.post("/api/user/credentials", (req, res) => {
         pass: process.env.EMAIL_PASSWORD
       }
     });
+
+    // Check if multiple candidates are provided
+    if (Array.isArray(candidates) && candidates.length > 0) {
+      console.log("Bulk email processing started...");
+
+      // Sending bulk emails
+      const emailPromises = candidates.map(async (candidate) => {
+
+        const normalizedCandidate = await normalizeCandidate(candidate);
+        const { role, email, confirmPassword, fullName, mgrEmail } = normalizedCandidate;
+
+        const mailOptions = {
+          from: process.env.EMAIL,
+          // to: email, // Candidate's email
+          to: email, // Manager's email
+          cc: mgrEmail,
+          subject: "Enfuse Welcomes You",
+          html: compiledTemplate1.render({ role, email, fullName, confirmPassword }),
+          attachments: [
+            {
+              filename: "enfuse-logo.png",
+              path: "./views/enfuse-logo.png",
+              cid: "enfuse-logo"
+            },
+            {
+              filename: "welcome.jpg",
+              path: "./views/welcome.jpg",
+              cid: "welcome"
+            }
+          ]
+        };
+
+        return transporter.sendMail(mailOptions);
+      });
+
+      // Execute all email promises
+      const results = await Promise.allSettled(emailPromises);
+
+      // Filter success & failed emails
+      const successfulEmails = results.filter(result => result.status === "fulfilled");
+      const failedEmails = results.filter(result => result.status === "rejected");
+
+      // console.log(`${successfulEmails.length} bulk emails sent successfully.`);
+      // console.log(`${failedEmails.length} bulk emails failed.`);
+
+      return res.status(201).json({
+        status: 201,
+        message: `${successfulEmails.length} bulk emails sent successfully.`,
+        failedEmails: failedEmails.map(fail => fail.reason)
+      });
+
+      // return res.status(400).json({ status: 400, message: "No valid candidates found for email processing." });
+    }
 
     const mailOptions = {
       from: process.env.EMAIL,

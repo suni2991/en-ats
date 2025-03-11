@@ -212,6 +212,8 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
   };
 
   const handleSlotSelect = (slot) => {
+
+    console.log('slot', slot);
     // Format the date as "On 13th, September, 2024"
     const formattedDate = `On ${moment(slot.date).format('Do, MMMM, YYYY')}`;
 

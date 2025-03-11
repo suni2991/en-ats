@@ -1170,15 +1170,22 @@ userRouter.post("/api/bulkupload", async (req, res) => {
       return res.status(400).json({ status: "ERROR", message: "No valid rows provided." });
     }
 
-    const password = Math.random().toString(36).slice(-8);
+    // const password = Math.random().toString(36).slice(-8);
 
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      password,
-      process.env.PASSWORD_SECRET_KEY
-    ).toString();
 
     // Iterate through each valid row
     for (const validRow of validRows) {
+
+      const { password } = validRow;
+
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        password,
+        process.env.PASSWORD_SECRET_KEY
+      ).toString();
+
+      console.log('single bulkupload password: ', validRow.password);
+      console.log('single bulkupload confirmPassword: ', validRow.confirmPassword);
+
       const candidate = await Candidate.findOne({ email: validRow["Email ID"] });
       validRow.bulkUpload = {};
 
@@ -1211,6 +1218,7 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.bulkUpload.l3Interviewer = validRow['L3 Interviewer'];
         validRow.bulkUpload.l3InterviewStatus = validRow['L3 Interview Status'];
         validRow.status = validRow['Candidate Final Status'];
+        validRow.isCampusDriveCandidate = validRow['IsCampusDrive(Yes/No)'];
         validRow.bulkUpload.hrComments = validRow['HR Comments'];
         validRow.resume = validRow['Resume Link'];
         validRow.mgrName = validRow["HR Name"];
@@ -1289,6 +1297,5 @@ function convertYearsToNumber(yearsString) {
   const match = yearsString.match(/(\d+)/);
   return match ? parseInt(match[0], 10) : null; // Return the number or null if not found
 }
-
 
 module.exports = userRouter;
