@@ -1,10 +1,8 @@
 const userRouter = require("express").Router();
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
-
 const xlsx = require('xlsx');
 const multer = require("multer");
-
 const Candidate = require("../model/CandidateModel");
 const {
   authenticate,
@@ -995,25 +993,24 @@ userRouter.get(
   }
 );
 
-
 userRouter.put("/api/candidate/:id/reset-scores", async (req, res) => {
   try {
     const _id = req.params.id;
     let { subject, history } = req.body; // Use 'let' so 'subject' can be modified
 
-    // Convert the subject to lowercase to make the check case-insensitive
-    subject = subject.toLowerCase();
-
     // List of valid subjects (in lowercase)
     const validSubjects = ['psychometric', 'quantitative', 'vocabulary', 'java', 'accounts', 'excel'];
 
-    if (!validSubjects.includes(subject)) {
-      return res.status(400).json({
+    // Fetch the candidate document from the database
+    const candidate = await Candidate.findById(_id);
+    if (!candidate) {
+      return res.status(404).json({
         status: "FAILED",
-        message: "Invalid subject provided"
+        message: "Candidate not found"
       });
     }
 
+    // Add history entry
     candidate.history.push({
       status: candidate.status,
       updatedBy: req.user.id, // Assuming you have user info in req.user
@@ -1022,10 +1019,31 @@ userRouter.put("/api/candidate/:id/reset-scores", async (req, res) => {
     });
 
     // Build the update object dynamically based on the subject
-    const resetFields = {
-      [`${subject}.score`]: -1,
-      [`${subject}.status`]: null // Optionally reset status to null or another value if needed
-    };
+    let resetFields = {};
+    if (subject) {
+      // Convert the subject to lowercase to make the check case-insensitive
+      subject = subject.toLowerCase();
+
+      if (!validSubjects.includes(subject)) {
+        return res.status(400).json({
+          status: "FAILED",
+          message: "Invalid subject provided"
+        });
+      }
+
+      resetFields = {
+        [`${subject}.score`]: -1,
+        [`${subject}.status`]: null // Optionally reset status to null or another value if needed
+      };
+    } else {
+      // Reset all subjects
+      validSubjects.forEach(sub => {
+        resetFields[`${sub}.score`] = -1;
+        resetFields[`${sub}.status`] = null;
+      });
+      resetFields.assessmentDone = false;
+      resetFields.atsCleared = false;
+    }
 
     // Perform the update
     const result = await Candidate.findByIdAndUpdate(
@@ -1037,13 +1055,13 @@ userRouter.put("/api/candidate/:id/reset-scores", async (req, res) => {
     if (!result) {
       return res.json({
         status: "FAILED",
-        message: `Failed to reset score for ${subject}`
+        message: `Failed to reset score${subject ? ` for ${subject}` : ''}`
       });
     }
 
     res.json({
       status: "SUCCESS",
-      message: `Score reset for ${subject}`,
+      message: `Score reset${subject ? ` for ${subject}` : ' for all subjects'}`,
       data: result
     });
   } catch (e) {
@@ -1054,6 +1072,65 @@ userRouter.put("/api/candidate/:id/reset-scores", async (req, res) => {
     });
   }
 });
+
+// userRouter.put("/api/candidate/:id/reset-scores", async (req, res) => {
+//   try {
+//     const _id = req.params.id;
+//     let { subject, history } = req.body; // Use 'let' so 'subject' can be modified
+
+//     // Convert the subject to lowercase to make the check case-insensitive
+//     subject = subject.toLowerCase();
+
+//     // List of valid subjects (in lowercase)
+//     const validSubjects = ['psychometric', 'quantitative', 'vocabulary', 'java', 'accounts', 'excel'];
+
+//     if (!validSubjects.includes(subject)) {
+//       return res.status(400).json({
+//         status: "FAILED",
+//         message: "Invalid subject provided"
+//       });
+//     }
+
+//     candidate.history.push({
+//       status: candidate.status,
+//       updatedBy: req.user.id, // Assuming you have user info in req.user
+//       updatedAt: new Date(),
+//       note: "Score reset",
+//     });
+
+//     // Build the update object dynamically based on the subject
+//     const resetFields = {
+//       [`${subject}.score`]: -1,
+//       [`${subject}.status`]: null // Optionally reset status to null or another value if needed
+//     };
+
+//     // Perform the update
+//     const result = await Candidate.findByIdAndUpdate(
+//       _id,
+//       { $set: resetFields }, // Dynamically reset the specific subject score
+//       { new: true }
+//     );
+
+//     if (!result) {
+//       return res.json({
+//         status: "FAILED",
+//         message: `Failed to reset score for ${subject}`
+//       });
+//     }
+
+//     res.json({
+//       status: "SUCCESS",
+//       message: `Score reset for ${subject}`,
+//       data: result
+//     });
+//   } catch (e) {
+//     res.status(500).json({
+//       status: "FAILED",
+//       message: "An error occurred while resetting the score",
+//       error: e.message
+//     });
+//   }
+// });
 
 userRouter.delete("/api/candidate/slot/:slotId", async (req, res) => {
   const { slotId } = req.params;
@@ -1167,7 +1244,6 @@ const validateAndFormatDriveLink = (link) => {
   };
 };
 
-
 userRouter.post("/api/bulkupload", async (req, res) => {
 
   try {
@@ -1179,6 +1255,17 @@ userRouter.post("/api/bulkupload", async (req, res) => {
 
     // Iterate through each valid row
     for (const validRow of validRows) {
+
+      const { password } = validRow;
+
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        password,
+        process.env.PASSWORD_SECRET_KEY
+      ).toString();
+
+      console.log('single bulkupload password: ', validRow.password);
+      console.log('single bulkupload confirmPassword: ', validRow.confirmPassword);
+
       const candidate = await Candidate.findOne({ email: validRow["Email ID"] });
       validRow.bulkUpload = {};
 
@@ -1191,7 +1278,7 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.lastName = nameParts[nameParts.length - 1];
         validRow.contact = validRow['Mobile Number'];
         validRow.organisation = validRow['Organisation'];
-        validRow.designation = validRow['Role/Designation'];
+        validRow.position = validRow['Role/Designation'];
         validRow.totalExperience = validRow['Total Experience'];
         validRow.relevantExperience = validRow['Relevant Experience'];
         validRow.qualification = validRow['Education'];
@@ -1202,16 +1289,20 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.preferedLocation = validRow['Prefered Location'];
         validRow.bulkUpload.resumeStatus = validRow['Resume Status'];
         validRow.bulkUpload.testApplicability = validRow['Test Applicability'];
-        validRow.bulkUpload.testStatus= validRow['Test Status'];
-        validRow.bulkUpload.testScore= validRow['Test Score'];
-        validRow.bulkUpload.l1Interviewer= validRow['L1 Interviewer'];
-        validRow.bulkUpload.l1InterviewStatus= validRow['L1 Interview Status'];
-        validRow.bulkUpload.l2Interviewer= validRow['L2 Interviewer'];
-        validRow.bulkUpload.l2InterviewStatus= validRow['L2 Interview Status'];
-        validRow.bulkUpload.l3Interviewer= validRow['L3 Interviewer'];
-        validRow.bulkUpload.l3InterviewStatus= validRow['L3 Interview Status'];
-        validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
-        validRow.bulkUpload.hrComments= validRow['HR Comments'];
+        validRow.bulkUpload.testStatus = validRow['Test Status'];
+        validRow.bulkUpload.testScore = validRow['Test Score'];
+        validRow.bulkUpload.l1Interviewer = validRow['L1 Interviewer'];
+        validRow.bulkUpload.l1InterviewStatus = validRow['L1 Interview Status'];
+        validRow.bulkUpload.l2Interviewer = validRow['L2 Interviewer'];
+        validRow.bulkUpload.l2InterviewStatus = validRow['L2 Interview Status'];
+        validRow.bulkUpload.l3Interviewer = validRow['L3 Interviewer'];
+        validRow.bulkUpload.l3InterviewStatus = validRow['L3 Interview Status'];
+        if(validRow['IsCampusDrive(Yes/No)'] === "Yes" || validRow['IsCampusDrive(Yes/No)'] === "yes" )
+          validRow.isCampusDrive = true;
+        else
+          validRow.isCampusDrive = false;
+        validRow.status = validRow['Candidate Final Status'];
+        validRow.bulkUpload.hrComments = validRow['HR Comments'];
         validRow.resume = validRow['Resume Link'];
         validRow.mgrName = validRow["HR Name"];
 
@@ -1245,16 +1336,20 @@ userRouter.post("/api/bulkupload", async (req, res) => {
         validRow.preferedLocation = validRow['Prefered Location'];
         validRow.bulkUpload.resumeStatus = validRow['Resume Status'];
         validRow.bulkUpload.testApplicability = validRow['Test Applicability'];
-        validRow.bulkUpload.testStatus= validRow['Test Status'];
-        validRow.bulkUpload.testScore= validRow['Test Score'];
-        validRow.bulkUpload.l1Interviewer= validRow['L1 Interviewer'];
-        validRow.bulkUpload.l1InterviewStatus= validRow['L1 Interview Status'];
-        validRow.bulkUpload.l2Interviewer= validRow['L2 Interviewer'];
-        validRow.bulkUpload.l2InterviewStatus= validRow['L2 Interview Status'];
-        validRow.bulkUpload.l3Interviewer= validRow['L3 Interviewer'];
-        validRow.bulkUpload.l3InterviewStatus= validRow['L3 Interview Status'];
-        validRow.bulkUpload.candidateFinalStatus= validRow['Candidate Final Status'];
-        validRow.bulkUpload.hrComments= validRow['HR Comments'];
+        validRow.bulkUpload.testStatus = validRow['Test Status'];
+        validRow.bulkUpload.testScore = validRow['Test Score'];
+        validRow.bulkUpload.l1Interviewer = validRow['L1 Interviewer'];
+        validRow.bulkUpload.l1InterviewStatus = validRow['L1 Interview Status'];
+        validRow.bulkUpload.l2Interviewer = validRow['L2 Interviewer'];
+        validRow.bulkUpload.l2InterviewStatus = validRow['L2 Interview Status'];
+        validRow.bulkUpload.l3Interviewer = validRow['L3 Interviewer'];
+        validRow.bulkUpload.l3InterviewStatus = validRow['L3 Interview Status'];
+        if(validRow['IsCampusDrive(Yes/No)'] === "Yes" || validRow['IsCampusDrive(Yes/No)'] === "yes" )
+          validRow.isCampusDrive = true;
+        else
+          validRow.isCampusDrive = false;
+        validRow.status = validRow['Candidate Final Status'];
+        validRow.bulkUpload.hrComments = validRow['HR Comments'];
         validRow.mgrName = validRow["HR Name"];
         validRow.resume = validRow['Resume Link'];
 
@@ -1263,6 +1358,9 @@ userRouter.post("/api/bulkupload", async (req, res) => {
           role: 'HR'
         });
         validRow.mgrEmail = manager.email;
+
+        validRow.password = encryptedPassword; // Set the encrypted password
+        validRow.confirmPassword = password;
 
         // Insert new candidate
         await Candidate.create(validRow);

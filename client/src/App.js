@@ -38,6 +38,7 @@ import Questionaire from "./pages/Questionaire.js";
 import QuestionList from "./components/QuestionList.js";
 import QuestionForm from "./components/QuestionForm.js";
 import EditTopic from './components/EditTopic.js';
+import Test from './components/campus/Test';
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -100,6 +101,9 @@ const App = () => {
             <Route path='/questions/all' element={<Sidebar><QuestionList /></Sidebar>} />
             <Route path='/topic/edit/:id' element={<EditTopic />} />
             <Route path='/question/edit/:id' element={<Sidebar><QuestionForm /></Sidebar>} />
+            <Route path="/campus/Quantitative" element={<Test testType="Quantitative" />} />
+        <Route path="/campus/Vocabulary" element={<Test testType="Vocabulary" />} />
+        <Route path="/campus/Psychometric" element={<Test testType="Psychometric" />} />
           </Route>
           {/* <Route path="/editCandidate" element={<EditCandidate />}/> */}
         </Routes>

@@ -29,9 +29,9 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
   const [applicants, setApplicants] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [filteredJobs, setFilteredJobs] = useState([]);
+  const { token, auth } = useAuth();
 
   const pageSize = 16;
-  const { token } = useAuth();
 
   useEffect(() => {
     const fetchJobsByStatus = async () => {
@@ -42,21 +42,27 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setFilteredJobs(response.data);
+
+        let jobsData = response.data;
+        if (auth.role === 'HiringManager') {
+          jobsData = jobsData.filter(job => job.department === auth.department);
+        }
+
+        setFilteredJobs(jobsData);
       } catch (error) {
         console.error("Error fetching jobs by status:", error);
       }
     };
 
     fetchJobsByStatus();
-  }, [selectedStatus, token]);
+  }, [selectedStatus, token, auth.role, auth.department]);
 
   useEffect(() => {
     const fetchCandidateCounts = async () => {
       try {
         const response = await axios.get(`${URL}/api/positions`, {
           headers: {
-            // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         const countsObject = response.data.reduce((acc, job) => {
@@ -73,24 +79,12 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
     fetchCandidateCounts();
   }, [jobs, token]);
 
-  // const copyJobLink = (positionId) => {
-  //   const frontendURL = `${window.location.origin}/register-job/${positionId}`;
-  //   navigator.clipboard.writeText(frontendURL)
-  //     .then(() => {
-  //       message.success("Link copied to clipboard!");
-  //     })
-  //     .catch((err) => {
-  //       console.error("Error copying link: ", err);
-  //       message.error("Failed to copy link.");
-  //     });
-  // };
-  function copyJobLink(jobId) {
+  const copyJobLink = (jobId) => {
     const jobURL = `${window.location.origin}/register-job/${jobId}`;
-  
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(jobURL).then(() => {
         message.success("Link copied to clipboard!");
-        console.log('Copied job URL to clipboard successfully!');
       }).catch(err => {
         console.error('Failed to copy job URL: ', err);
       });
@@ -102,14 +96,12 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
       textArea.select();
       try {
         document.execCommand('copy');
-        console.log('Copied job URL using fallback!');
       } catch (err) {
         console.error('Fallback: Oops, unable to copy', err);
       }
       document.body.removeChild(textArea);
     }
-  }
-  
+  };
 
   const showApplicants = async (position) => {
     try {
@@ -129,10 +121,25 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
     }
   };
 
+  const renderResumeLink = (row) => {
+    if (row.resume) {
+      let downloadLink = `${URL}${row.resume}`;
+      if (row.resume.includes("google.com")) {
+        downloadLink = row.resume;
+      }
+  
+      return (
+        <a href={downloadLink} target="_blank" rel="noopener noreferrer" className='resume-link'>
+          {row.firstName} CV
+        </a>
+      );
+    } else {
+      return "Resume not available";
+    }
+  };
+
   const startIndex = (currentPage - 1) * pageSize;
   const currentJobs = filteredJobs.slice(startIndex, startIndex + pageSize);
-  // const startIndex = (currentPage - 1) * pageSize;
-  // const currentJobs = jobs.slice(startIndex, startIndex + pageSize);
 
   const columns = [
     {
@@ -140,16 +147,13 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
       dataIndex: "fullName",
       key: "fullName",
     },
+   
     {
-      title: "Qualification",
-      dataIndex: "qualification",
-      key: "qualification",
+      title: "Resume/CV",
+      key: "resume",
+      render: (text, record) => renderResumeLink(record),
     },
-    {
-      title: "Relevant Experience",
-      dataIndex: "relevantExperience",
-      key: "relevantExperience",
-    },
+   
     {
       title: "Notice Period",
       dataIndex: "noticePeriod",
@@ -170,10 +174,71 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
     },
   ];
 
+
+  if (auth.role === "HiringManager") {
+    columns.push({
+      title: "Action on CV",
+      key: "edit",
+      render: (text, record) => (
+        <span className="actions-cv-buttons">
+          <Button
+            type="link"
+            onClick={() => handleShortlist(record._id)}
+          >
+            Shortlist
+          </Button>
+          <Button
+            type="link"
+            onClick={() => handleReject(record._id)}
+          >
+            Reject
+          </Button>
+        </span>
+      ),
+    });
+  }
+
+  const handleShortlist = async (id) => {
+    try {
+      const response = await axios.put(`${URL}/api/candidate/${id}`, { status: "CV Shortlisted" }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.status === "SUCCESS") {
+        message.success("CV Shortlisted successfully!");
+        // Optionally, refresh the applicants list or update the UI
+      } else {
+        message.error("Failed to shortlist CV.");
+      }
+    } catch (error) {
+      console.error("Error shortlisting CV:", error);
+      message.error("An error occurred while shortlisting the CV.");
+    }
+  };
+  
+  const handleReject = async (id) => {
+    try {
+      const response = await axios.put(`${URL}/api/candidate/${id}`, { status: "CV Rejected" }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.status === "SUCCESS") {
+        message.success("CV Rejected successfully!");
+        // Optionally, refresh the applicants list or update the UI
+      } else {
+        message.error("Failed to reject CV.");
+      }
+    } catch (error) {
+      console.error("Error rejecting CV:", error);
+      message.error("An error occurred while rejecting the CV.");
+    }
+  };
+  
   return (
     <div>
       <Row gutter={[16, 16]}>
-
         {currentJobs.map((job) => {
           const daysRemaining = moment(job.fullfilledBy).diff(moment(), 'days');
 
@@ -224,7 +289,6 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
                       <p>
                         <strong>Dept:</strong> {job.department}
                       </p>
-                     
                       <p>
                         <strong>Status:</strong>{" "}
                         <span
@@ -233,14 +297,14 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
                             fontWeight: "bold",
                           }}
                         >
-                          {job.status} 
+                          {job.status}
                         </span>
                       </p>
-                      {job.status === "REQ Approved" && job.fullfilledBy !== null && ( <p> <strong>Closes in:</strong> {daysRemaining} days </p> )}
-                      {/* {job.status === "REQ Approved" && (
-                      <p>
-                        <strong>Closed in:</strong> {daysRemaining} days
-                      </p>)} */}
+                      {job.status === "REQ Approved" && job.fullfilledBy !== null && (
+                        <p>
+                          <strong>Closes in:</strong> {daysRemaining} days
+                        </p>
+                      )}
                     </Card>
                     <Card
                       className="card-back"
@@ -258,7 +322,6 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
                       />
                     </Card>
                   </div>
-
                 </div>
               </Badge>
             </Col>
@@ -268,12 +331,12 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
       <Pagination
         current={currentPage}
         pageSize={pageSize}
-        total={jobs.length}
+        total={filteredJobs.length}
         onChange={(page) => setCurrentPage(page)}
         style={{
           textAlign: "right",
           marginTop: "20px",
-          paddingTop: '10px', 
+          paddingTop: '10px',
           background: "#fff",
           maxWidth: "100%",
           height: "50px",
@@ -281,49 +344,43 @@ const JobDashboard = ({ jobs, selectedStatus }) => {
         }}
       />
       <Modal
-      title={null} // Set title to null for custom header
-      open={isModalVisible}
-      onCancel={() => setIsModalVisible(false)}
-      footer={null}
-      width={800}
-    >
-      <Row justify="space-between" align="middle">
-        {/* Table Title */}
-        <Col>
-          <h2 style={{ margin: 0, paddingtop: 0 }}>Applicants for {selectedJob}</h2>
-        </Col>
-    
-        {/* Copy Button */}
-        <Col>
-          <Button
-            icon={<CopyOutlined />}
-            onClick={() => copyJobLink(selectedJob)}
-            style={{
-              backgroundColor: "#00B4D2",
-              color: "white",
-              transition: "transform 0.2s ease, background-color 0.2s ease",
-              height: 'auto', 
-              margin:'20px 10px', // Adjust height for centering
-              // padding: '8px 16px', // Button padding to look even
-            }}
-          >
-            Copy Job Registration Link
-          </Button>
-        </Col>
-      </Row>
-    
-      {/* Table with Applicants */}
-      <Table
-        columns={columns}
-        dataSource={applicants}
-        rowKey="_id"
-        style={{ textTransform: "capitalize" }}
-        pagination={{ pageSize: 8 }}
-      />
-    </Modal>
-    
+        title={null}
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        <Row justify="space-between" align="middle">
+          <Col>
+            <h2 style={{ margin: 0, paddingTop: 0 }}>Applicants for {selectedJob}</h2>
+          </Col>
+          <Col>
+            <Button
+              icon={<CopyOutlined />}
+              onClick={() => copyJobLink(selectedJob)}
+              style={{
+                backgroundColor: "#00B4D2",
+                color: "white",
+                transition: "transform 0.2s ease, background-color 0.2s ease",
+                height: 'auto',
+                margin: '20px 10px',
+              }}
+            >
+              Copy Job Registration Link
+            </Button>
+          </Col>
+        </Row>
+        <Table
+          columns={columns}
+          dataSource={applicants}
+          rowKey="_id"
+          style={{ textTransform: "capitalize" }}
+          pagination={{ pageSize: 8 }}
+        />
+      </Modal>
     </div>
   );
 };
 
 export default JobDashboard;
+

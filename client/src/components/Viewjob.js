@@ -365,10 +365,10 @@ const Viewjob = ({ auth }) => {
 
   return (
     <div>
-      {auth.role === "Hiring-Manager" ? (
+      {auth.role === "HiringManager" ? (
         <div>
           <Fetchtable
-            url={`${URL}/api/viewjobs?mgrRole=Hiring-Manager&fullName=${auth.fullName}`}
+            url={`${URL}/api/viewjobs?mgrRole=HiringManager&fullName=${auth.fullName}`}
             columns={userColumns}
             filteredData={filteredJobs}
           />

@@ -201,7 +201,7 @@ const Sidebar = ({ children }) => {
                   <div className="link-text">{item.name}</div>
                 </NavLink>
               )
-          } else if (auth.role === "Hiring-Manager") {
+          } else if (auth.role === "HiringManager") {
             return (
               (item.name === "Dashboard" || item.name === "Feedback" || item.name === "My Slot") && (
                 <NavLink
@@ -254,7 +254,7 @@ const Sidebar = ({ children }) => {
             {(auth.role === "HR" ||
               auth.role === "Admin" ||
               auth.role === "Panelist" ||
-              auth.role === "Hiring-Manager") && (
+              auth.role === "HiringManager") && (
                 <nav className="navbar">
                   <div className="navbar-right">
 

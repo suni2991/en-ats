@@ -230,7 +230,8 @@ const AssignInterview = ({ open, onClose, candidateId, auth }) => {
       ...prevData,
       round: {
         ...prevData.round,
-        bookedSlot: slot, // Store the actual slot object
+        bookedSlot: slot,
+        interviewDate: slot.date, // Store the actual slot object
         interviewDt: formattedInterviewDetails, // Store the formatted string for display
       },
     }));

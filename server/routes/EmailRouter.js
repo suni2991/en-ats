@@ -155,63 +155,118 @@ emailRouter.post(
   }
 );
 
-emailRouter.post("/api/user/credentials", (req, res) => {
+emailRouter.post("/api/user/credentials", async (req, res) => {
+  const { candidates } = req.body;
   const { role } = req.body;
   const { confirmPassword } = req.body;
   const { email } = req.body;
-  const { mgrEmail } = req.body;
   const { fullName } = req.body;
 
+  const normalizeCandidate = async (candidate) => {
+  };
+
   try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
 
-      const transporter = nodemailer.createTransport({
-          
-          service: "gmail",
-          auth: {
-              user: process.env.EMAIL,
-              pass: process.env.EMAIL_PASSWORD
-          }
-      });
+    // Check if multiple candidates are provided
+    if (Array.isArray(candidates) && candidates.length > 0) {
+      console.log("Bulk email processing started...");
 
-      const mailOptions = {
+      // Sending bulk emails
+      const emailPromises = candidates.map(async (candidate) => {
+
+        const normalizedCandidate = await normalizeCandidate(candidate);
+        const { role, email, confirmPassword, fullName, mgrEmail } = normalizedCandidate;
+
+        const mailOptions = {
           from: process.env.EMAIL,
-          to: email,
+          // to: email, // Candidate's email
+          to: email, // Manager's email
           cc: mgrEmail,
           subject: "Enfuse Welcomes You",
           html: compiledTemplate1.render({ role, email, fullName, confirmPassword }),
           attachments: [
-              {
-                  filename: 'enfuse-logo.png',
-                  path: './views/enfuse-logo.png',
-                  cid: "enfuse-logo"
-              },
-              {
-                  filename: 'welcome.jpg',
-                  path: './views/welcome.jpg',
-                  cid: "welcome"
-              },
-              {
-                filename: "enfuse-logo.png",
-                path: "./views/enfuse-logo.png",
-                cid: "enfuse-logo",
-              },
+            {
+              filename: "enfuse-logo.png",
+              path: "./views/enfuse-logo.png",
+              cid: "enfuse-logo"
+            },
+            {
+              filename: "welcome.jpg",
+              path: "./views/welcome.jpg",
+              cid: "welcome"
+            }
           ]
-      };
+        };
 
-      transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-              console.log("Error" + error)
-          } else {
-              console.log("Email sent:" + info.response);
-              res.status(201).json({ status: 201, info })
-          }
-      })
+        return transporter.sendMail(mailOptions);
+      });
+
+      // Execute all email promises
+      const results = await Promise.allSettled(emailPromises);
+
+      // Filter success & failed emails
+      const successfulEmails = results.filter(result => result.status === "fulfilled");
+      const failedEmails = results.filter(result => result.status === "rejected");
+
+      // console.log(`${successfulEmails.length} bulk emails sent successfully.`);
+      // console.log(`${failedEmails.length} bulk emails failed.`);
+
+      return res.status(201).json({
+        status: 201,
+        message: `${successfulEmails.length} bulk emails sent successfully.`,
+        failedEmails: failedEmails.map(fail => fail.reason)
+      });
+
+      // return res.status(400).json({ status: 400, message: "No valid candidates found for email processing." });
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: mgrEmail,
+      cc: mgrEmail,
+      subject: "Enfuse Welcomes You",
+      html: compiledTemplate1.render({ role, email, fullName, confirmPassword }),
+      attachments: [
+        {
+          filename: 'enfuse-logo.png',
+          path: './views/enfuse-logo.png',
+          cid: "enfuse-logo"
+        },
+        {
+          filename: 'welcome.jpg',
+          path: './views/welcome.jpg',
+          cid: "welcome"
+        },
+        {
+          filename: "enfuse-logo.png",
+          path: "./views/enfuse-logo.png",
+          cid: "enfuse-logo",
+        },
+      ]
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("Error" + error)
+      } else {
+        console.log("Email sent:" + info.response);
+        res.status(201).json({ status: 201, info })
+      }
+    })
 
   } catch (error) {
-      console.log("Error" + error);
-      res.status(401).json({ status: 401, error })
+    console.log("Error" + error);
+    res.status(401).json({ status: 401, error })
   }
 });
+
 
 emailRouter.post(
   "/api/job/approval",

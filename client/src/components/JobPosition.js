@@ -340,7 +340,7 @@ const JobPositionPieChart = ({ department }) => {
       >
 
         {
-          auth.role === "Hiring-Manager" && (
+          auth.role === "HiringManager" && (
             <Select
               placeholder="Select Department"
               style={{ width: 240 }}

@@ -14,6 +14,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
   const { token, auth, role } = useAuth();
   const [rejectionModalVisible, setRejectionModalVisible] = useState(false);
   const [rejectionNote, setRejectionNote] = useState("");
+  const isCampusDrive = candidateData.isCampusDrive;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,6 +143,8 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       return <center><h1> No-Test</h1></center>;
     }
 
+   
+  
     if (!candidateData?.assessmentDone) {
       return <p>No assessment data available.</p>;
     }
@@ -165,7 +168,13 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
     );
   
     const atsCleared = candidateData.atsCleared;
-    const scores = candidateData.selectedCategory === "Technical" ? (
+    const scores = isCampusDrive ? (
+      <>
+        {renderScoreRow("Psychometric", candidateData.psychometric)}
+        {renderScoreRow("Vocabulary", candidateData.vocabulary)}
+        {renderScoreRow("Quantitative", candidateData.quantitative)}
+      </>
+    ) : candidateData.selectedCategory === "Technical" ? (
       <>
         {renderScoreRow("Psychometric", candidateData.psychometric)}
         {renderScoreRow("Java", candidateData.java)}
@@ -183,18 +192,18 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
   
     return (
       <>
-      {scores}
-      <div style={{ marginTop: "20px" }}>
-        {!candidateData.atsCleared && (
-          <>
-            <h4><strong>Test:</strong></h4>
-            <Button type="primary" onClick={() => handleTestStatusUpdate("Test Rejected")} style={{ background: "red", width: "30%", marginRight: "5%" }}>Rejected</Button>
-            <Button type="primary" onClick={() => handleTestStatusUpdate("Test Shortlisted")} style={{ background: "#00B4D2", width: "30%", marginRight: "5%" }}>Shortlisted</Button>
-            <Button type="primary" onClick={() => handleTestStatusUpdate("Re-Test")} style={{ background: "#007d93", width: "30%" }}>Re-Test</Button>
-          </>
-        )}
-      </div>
-    </>
+        {scores}
+        <div style={{ marginTop: "20px" }}>
+          {!candidateData.atsCleared && (
+            <>
+              <h4><strong>Test:</strong></h4>
+              <Button type="primary" onClick={() => handleTestStatusUpdate("Test Rejected")} style={{ background: "red", width: "30%", marginRight: "5%" }}>Rejected</Button>
+              <Button type="primary" onClick={() => handleTestStatusUpdate("Test Shortlisted")} style={{ background: "#00B4D2", width: "30%", marginRight: "5%" }}>Shortlisted</Button>
+              <Button type="primary" onClick={() => handleTestStatusUpdate("Re-Test")} style={{ background: "#007d93", width: "30%" }}>Re-Test</Button>
+            </>
+          )}
+        </div>
+      </>
     );
   };
 
@@ -210,7 +219,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       });
       await Promise.all(resetPromises);
     }
-
+  
     const updatedStatus = status === "Test Shortlisted" ? "L1 To be Scheduled" : status;
   
     try {
@@ -223,7 +232,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           assessmentDone: status === "Re-Test" ? false : candidateData.assessmentDone,
           history: {
             note: `Test status updated to ${status}`,
-            updatedBy: auth.fullName,
+            updatedBy: auth.fullName, // Use fullName instead of id
             updatedAt: new Date().toISOString(),
           },
         },
@@ -254,15 +263,15 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       message.error("Error updating test status.");
     }
   };
-
+  
   const handleRejection = async () => {
     if (!rejectionNote) {
       message.warning("Please provide a note for the rejection.");
       return;
     }
   
-    const updatedBy = auth.fullName; // Replace with actual user role if dynamic
-
+    const updatedBy = auth.fullName; // Use fullName instead of id
+  
     try {
       await axios.put(
         `${URL}/api/candidate/${candidateId}`,
@@ -272,7 +281,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           history: {
             status:"CV Rejected",
             note: `${rejectionNote}`,
-            updatedBy: updatedBy,
+            updatedBy: updatedBy, // Use fullName instead of id
             updatedAt: new Date(),
           }
         },
@@ -300,7 +309,6 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
       message.error("Error updating candidate status.");
     }
   };
-  
 
   const renderRejectionModal = () => (
     <Modal
@@ -418,6 +426,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
             width={100}
           />
           <h1>{candidateData.position}</h1>
+          
           <div style={{ textTransform: 'capitalize' }}>
             {renderResumeLink(candidateData)}
           </div>
@@ -530,6 +539,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
             }}
           >
             <div>
+       
               <p>
                 <span style={labelStyle}>Status</span>
                 <span style={valueStyle}>: {candidateData.status}</span>
@@ -562,7 +572,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
         </Collapse>
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          {(candidateData.status && (candidateData.status.includes("CV") || candidateData.status.includes("Awaiting"))) && (
+          {(candidateData.status && (candidateData.status.includes("CV Sourced") || candidateData.status.includes("Awaiting") || candidateData.status.includes("Hold"))) && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%", marginBottom: "10px" }}>
                 <Button type="primary" onClick={() => handleSendEmailAndUpdateStatus("CV Shortlisted")} style={{ background: "#00B4D2", width: "48%" }}>CV Shortlisted</Button>
@@ -576,6 +586,7 @@ const CandidateProfileDrawer = ({ open, onClose, candidateId, onUpdateStatus }) 
           )}
           <Button type="primary" onClick={handleHistoryDrawerOpen} style={{ marginTop: "20px", background: "#00B4D2", alignSelf: "center" }}>View History</Button>
           <div>
+          {isCampusDrive && <h5>Campus Drive</h5>}
             <h6>{candidateData.status}</h6>
           </div>
         </div>

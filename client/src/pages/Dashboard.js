@@ -44,33 +44,61 @@ const Dashboard = () => {
   //   fullfilledBy: ""
   // });
 
+  // useEffect(() => {
+  //   const fetchJobs = async () => {
+  //     try {
+  //       console.log('useEffect token: ', token);
+
+  //       // console.log("Parameters for fetching jobs:", {
+  //       //   mgrRole: auth.role,
+  //       //   fullName: auth.fullName,
+  //       // });
+
+  //       const response = await axios.get(`${URL}/api/viewjobs`, {
+  //         params: { mgrRole: auth.role, fullName: auth.fullName },
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       setJobs(response.data.reverse());
+  //     } catch (error) {
+  //       console.error("Error fetching jobs:", error);
+  //     }
+  //   };
+
+  //   if (auth.role && auth.fullName) {
+  //     fetchJobs();
+  //   }
+  // }, [auth.role, auth.fullName]);
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         console.log('useEffect token: ', token);
-
-        // console.log("Parameters for fetching jobs:", {
-        //   mgrRole: auth.role,
-        //   fullName: auth.fullName,
-        // });
-
+  
+        const params = { mgrRole: auth.role, fullName: auth.fullName };
+        if (auth.role === 'HiringManager') {
+          params.department = auth.department;
+        }
+  
         const response = await axios.get(`${URL}/api/viewjobs`, {
-          params: { mgrRole: auth.role, fullName: auth.fullName },
+          params,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         setJobs(response.data.reverse());
       } catch (error) {
         console.error("Error fetching jobs:", error);
       }
     };
-
+  
     if (auth.role && auth.fullName) {
       fetchJobs();
     }
-  }, [auth.role, auth.fullName]);
+  }, [auth.role, auth.fullName, auth.department]);
 
   useEffect(() => {
     const fetchPendingJobs = async () => {
@@ -145,14 +173,25 @@ const Dashboard = () => {
     setSearchQuery(e.target.value);
   };
 
+  // const filteredJobs = jobs.filter(
+  //   (job) =>
+  //     (job.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     job.jobLocation.toLowerCase().includes(searchQuery.toLowerCase())) &&
+  //     job.status === selectedStatus
+  // );
+
+  
   const filteredJobs = jobs.filter(
     (job) =>
       (job.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.jobLocation.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      job.status === selectedStatus
+        job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.jobLocation.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      job.status === selectedStatus &&
+      (auth.role !== 'HiringManager' || job.department === auth.department)
   );
-
+  
+  
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
@@ -266,7 +305,7 @@ const Dashboard = () => {
         )}
       </div>
 
-      {auth.role === 'Hiring-Manager' ?
+      {auth.role === 'HiringManager' ?
         (
           <div className='stat-repo-dashboard'>
             <JobPositionPieChart department={auth.department} />
@@ -279,20 +318,20 @@ const Dashboard = () => {
         )
       }
 
-      <div
-        className="list-applicants"
-        style={{ width: "99.5%", marginLeft: "5px", height: "auto" }}
-      >
-        <Table
-          dataSource={filteredJobs}
-          columns={columns}
-          rowKey={(record) => record._id}
-          rowClassName={getRowClassName}
-          title={() => (
-            <h1 style={{ marginBottom: "10px" }}>Requisition Received and Sent for Approval </h1>
-          )}
-        />
-      </div>
+<div
+  className="list-applicants"
+  style={{ width: "99.5%", marginLeft: "5px", height: "auto" }}
+>
+  <Table
+    dataSource={pendingJobs}
+    columns={columns}
+    rowKey={(record) => record._id}
+    rowClassName={getRowClassName}
+    title={() => (
+      <h1 style={{ marginBottom: "10px" }}>Requisition Received and Sent for Approval </h1>
+    )}
+  />
+</div>
 
       <Modal
         open={isAddNewJobModalVisible}

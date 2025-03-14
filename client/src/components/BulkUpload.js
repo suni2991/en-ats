@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Upload, message, Form, Button } from 'antd';
+import { message, Button } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 
@@ -63,7 +63,7 @@ const BulkUpload = () => {
                 const contactRegex = /^[0-9]{10}$/;
                 const designationRegex = /^[A-Za-z\s]+$/;
                 const hrNameRegex = /^[A-Za-z\s]+$/;
-
+                const isCampusDriveRegex = /^(Yes|yes|No|no)$/;
 
                 let errorMessages = [];
                 let validRows = [];
@@ -74,6 +74,11 @@ const BulkUpload = () => {
                 jsonData.forEach((row, index) => {
                     let isValid = true;
                     let errors = []
+
+                    if(!row.password || !row.confirmPassword){
+                        row.password = Math.random().toString(36).slice(-8);
+                        row.confirmPassword = row.password;
+                    }
 
                     if (!row["Sr No"] || !srNoRegex.test(row["Sr No"])) {
                         errors.push(`Invalid Sr No`);
@@ -97,6 +102,10 @@ const BulkUpload = () => {
                     }
                     if (!row["HR Name"] || !hrNameRegex.test(row["HR Name"])) {
                         errors.push(`Invalid HR Name`);
+                        isValid = false;
+                    }
+                    if (!row["IsCampusDrive(Yes/No)"] || !isCampusDriveRegex.test(row["IsCampusDrive(Yes/No)"])) {
+                        errors.push(`Invalid Input for 'Is Campus Drive Field'`);
                         isValid = false;
                     }
 
@@ -144,32 +153,46 @@ const BulkUpload = () => {
             console.log('File selection canceled.');
             setvalidRowsState(null);
         }
-
     }
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
-
         if (!validRowsState || validRowsState.length === 0) {
             message.error('No file uploaded. Please upload a file with valid rows!');
             return;
         }
 
-        try {
+        // Filter candidates who meet the criteria
+        const shortlistedCandidates = validRowsState.filter(candidate =>
+            (candidate["IsCampusDrive(Yes/No)"] === 'Yes' || candidate["IsCampusDrive(Yes/No)"] === 'yes') &&
+            candidate['Candidate Final Status'] === 'CV Shortlisted'
+        );
 
+        try {
             const response = await axios.post(`${URL}/api/bulkupload`, { validRows: validRowsState }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-
             console.log('Response:', response.data);
             message.success(`${validRowsState.length} Valid Records Uploaded Successfully.`);
             console.log('Uploaded rows handleSubmit:', validRowsState);
 
+            // If there are candidates to notify, send emails
+            if (shortlistedCandidates.length > 0) {
+                await axios.post(`${URL}/api/user/credentials`, { candidates: shortlistedCandidates }, {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                message.success(`${shortlistedCandidates.length} shortlisted candidates notified successfully.`);
+            } else {
+                message.info('No shortlisted candidates required an email notification.');
+            }
+
         } catch (error) {
             console.error('Error uploading file:', error);
+            console.error('Error uploading file or sending emails:', error);
+            message.error('An error occurred during file upload or email notification.');
         }
     }
 
@@ -182,7 +205,7 @@ const BulkUpload = () => {
             "Expected Salary", "Notice Period/ LWD", "Current Location", "Prefered Location",
             "Resume Status", "Test Applicability", "Test Status", "Test Score",
             "L1 Interviewer", "L1 Interview Status", "L2 Interviewer", "L2 Interview Status",
-            "L3 Interviewer", "L3 Interview Status", "Candidate Final Status",
+            "L3 Interviewer", "L3 Interview Status", "IsCampusDrive(Yes/No)", "Candidate Final Status",
             "HR Comments", "HR Name", "Resume Link"
         ];
 

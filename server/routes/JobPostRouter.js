@@ -79,9 +79,9 @@ jobRouter.get(
         jobs = await Job.find({
           status: { $nin: ["Waiting for Approval", "Denied"] },
         });
-      } else if (mgrRole === "Hiring-Manager") {
+      } else if (mgrRole === "HiringManager") {
         // const fullNameRegex = new RegExp(fullName, "i");
-        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "Hiring-Manager" });
+        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "HiringManager" });
         console.log("hiringManager department: ");
         console.log(hiringManager.department);
         jobs = await Job.find({
@@ -89,8 +89,7 @@ jobRouter.get(
           // updateBy: fullNameRegex,
           status: { $nin: ["Waiting for Approval", "Denied"] },
         });
-        console.log("jobs: ");
-        console.log(jobs);
+       
       } else {
         const fullNameRegex = new RegExp(fullName, "i");
         jobs = await Job.find({
@@ -129,9 +128,9 @@ jobRouter.get(
         jobPosts = await Job.find({
           status: { $in: ["Hold"] },
         });
-      } else if (mgrRole === "Hiring-Manager") {
+      } else if (mgrRole === "HiringManager") {
 
-        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "Hiring-Manager" });
+        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "HiringManager" });
         console.log("hiringManager department: ");
         console.log(hiringManager.department);
         jobs = await Job.find({
@@ -139,8 +138,7 @@ jobRouter.get(
           // updateBy: fullNameRegex,
           status: { $nin: ["Hold"] },
         });
-        console.log("jobs: ");
-        console.log(jobs);
+       
 
 
         // const fullNameRegex = new RegExp(fullName, "i");
@@ -177,9 +175,9 @@ jobRouter.get(
         jobPosts = await Job.find({
           status: { $in: ["Waiting for Approval", "Denied"] },
         });
-      } else if (mgrRole === "Hiring-Manager") {
+      } else if (mgrRole === "HiringManager") {
 
-        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "Hiring-Manager" });
+        const hiringManager = await Candidate.findOne({ fullName: fullName, role: "HiringManager" });
         console.log("hiringManager department: ");
         console.log(hiringManager.department);
         jobs = await Job.find({
@@ -187,8 +185,7 @@ jobRouter.get(
           // updateBy: fullNameRegex,
           status: { $nin: ["Waiting for Approval", "Denied"] },
         });
-        console.log("jobs: ");
-        console.log(jobs);
+       
 
 
         // const fullNameRegex = new RegExp(fullName, "i");

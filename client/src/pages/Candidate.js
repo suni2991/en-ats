@@ -17,9 +17,9 @@ const Hire = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-
   const Id = auth._id;
   const Category = auth.selectedCategory;
+  const isCampusDrive = auth.isCampusDrive;
 
   const assessmentDataTechnical = [
     {
@@ -50,10 +50,24 @@ const Hire = () => {
     { no: "4", assessment: "Excel Test", marks: "15", duration: "5min" },
   ];
 
+  const assessmentDataCampusDrive = [
+    {
+      no: "1",
+      assessment: "Quantitative Test",
+      marks: "10",
+      duration: "10min",
+    },
+    { no: "2", assessment: "Vocabulary Test", marks: "10", duration: "5min" },
+    {
+      no: "3",
+      assessment: "Psychometric Test",
+      marks: "10",
+      duration: "10min",
+    },
+  ];
 
   // Fetch candidate details on component mount
   useEffect(() => {
-    // setShowModal(false);
     const fetchCandidate = async () => {
       try {
         const res = await axios.get(`/api/candidate/profile/${Id}`);
@@ -67,24 +81,29 @@ const Hire = () => {
       }
     };
     fetchCandidate();
-    // console.log(candidate);
   }, [auth]);
 
   const handleCloseModal = () => {
     setShowModal(false);
   };
 
-  const assessmentData =
-    auth.selectedCategory === "Technical"
-      ? assessmentDataTechnical
-      : assessmentDataNonTechnical;
+  const assessmentData = isCampusDrive
+    ? assessmentDataCampusDrive
+    : auth.selectedCategory === "Technical"
+    ? assessmentDataTechnical
+    : assessmentDataNonTechnical;
 
   // Initialize tests based on selectedCategory and candidate details
   useEffect(() => {
-    // console.log(candidate);
     if (candidate) {
       let initialTests = [];
-      if (Category === 'Technical') {
+      if (isCampusDrive) {
+        initialTests = [
+          { name: 'Vocabulary', score: candidate.vocabulary.score },
+          { name: 'Psychometric', score: candidate.psychometric.score },
+          { name: 'Quantitative', score: candidate.quantitative.score },
+        ];
+      } else if (Category === 'Technical') {
         initialTests = [
           { name: 'Vocabulary', score: candidate.vocabulary.score },
           { name: 'Java', score: candidate.java.score },
@@ -101,7 +120,7 @@ const Hire = () => {
       }
       setTests(initialTests);
     }
-  }, [Category, candidate]);
+  }, [Category, candidate, isCampusDrive]);
 
   // Check if all tests are completed
   useEffect(() => {
@@ -115,15 +134,15 @@ const Hire = () => {
       message.error(`${testName} exam already completed.`);
       return;
     }
-    navigate(`/assessment/${testName}`)
-    // Logic to start the exam (e.g., navigate to exam page)
+    if (isCampusDrive) {
+      navigate(`/campus/${testName}`);
+    } else {
+      navigate(`/assessment/${testName}`);
+    }
     message.success(`${testName} exam started!`);
   };
 
-
-
   useEffect(() => {
-
     const hasSeenModal = localStorage.getItem('hasSeenModal');
     if (candidate) {
       if (candidate.assessmentDone === false) {
@@ -131,22 +150,21 @@ const Hire = () => {
           setShowModal(true);
           localStorage.setItem('hasSeenModal', true);
         }
-      }else if(candidate.assessmentDone === true) {
+      } else if (candidate.assessmentDone === true) {
         navigate("/thankyou");
       }
     }
-  }, [candidate])
+  }, [candidate, navigate]);
 
   const handleSubmit = async () => {
     if (!isChecked) {
       message.error('Please confirm that you have successfully submitted all tests by checking the box');
       return;
     }
-  
-    // Exclude "Accounts" and "Java" from the completion check
+
     const requiredTests = tests.filter(test => test.name !== 'Accounts' && test.name !== 'Java');
     const completedRequiredTests = requiredTests.filter(test => test.score > -1).length;
-  
+
     if (completedRequiredTests < requiredTests.length) {
       message.error('Please complete all required tests before submitting.');
     } else {
@@ -168,9 +186,7 @@ const Hire = () => {
     setIsChecked(true);
   };
 
-
   return (
-
     <div>
       {showModal && (
         <div className="modal" style={{ zIndex: '1000' }}>
@@ -296,7 +312,6 @@ const Hire = () => {
         </div>
       </div>
     </div>
-
   );
 };
 
